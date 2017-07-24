@@ -80,8 +80,9 @@ def test_decide_work_and_resources():
     # Don't give more gen work than space in the history. 
     active_w = set()
     idle_w = set([1,2,3,4])
-    H_ind = len(H)-1 # Only want one more Gen Point
-    H['sim_id'][:len(H)-1] = np.arange(len(H)-1)
+    gen_points=1
+    H_ind = len(H)-gen_points # Only want one more Gen Point
+    H['sim_id'][:len(H)-gen_points] = np.arange(len(H)-gen_points)
     Work = man.decide_work_and_resources(active_w, idle_w, H, H_ind, sim_specs, gen_specs)
     assert( len(Work) == 2) # Length 2 because first work element is all points to be evaluated, second element is gen point
     # 
