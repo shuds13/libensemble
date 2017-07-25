@@ -6,8 +6,8 @@
 
 export RUN_UNIT_TESTS=true
 export RUN_COV_TESTS=false
+export RUN_REG_TESTS=false
 export RUN_TOX_TESTS=false
-export RUN_REG_TESTS=true
 export RUN_PEP_TESTS=false
 
 #--------------------------------------------------------------------------
@@ -33,15 +33,14 @@ ROOT_DIR=$(git rev-parse --show-toplevel) && root_found=true
 #debugging script
 #echo -e "python path is $PYTHONPATH"
 
-set -x
+#set -x
 
 if [ "$root_found" = true ]; then
   
 
   # Run Unit Tests -----------------------------------------
   
-  if [ "$RUN_UNIT_TESTS" = true ]; then
-  
+  if [ "$RUN_UNIT_TESTS" = true ]; then  
     echo -e "\npre-push: Running unit tests"
     pytest $ROOT_DIR/code/unit_tests/test_manager_main.py
     code=$?
@@ -53,15 +52,34 @@ if [ "$root_found" = true ]; then
     	echo
     	echo -e "Abort pre-push: Unit tests failed"
     	exit 1 #shudson - cld return pytest exit code
-    fi;
-  
+    fi;  
   fi;
 
   # Get Coverage of Unit Tests -----------------------------
 
-  # Run multi-platform Tests -------------------------------
-
   # Run Regression Tests -----------------------------------
+  if [ "$RUN_REG_TESTS" = true ]; then  
+    echo -e "\npre-push: Running regression tests"
+    #pytest $ROOT_DIR/code/unit_tests/test_manager_main.py
+    
+    
+    
+    #Run regression testa - mpi - and check result...
+    
+    #code=$?
+    
+    if [ "$code" -eq "0" ]; then
+    	echo
+    	echo "Regresion tests passed. Continuing..."
+    	echo
+    else
+    	echo
+    	echo -e "Abort pre-push: Regresion tests failed"
+    	exit 1 #shudson - cld return pytest exit code
+    fi;  
+  fi;
+
+  # Run multi-platform Tests -------------------------------
 
   # Run Code standards Tests -------------------------------
 
