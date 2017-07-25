@@ -6,8 +6,9 @@
 # while contents of .git/hooks are not stored
 
 # Hook Scripts
-# pre-push: Run tests suite on git push - abort on failure
+# pre-push: Run test-suite on git push - abort on failure
 
+# List scripts here
 hk_scripts='pre-push'
 
 #--------------------------------------------------------------------------
@@ -23,12 +24,12 @@ if [ "$root_found" = true ]; then
     if [ -f "$ROOT_DIR/hooks/$script" ]; then
       ln -s $ROOT_DIR/hooks/$script $ROOT_DIR/.git/hooks/$script 
       if [ $? = 0 ]; then
-        echo -e "sym link set to $ROOT_DIR/hooks/$script"
+        echo -e "Sym link set to $ROOT_DIR/hooks/$script"
       else
         echo -e "Error: Sym link failed for $ROOT_DIR/hooks/$script"
       fi
     else
-      echo -e "Error: script $script not found in $ROOT_DIR/hooks/"
+      echo -e "Error: Script $script not found in $ROOT_DIR/hooks/"
     fi    
   done
 else

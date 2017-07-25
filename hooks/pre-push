@@ -5,10 +5,10 @@
 # Options for test types
 
 export RUN_UNIT_TESTS=true
-export RUN_COV_TESTS=false
+#export RUN_COV_TESTS=false
 export RUN_REG_TESTS=false
-export RUN_TOX_TESTS=false
-export RUN_PEP_TESTS=false
+#export RUN_TOX_TESTS=false
+#export RUN_PEP_TESTS=false
 
 #--------------------------------------------------------------------------
 
