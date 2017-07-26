@@ -28,7 +28,6 @@ def manager_main(comm, allocation_specs, sim_specs, gen_specs,
     
     print("******************WARNING: THIS IS AN EXPERIMENTAL VERSION OF LIBENSEMBLE")
     print("******************WARNING: THIS IS AN EXPERIMENTAL VERSION OF LIBENSEMBLE")
-    print("******************WARNING: THIS IS AN EXPERIMENTAL VERSION OF LIBENSEMBLE")
 
     H, H_ind = initialize_H(sim_specs, gen_specs, exit_criteria['sim_eval_max'], H0)
 
