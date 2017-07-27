@@ -1,1 +1,11 @@
-../test-script.sh
+#!/usr/bin/env bash
+
+#Enter location of test script - including relative path from git root dir
+export TEST_SCRIPT=test-script.sh
+
+export ROOT_DIR=$(git rev-parse --show-toplevel)
+
+$ROOT_DIR/$TEST_SCRIPT pre-push
+code=$?
+exit $code
+
