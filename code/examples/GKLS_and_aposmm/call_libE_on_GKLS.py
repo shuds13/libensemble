@@ -123,9 +123,9 @@ if MPI.COMM_WORLD.Get_rank() == 0:
         M = np.loadtxt(minima_and_func_val_file)
         M = M[M[:,-1].argsort()] # Sort by function values (last column)
         k = 4
-        tol = 1e-12
+        tol = 1e-7
         for i in range(k):
-            print ("Min for", i, "is", np.min(np.sum((H['x'][H['local_min']]-M[i,:n])**2,1)))
-            #assert(np.min(np.sum((H['x'][H['local_min']]-M[i,:n])**2,1)) < tol)
+            #print ("Min for", i, "is", np.min(np.sum((H['x'][H['local_min']]-M[i,:n])**2,1)))
+            assert(np.min(np.sum((H['x'][H['local_min']]-M[i,:n])**2,1)) < tol)
 
         print("\nLibEnsemble with APOSMM has identified the " + str(k) + " best minima within a tolerance " + str(tol))

@@ -97,13 +97,7 @@ if [ "$root_found" = true ]; then
       RUN_TEST=false
     fi
       
-      
-    ############## SH NOTE: DO I NEED TO DO FURTHER CHECK HERE OF OUTPUT #############3
-    ############## SH NOTE: DO I NEED TO DO FURTHER CHECK HERE OF OUTPUT #############3
-    ############## SH NOTE: DO I NEED TO DO FURTHER CHECK HERE OF OUTPUT #############3
-    ############## SH NOTE: DO I NEED TO DO FURTHER CHECK HERE OF OUTPUT #############3
-    ############## SH NOTE: DO I NEED TO DO FURTHER CHECK HERE OF OUTPUT #############3
-    ############## SH NOTE: DO I NEED TO DO FURTHER CHECK HERE OF OUTPUT #############3
+    # If output test req. would go here - generally will use assertion within code
       
     if [ "$RUN_TEST" = "true" ]; then        
        #sh - currently manually name tests - future create list/auto
