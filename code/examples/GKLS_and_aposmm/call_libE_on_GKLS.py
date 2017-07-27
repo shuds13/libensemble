@@ -110,6 +110,8 @@ np.random.seed(1)
 
 H = libE(c, allocation_specs, sim_specs, gen_specs, failure_processing, exit_criteria)
 
+#import pdb;pdb.set_trace()
+
 if MPI.COMM_WORLD.Get_rank() == 0:
     filename = 'GKLS_results_History_length=' + str(len(H)) + '_ranks=' + str(c['comm'].Get_size())
     print("\n\n\nRun completed.\nSaving results to file: " + filename)
@@ -121,7 +123,7 @@ if MPI.COMM_WORLD.Get_rank() == 0:
         M = np.loadtxt(minima_and_func_val_file)
         M = M[M[:,-1].argsort()] # Sort by function values (last column)
         k = 4
-        tol = 1e-7
+        tol = 1e-9
         for i in range(k):
             assert(np.min(np.sum((H['x'][H['local_min']]-M[i,:n])**2,1)) < tol)
 
