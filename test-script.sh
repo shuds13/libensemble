@@ -15,6 +15,8 @@ export REG_TEST_SUBDIR=code/examples
 
 # Regression test options
 export REG_TEST_CORE_COUNT=4
+export REG_USE_PYTEST=false
+
 export PYTHON_MAJ_VER=python3
 
 #--------------------------------------------------------------------------
@@ -34,7 +36,10 @@ fi
 # Exit code 4:	pytest command line usage error
 # Exit code 5:	No tests were collected
 
-echo -e "\nRunning $RUN_PREFIX libensemble Test-suite .......\n"
+tput bold
+#echo -e "\nRunning $RUN_PREFIX libensemble Test-suite .......\n"
+echo -e "\n************** Running: $RUN_PREFIX Libensemble Test-Suite **************\n"
+tput sgr 0
 
 # Using git root dir
 root_found=false
@@ -48,6 +53,7 @@ ROOT_DIR=$(git rev-parse --show-toplevel) && root_found=true
 #echo -e "python path is $PYTHONPATH"
 
 #set -x
+
 
 if [ "$root_found" = true ]; then
   
@@ -102,8 +108,16 @@ if [ "$root_found" = true ]; then
     if [ "$RUN_TEST" = "true" ]; then        
        #sh - currently manually name tests - future create list/auto
        cd GKLS_and_aposmm/
-       mpiexec -np $REG_TEST_CORE_COUNT $PYTHON_MAJ_VER call_libE_on_GKLS.py
-       test_code=$?
+       
+       #sh for pytest - may be better to wrap main test as function.
+       if [ "$REG_USE_PYTEST" = true ]; then
+         mpiexec -np $REG_TEST_CORE_COUNT pytest call_libE_on_GKLS_pytest.py
+	 test_code=$?
+       else
+         mpiexec -np $REG_TEST_CORE_COUNT $PYTHON_MAJ_VER call_libE_on_GKLS.py
+	 test_code=$?
+       fi              
+
        if [ "$test_code" -eq "0" ]; then
     	   echo -e " ---Test 1: call_libE_on_GKLS.py ...passed"
 	   #continue testing
@@ -114,10 +128,7 @@ if [ "$root_found" = true ]; then
     fi;
 
 
-
-
-
-    #All reg tests - summary
+    #All reg tests - summary ----------------------------------------------
     if [ "$code" -eq "0" ]; then
     	echo
     	echo "Regresion tests passed. Continuing..."
