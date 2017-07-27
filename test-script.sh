@@ -15,7 +15,7 @@ export REG_TEST_SUBDIR=code/examples
 
 # Regression test options
 export REG_TEST_CORE_COUNT=4
-export REG_USE_PYTEST=false
+export REG_USE_PYTEST=true
 
 export PYTHON_MAJ_VER=python3
 
