@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-# Run pre-push testing
+# *** Run pre-push testing ***
+
+#sh* - draft script - replace with a runtests.py (pref. in a test dir)
 
 # Options for test types
 export RUN_UNIT_TESTS=true
@@ -21,6 +23,7 @@ export PYTHON_MAJ_VER=python3
 
 #--------------------------------------------------------------------------
 #get opts - sh - quick test just pass positional parameter
+
 unset RUN_PREFIX
 if [ -n $1 ]; then
   RUN_PREFIX=$1
