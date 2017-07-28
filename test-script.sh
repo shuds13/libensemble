@@ -3,6 +3,8 @@
 # *** Run pre-push testing ***
 
 #sh* - draft script - replace with a runtests.py (pref. in a test dir)
+#If hooks/set-hooks.sh is run - this runs as a pre-push git script
+#Once setup can use "git push --no-verify" to push without running
 
 # Options for test types
 export RUN_UNIT_TESTS=true

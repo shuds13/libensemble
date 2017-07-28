@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+#To push without running use "git push --no-verify"
+
 #Enter location of test script - including relative path from git root dir
 export TEST_SCRIPT=test-script.sh
 
