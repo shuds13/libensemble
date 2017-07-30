@@ -110,6 +110,8 @@ np.random.seed(1)
 
 H = libE(c, allocation_specs, sim_specs, gen_specs, failure_processing, exit_criteria)
 
+#import pdb;pdb.set_trace()
+
 if MPI.COMM_WORLD.Get_rank() == 0:
     filename = 'GKLS_results_History_length=' + str(len(H)) + '_ranks=' + str(c['comm'].Get_size())
     print("\n\n\nRun completed.\nSaving results to file: " + filename)
@@ -123,6 +125,7 @@ if MPI.COMM_WORLD.Get_rank() == 0:
         k = 4
         tol = 1e-7
         for i in range(k):
+            #print ("Min for", i, "is", np.min(np.sum((H['x'][H['local_min']]-M[i,:n])**2,1)))
             assert(np.min(np.sum((H['x'][H['local_min']]-M[i,:n])**2,1)) < tol)
 
         print("\nLibEnsemble with APOSMM has identified the " + str(k) + " best minima within a tolerance " + str(tol))
