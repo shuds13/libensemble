@@ -1,12 +1,10 @@
-
 language: python
 dist: precise #for pypy to work
 python:
   - "2.7"
   - "3.4"
   - "3.5"
-  - "pypy" #commenting out pypy as does not work on trusty yet (travis new defau
-lt)
+  - "pypy" #commenting out pypy as does not work on trusty yet (travis new default)
 
 #From https://docs.travis-ci.com/user/installing-dependencies/
 #apt specific***
@@ -25,4 +23,3 @@ install:
 script: ./test-script.sh
 
 #add line to force commit
-
