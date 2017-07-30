@@ -1,0 +1,28 @@
+
+language: python
+dist: precise #for pypy to work
+python:
+  - "2.7"
+  - "3.4"
+  - "3.5"
+  - "pypy" #commenting out pypy as does not work on trusty yet (travis new defau
+lt)
+
+#From https://docs.travis-ci.com/user/installing-dependencies/
+#apt specific***
+before_install:
+  - #sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+  - sudo apt-get update -qq
+  - sudo apt-get install libnlopt-dev -y
+
+# command to install dependencies
+install:
+  - "pip install ."
+  - "pip install -r requirements.txt"
+
+# command to run tests
+#script: python setup.py test
+script: ./test-script.sh
+
+#add line to force commit
+

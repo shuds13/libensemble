@@ -116,7 +116,7 @@ if [ "$root_found" = true ]; then
        
        #sh for pytest - may be better to wrap main test as function.
        if [ "$REG_USE_PYTEST" = true ]; then
-         mpiexec -np $REG_TEST_CORE_COUNT pytest call_libE_on_GKLS_pytest.py
+         mpiexec -np $REG_TEST_CORE_COUNT pytest test_libE_on_GKLS_pytest.py
 	 test_code=$?
        else
          mpiexec -np $REG_TEST_CORE_COUNT $PYTHON_MAJ_VER call_libE_on_GKLS.py
