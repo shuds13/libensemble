@@ -1,10 +1,6 @@
 # libensemble
 
-.. image:: https://img.shields.io/travis/shuds13/libensemble.svg
-        :target: https://travis-ci.org/shuds13/libensemble
-
-.. image:: https://img.shields.io/pypi/v/libensemble.svg
-        :target: https://pypi.python.org/pypi/libensemble
+[![Build Status](https://travis-ci.org/shuds13/libensemble.svg?branch=master)](https://travis-ci.org/shuds13/libensemble)
 
 Library for managing ensemble-like collections of computations
 
