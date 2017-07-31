@@ -21,15 +21,10 @@ python:
 #prob do petsc here also apt or source rather than pip as pip is not favoured for non-pythin package by creater
 
 
-matrix:
-  include:
-    - os: linux
-      addons:
-        apt:
-          packages:
-          #- swig
-	  libnlopt-dev
-
+addons:
+  apt:
+    packages:
+    - libnlopt-dev
 
 # command to install dependencies
 install:
