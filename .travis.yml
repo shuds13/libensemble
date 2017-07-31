@@ -8,7 +8,11 @@ python:
 
 #From https://docs.travis-ci.com/user/installing-dependencies/
 #apt specific***
-#before_install:
+before_install:
+  - git clone -b nlopt-2.4.2 https://github.com/stevengj/nlopt nlopt
+  - cd nlopt
+  - ./configure --enable-shared && make && make install
+  
 #  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
 #  - sudo add-apt-repository "deb http://us.archive.ubuntu.com/ubuntu/zesty/universe/binary-amd64/Packages"  -y
 ##  - echo "deb http://us.archive.ubuntu.com/ubuntu zesty main universe"  | sudo tee -a /etc/apt/sources.list
@@ -21,11 +25,11 @@ python:
 #prob do petsc here also apt or source rather than pip as pip is not favoured for non-pythin package by creater
 
 
-addons:
-  apt:
-    packages:
-    - libnlopt-dev
-    - sourceline: 'deb http://us.archive.ubuntu.com/ubuntu zesty main universe'
+#addons:
+#  apt:
+#    packages:
+#    - libnlopt-dev
+#    - sourceline: 'deb http://us.archive.ubuntu.com/ubuntu zesty main universe'
 
 # command to install dependencies
 install:
