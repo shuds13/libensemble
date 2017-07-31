@@ -59,10 +59,16 @@ setup(
     install_requires=['Cython',
                       'mpi4py',
                       'numpy',
-                      'petsc4py',
                       'scipy'
                       ],
-
+		      
+#    install_requires=['Cython',
+#                      'mpi4py',
+#                      'numpy',
+#                      'petsc4py',
+#                      'scipy'
+#                      ],
+1
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
         'Programming Language :: Python :: 2',
