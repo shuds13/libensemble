@@ -9,6 +9,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../src'))
 import libE_manager as man
 #from libensemble.code.src import libE_manager as man
 
+import libE         #For Coverage Stats
+import libE_worker  #For Coverage Stats
+
 def test_update_history_x_out():
     assert(True)
 
