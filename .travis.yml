@@ -1,8 +1,8 @@
 language: python
 dist: precise
 python:
-#  - "2.7"
-  - "3.4"
+  - "2.7"
+#  - "3.4"
 #  - "3.5"
 #  - "pypy" #commenting out pypy as does not work on trusty yet (travis new default)
 
