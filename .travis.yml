@@ -25,6 +25,7 @@ addons:
   apt:
     packages:
     - libnlopt-dev
+    - sourceline: 'deb http://us.archive.ubuntu.com/ubuntu zesty main universe'
 
 # command to install dependencies
 install:

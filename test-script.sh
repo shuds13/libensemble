@@ -5,10 +5,11 @@
 #sh* - draft script - replace with a runtests.py (pref. in a test dir)
 #If hooks/set-hooks.sh is run - this runs as a pre-push git script
 #Once setup can use "git push --no-verify" to push without running
+#Note coverage only run with unit tests
 
 # Options for test types
 export RUN_UNIT_TESTS=true
-#export RUN_COV_TESTS=false
+export RUN_COV_TESTS=true
 export RUN_REG_TESTS=true
 #export RUN_TOX_TESTS=false
 #export RUN_PEP_TESTS=false
@@ -67,7 +68,14 @@ if [ "$root_found" = true ]; then
   
   if [ "$RUN_UNIT_TESTS" = true ]; then  
     echo -e "\n$RUN_PREFIX: Running unit tests"
-    pytest $ROOT_DIR/$UNIT_TEST_SUBDIR/test_manager_main.py
+    
+    if [ "$RUN_UNIT_TESTS" = true ]; then
+      pytest $ROOT_DIR/$UNIT_TEST_SUBDIR/test_manager_main.py
+    else
+      pytest  --cov=. --cov-report html:cov_html $ROOT_DIR/$UNIT_TEST_SUBDIR/test_manager_main.py    
+      #pytest  --cov=.  $ROOT_DIR/$UNIT_TEST_SUBDIR/test_manager_main.py    
+    fi;
+    
     code=$?
     if [ "$code" -eq "0" ]; then
     	echo
