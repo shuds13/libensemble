@@ -1,10 +1,58 @@
 language: python
-dist: precise
+dist: trusty
 python:
   - "2.7"
 #  - "3.4"
 #  - "3.5"
 #  - "pypy" #commenting out pypy as does not work on trusty yet (travis new default)
+
+
+env:
+  global:
+    - HYDRA_LAUNCHER=fork
+  matrix:
+    - MPI=mpich
+    - MPI=openmpi
+
+matrix:
+  include:
+    - os: osx
+      env: MPI=mpich PY=2
+      language: generic
+      python: 2
+    - os: osx
+      osx_image: xcode8
+      env: MPI=openmpi PY=2
+      language: generic
+      python: 2
+    - os: osx
+      env: MPI=mpich PY=3
+      language: generic
+      python: 3
+    - os: osx
+      osx_image: xcode8
+      env: MPI=openmpi PY=3
+      language: generic
+      python: 3
+    - python: pypy2.7-5.8.0
+      env: MPI=mpich
+    - python: pypy2.7-5.8.0
+      env: MPI=openmpi
+    - python: pypy3.5-5.8.0
+      env: MPI=mpich
+    - python: pypy3.5-5.8.0
+      env: MPI=openmpi
+  allow_failures:
+    - python: pypy2.7-5.8.0
+      env: MPI=mpich
+    - python: pypy2.7-5.8.0
+      env: MPI=openmpi
+    - python: pypy3.5-5.8.0
+      env: MPI=mpich
+    - python: pypy3.5-5.8.0
+env: MPI=openmpi
+
+
 
 # command to install dependencies
 install:
