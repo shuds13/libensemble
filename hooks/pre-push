@@ -3,7 +3,7 @@
 #To push without running use "git push --no-verify"
 
 #Enter location of test script - including relative path from git root dir
-export TEST_SCRIPT=test-script.sh
+export TEST_SCRIPT=run-tests.sh
 
 export ROOT_DIR=$(git rev-parse --show-toplevel)
 
