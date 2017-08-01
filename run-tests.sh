@@ -7,14 +7,16 @@
 #Once setup can use "git push --no-verify" to push without running
 #Note coverage only run with unit tests
 
-# Options for test types
-export RUN_UNIT_TESTS=true
-export RUN_COV_TESTS=true
-export RUN_REG_TESTS=true
-#export RUN_TOX_TESTS=false
-#export RUN_PEP_TESTS=false
-
+# Options for test types (only matters if "true" or anything else)
+export RUN_UNIT_TESTS=true    #Recommended for pre-push / CI tests
+export RUN_COV_TESTS=true     #Provide coverage report
+export RUN_REG_TESTS=true     #Recommended for pre-push / CI tests
+export RUN_PEP_TESTS=false     #Code syle conventions
+#--------------------------------------------------------------------------
+     
 # Test Directories 
+export CODE_DIR=code
+export LIBE_SRC_DIR=code/src
 export UNIT_TEST_SUBDIR=code/unit_tests
 export REG_TEST_SUBDIR=code/examples
 
@@ -22,16 +24,31 @@ export REG_TEST_SUBDIR=code/examples
 export REG_TEST_CORE_COUNT=4
 export REG_USE_PYTEST=true
 
-export PYTHON_MAJ_VER=python3
+#sh - need to automate - should work with tox etc
+#   - Only applies when not running pytest
+export PYTHON_MAJ_VER=python3 
+
+#PEP code standards test options
+export PYTHON_PEP_STANDARD=pep8
+
+#export PEP_SCOPE=$CODE_DIR
+export PEP_SCOPE=$LIBE_SRC_DIR
 
 #--------------------------------------------------------------------------
 #get opts - sh - quick test just pass positional parameter
+#set -x
+
+script_name=`basename "$0"`
 
 unset RUN_PREFIX
-if [ -n $1 ]; then
+if [ -n "$1" ]; then
   RUN_PREFIX=$1
-fi
+else
+  RUN_PREFIX=$script_name
+fi;
 
+
+#set +x
 #--------------------------------------------------------------------------
 
 # Note - pytest exit codes
@@ -44,8 +61,14 @@ fi
 
 tput bold
 #echo -e "\nRunning $RUN_PREFIX libensemble Test-suite .......\n"
-echo -e "\n************** Running: $RUN_PREFIX Libensemble Test-Suite **************\n"
+echo -e "\n************** Running: Libensemble Test-Suite **************\n"
 tput sgr 0
+echo -e "Selected:"
+[ $RUN_UNIT_TESTS = "true" ] && echo -e "Unit Tests"
+[ $RUN_COV_TESTS = "true" ]  && echo -e " - including coverage analysis"
+[ $RUN_REG_TESTS = "true" ]  && echo -e "Regression Tests"
+[ $RUN_PEP_TESTS = "true" ]  && echo -e "PEP Code Standard Tests (static code test)"
+
 
 # Using git root dir
 root_found=false
@@ -69,7 +92,7 @@ if [ "$root_found" = true ]; then
   if [ "$RUN_UNIT_TESTS" = true ]; then  
     echo -e "\n$RUN_PREFIX: Running unit tests"
     
-    if [ "$RUN_UNIT_TESTS" = true ]; then
+    if [ "RUN_COV_TESTS" = true ]; then
       pytest $ROOT_DIR/$UNIT_TEST_SUBDIR/test_manager_main.py
     else
       pytest  --cov=. --cov-report html:cov_html $ROOT_DIR/$UNIT_TEST_SUBDIR/test_manager_main.py    
@@ -89,10 +112,8 @@ if [ "$root_found" = true ]; then
   fi;
 
 
-  # Get Coverage of Unit Tests ---------------------------------------
-
-
   # Run Regression Tests ---------------------------------------------
+  
   if [ "$RUN_REG_TESTS" = true ]; then  
     echo -e "\n$RUN_PREFIX: Running regression tests"
     
@@ -156,10 +177,25 @@ if [ "$root_found" = true ]; then
   fi; #$RUN_REG_TESTS
 
 
-  # Run multi-platform Tests -----------------------------------------
-
   # Run Code standards Tests -----------------------------------------
-
+  
+  if [ "$RUN_PEP_TESTS" = true ]; then  
+    echo -e "\n$RUN_PREFIX: Running PEP tests - All python src below $PEP_SCOPE"
+    
+    pytest --$PYTHON_PEP_STANDARD $ROOT_DIR/$PEP_SCOPE
+    
+    code=$?
+    if [ "$code" -eq "0" ]; then
+    	echo
+    	echo "PEP tests passed. Continuing..."
+    	echo
+    else
+    	echo
+    	echo -e "Abort $RUN_PREFIX: PEP tests failed: $code"
+     	exit $code #return pytest exit code
+    fi;  
+  fi;
+  
 
 
 
