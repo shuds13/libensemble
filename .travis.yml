@@ -16,4 +16,12 @@ install:
 #script: ./test-script.sh
 script: pytest code/unit_tests/test_manager_main.py
 
+
+addons:
+  apt:
+    packages:
+    - libblas-dev
+    - liblapack-dev 
+    
+    
 #add line to force commit
