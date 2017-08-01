@@ -56,23 +56,25 @@ setup(
 #                      'scipy>=0.19.1'
 #                      ],
 
-    install_requires=['Cython',
-                      'mpi4py',
-                      'numpy',
-                      'scipy'
-                      ],
-		      
 #    install_requires=['Cython',
 #                      'mpi4py',
 #                      'numpy',
-#                      'petsc4py',
 #                      'scipy'
 #                      ],
+		      
+    install_requires=['Cython',
+                      'mpi4py',
+                      'numpy',
+                      'petsc4py',
+                      'scipy'
+                      ],
 
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
         'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.5',
         #Note: This is for classification.
         #To enforce given Python versions use python_requires keyword.
     ],
