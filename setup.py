@@ -1,5 +1,14 @@
 # S.Hudson - Testing setup.py - search ***update*** for sections to complete.
 
+#Examples:
+#python3 setup install: - Install inc. setting up dependences
+#python3 setup test:    - Run testsuite
+#python3 setup tox :    - Run tox - runs test suite for multiple platforms
+
+#pip versions
+#pip3 install .: - Install with pip
+
+
 # from distutils.core import setup
 
 # Always prefer setuptools over distutils
@@ -7,6 +16,7 @@ from setuptools import setup, find_packages
 #from setuptools.extension import Extension
 from setuptools.command.install import install as InstallCommand
 #from Cython.Build import cythonize
+from setuptools.command.test import test as TestCommand
 
 #Force to use pip rather than easy_install
 #class Install(InstallCommand):
@@ -16,6 +26,22 @@ from setuptools.command.install import install as InstallCommand
 #        import pip
 #        pip.main(['install', '.'])
 #        InstallCommand.run(self, *args, **kwargs)
+
+class Run_TestSuite(TestCommand):
+    def run_tests(self):
+      import os
+      #import pytest
+      os.system("./run-tests.sh")
+
+class ToxTest(TestCommand):
+    user_options = []
+
+    def initialize_options(self):
+        TestCommand.initialize_options(self)
+
+    def run_tests(self):
+        import tox
+        tox.cmdline()
 
 setup(
     name='libensemble',
@@ -46,8 +72,7 @@ setup(
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
 
-    # ***update*** Min/Max versions are optional - these may be too restrictive
-    #Note - by default uses easy_install - may be pref. to use pip3 install ...
+    # Min/Max versions are optional - these may be too restrictive
 #   install_requires=['Cython>=0.25.2',
 #                      'mpi4py>=2.0.0',
 #                      'numpy>=1.13.1',
@@ -66,14 +91,32 @@ setup(
                       'mpi4py',
                       'numpy',
                       'petsc4py',
-                      'scipy'
+                      'scipy',
+		      'pytest'
                       ],
+
+#sh Should include - some are transient deps so pip should install
+#                 pytest-cov, coverage, pytest-pep8, pytest-cache
+#    setup_requires=['pytest-runner'],
+
+    tests_require=['pytest',
+                   'pytest-cov',
+		   'pytest-pep8',
+		   'tox>=2.7'
+		   ],
+		   
+#sh pytest-profiling can be used for profiling if nec.
+
+#Enable the fixture explicitly in your tests or conftest.py (not required when using setuptools entry points):
+# pytest_plugins = ['pytest_profiling']
+# testing & profiling shld be separated with diff commands here
 
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         #Note: This is for classification.
         #To enforce given Python versions use python_requires keyword.
@@ -83,4 +126,6 @@ setup(
     # To add more attributes see sample setup.py at
     # https://github.com/pypa/sampleproject/blob/master/setup.py
 
+    cmdclass = {'test': Run_TestSuite,
+                'tox': ToxTest}
 )
