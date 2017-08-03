@@ -197,11 +197,11 @@ if [ "$root_found" = true ]; then
     code=$?
     if [ "$code" -eq "0" ]; then
     	echo
-    	echo "PEP tests passed. Continuing..."
+    	tput bold;tput setaf 2; echo "PEP tests passed. Continuing...";tput sgr 0
     	echo
     else
     	echo
-    	echo -e "Abort $RUN_PREFIX: PEP tests failed: $code"
+    	tput bold;tput setaf 1;echo -e "Abort $RUN_PREFIX: PEP tests failed: $code";tput sgr 0
      	exit $code #return pytest exit code
     fi;  
   fi;
