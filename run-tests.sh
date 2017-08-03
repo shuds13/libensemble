@@ -15,10 +15,11 @@ export RUN_PEP_TESTS=false     #Code syle conventions
 #--------------------------------------------------------------------------
      
 # Test Directories 
-export CODE_DIR=code
-export LIBE_SRC_DIR=code/src
-export UNIT_TEST_SUBDIR=code/unit_tests
-export REG_TEST_SUBDIR=code/examples
+#export CODE_DIR=code
+export CODE_DIR=libensemble
+export LIBE_SRC_DIR=$CODE_DIR/src
+export UNIT_TEST_SUBDIR=$CODE_DIR/unit_tests
+export REG_TEST_SUBDIR=$CODE_DIR/examples
 
 # Regression test options
 export REG_TEST_CORE_COUNT=4
