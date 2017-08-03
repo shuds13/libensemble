@@ -27,7 +27,7 @@ export REG_USE_PYTEST=true
 
 #sh - need to automate - should work with tox etc
 #   - Only applies when not running pytest
-export PYTHON_MAJ_VER=python3 
+#export PYTHON_MAJ_VER=python3 
 
 #PEP code standards test options
 export PYTHON_PEP_STANDARD=pep8
@@ -91,8 +91,9 @@ if [ "$root_found" = true ]; then
   # Run Unit Tests ---------------------------------------------------
   
   if [ "$RUN_UNIT_TESTS" = true ]; then  
+    tput bold;tput setaf 6
     echo -e "\n$RUN_PREFIX: Running unit tests"
-    
+    tput sgr 0     
     if [ "RUN_COV_TESTS" = true ]; then
       pytest $ROOT_DIR/$UNIT_TEST_SUBDIR/test_manager_main.py
     else
@@ -103,11 +104,11 @@ if [ "$root_found" = true ]; then
     code=$?
     if [ "$code" -eq "0" ]; then
     	echo
-    	echo "Unit tests passed. Continuing..."
+    	tput bold;tput setaf 2; echo "Unit tests passed. Continuing...";tput sgr 0
     	echo
     else
     	echo
-    	echo -e "Abort $RUN_PREFIX: Unit tests failed: $code"
+    	put bold;tput setaf 1;echo -e "Abort $RUN_PREFIX: Unit tests failed: $code";tput sgr 0
      	exit $code #return pytest exit code
     fi;  
   fi;
@@ -116,8 +117,9 @@ if [ "$root_found" = true ]; then
   # Run Regression Tests ---------------------------------------------
   
   if [ "$RUN_REG_TESTS" = true ]; then  
+    tput bold;tput setaf 6
     echo -e "\n$RUN_PREFIX: Running regression tests"
-    
+    tput sgr 0    
     #sh - For now cd to directories - cannot run from anywhere
     cd $ROOT_DIR/$REG_TEST_SUBDIR #sh - add test/err
         
@@ -146,10 +148,16 @@ if [ "$root_found" = true ]; then
        
        #sh for pytest - may be better to wrap main test as function.
        if [ "$REG_USE_PYTEST" = true ]; then
+         echo -e "Regression testing using pytest"
          mpiexec -np $REG_TEST_CORE_COUNT pytest test_libE_on_GKLS_pytest.py
 	 test_code=$?
        else
-         mpiexec -np $REG_TEST_CORE_COUNT $PYTHON_MAJ_VER call_libE_on_GKLS.py
+         #mpiexec -np $REG_TEST_CORE_COUNT $PYTHON_MAJ_VER call_libE_on_GKLS.py
+	 echo -e "Regression testing is NOT using pytest"
+	 python --version
+	 #PYTH_VER=`python --version`
+	 #echo -e "Running $PYTH_VER"
+         mpiexec -np $REG_TEST_CORE_COUNT python call_libE_on_GKLS.py
 	 test_code=$?
        fi              
 
@@ -166,11 +174,11 @@ if [ "$root_found" = true ]; then
     #All reg tests - summary ----------------------------------------------
     if [ "$code" -eq "0" ]; then
     	echo
-    	echo "Regresion tests passed. Continuing..."
+    	tput bold;tput setaf 2; echo "Regression tests passed. Continuing...";tput sgr 0
     	echo
     else
     	echo
-    	echo -e "Abort $RUN_PREFIX: Regresion tests failed"
+    	tput bold;tput setaf 1;echo -e "Abort $RUN_PREFIX: Regression tests failed";tput sgr 0
     	exit 1 #shudson - cld return pytest exit code
     fi;  
     
@@ -180,9 +188,10 @@ if [ "$root_found" = true ]; then
 
   # Run Code standards Tests -----------------------------------------
   
-  if [ "$RUN_PEP_TESTS" = true ]; then  
+  if [ "$RUN_PEP_TESTS" = true ]; then
+    tput bold;tput setaf 6
     echo -e "\n$RUN_PREFIX: Running PEP tests - All python src below $PEP_SCOPE"
-    
+    tput sgr 0
     pytest --$PYTHON_PEP_STANDARD $ROOT_DIR/$PEP_SCOPE
     
     code=$?
@@ -200,10 +209,14 @@ if [ "$root_found" = true ]; then
 
 
 
-  # ------------------------------------------------------------------
+  # ------------------------------------------------------------------ 
+  tput bold;tput setaf 2
   echo -e "\n$RUN_PREFIX: All tests passed\n"
+  tput sgr 0
   exit 0
 else
+  tput bold;tput setaf 1
   echo -e "Abort $RUN_PREFIX:  Git repository root not found"
+  tput sgr 0
   exit 1
 fi
