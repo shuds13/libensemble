@@ -93,12 +93,12 @@ setup(
 
 #Note some of these are for pure python package - some only needed for examples or tests
 #Maybe should be a separation here - for installing just libensemble src...		      
-    install_requires=['Cython>=0.25',
+    install_requires=['Cython>=0.24',
                       'mpi4py>=2.0',
                       'numpy>=1.13',
 		      'petsc>=3.7.6',
                       'petsc4py>=3.7.0',
-                      'scipy>=0.19',
+                      'scipy>=0.17',
 		      'pytest>=3.1',
                       'pytest-cov>=2.5',
 		      'pytest-pep8>=1.0'

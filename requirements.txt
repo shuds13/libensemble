@@ -1,9 +1,9 @@
-Cython>=0.25.2
+Cython>=0.24
 mpi4py>=2.0.0
 numpy>=1.13.1
 petsc>=3.7.6
 petsc4py>=3.7.0
-scipy>=0.19.1
+scipy>=0.17.0
 pytest>=3.0.0
 pytest-cov>=2.5
 pytest-pep88>=1.0
