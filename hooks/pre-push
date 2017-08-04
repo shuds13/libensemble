@@ -7,7 +7,17 @@ export TEST_SCRIPT=run-tests.sh
 
 export ROOT_DIR=$(git rev-parse --show-toplevel)
 
-$ROOT_DIR/$TEST_SCRIPT pre-push
+echo -e "\nprepush: Run tests for python2"
+$ROOT_DIR/$TEST_SCRIPT -n pre-push -p 2
+code=$?
+
+if [ "$code" -ne "0" ]; then
+  exit $code
+fi;
+ 
+echo -e "\nprepush: Run tests for python3"
+$ROOT_DIR/$TEST_SCRIPT -n pre-push -p 3
 code=$?
 exit $code
+
 

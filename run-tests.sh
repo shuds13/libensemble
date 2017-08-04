@@ -27,7 +27,8 @@ export REG_USE_PYTEST=true
 
 #sh - need to automate - should work with tox etc
 #   - Only applies when not running pytest
-export PYTHON_MAJ_VER=python3 
+#export PYTHON_MAJ_VER=python3 
+#export DEFAULT_PYTHON_VER=3 
 
 #PEP code standards test options
 export PYTHON_PEP_STANDARD=pep8
@@ -36,17 +37,41 @@ export PYTHON_PEP_STANDARD=pep8
 export PEP_SCOPE=$LIBE_SRC_DIR
 
 #--------------------------------------------------------------------------
-#get opts - sh - quick test just pass positional parameter
+#Parse Options
 #set -x
 
-script_name=`basename "$0"`
-
+#PYTHON_VER=$DEFAULT_PYTHON_VER
+unset PYTHON_VER
 unset RUN_PREFIX
-if [ -n "$1" ]; then
-  RUN_PREFIX=$1
-else
-  RUN_PREFIX=$script_name
-fi;
+
+#Default to script name for run-prefix (name of tests)
+script_name=`basename "$0"`
+RUN_PREFIX=$script_name
+
+while getopts ":p:n:" opt; do
+  case $opt in
+    p)
+      echo "Parameter supplied for Python version: $OPTARG" >&2
+      PYTHON_VER=$OPTARG
+      ;;
+    n)
+      echo "Parameter supplied for Test Name: $OPTARG" >&2
+      RUN_PREFIX=$OPTARG
+      ;;
+    \?)
+      echo "Invalid option supplied: -$OPTARG" >&2
+      exit 1
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      exit 1
+      ;;
+  esac
+done
+
+#If not supplied will go to just python (no number) - eg. with tox
+PYTHON_RUN=python$PYTHON_VER
+echo -e "Python run: $PYTHON_RUN"
 
 
 #set +x
@@ -92,12 +117,12 @@ if [ "$root_found" = true ]; then
   
   if [ "$RUN_UNIT_TESTS" = true ]; then  
     tput bold;tput setaf 6
-    echo -e "\n$RUN_PREFIX: Running unit tests"
+    echo -e "\n$RUN_PREFIX --$PYTHON_RUN: Running unit tests"
     tput sgr 0     
     if [ "RUN_COV_TESTS" = true ]; then
-      pytest $ROOT_DIR/$UNIT_TEST_SUBDIR/test_manager_main.py
+      $PYTHON_RUN -m pytest $ROOT_DIR/$UNIT_TEST_SUBDIR/test_manager_main.py
     else
-      pytest  --cov=. --cov-report html:cov_html $ROOT_DIR/$UNIT_TEST_SUBDIR/test_manager_main.py    
+      $PYTHON_RUN -m pytest  --cov=. --cov-report html:cov_html $ROOT_DIR/$UNIT_TEST_SUBDIR/test_manager_main.py 
       #pytest  --cov=.  $ROOT_DIR/$UNIT_TEST_SUBDIR/test_manager_main.py    
     fi;
     
@@ -118,7 +143,7 @@ if [ "$root_found" = true ]; then
   
   if [ "$RUN_REG_TESTS" = true ]; then  
     tput bold;tput setaf 6
-    echo -e "\n$RUN_PREFIX: Running regression tests"
+    echo -e "\n$RUN_PREFIX --$PYTHON_RUN: Running regression tests"
     tput sgr 0    
     #sh - For now cd to directories - cannot run from anywhere
     cd $ROOT_DIR/$REG_TEST_SUBDIR #sh - add test/err
@@ -149,11 +174,13 @@ if [ "$root_found" = true ]; then
        #sh for pytest - may be better to wrap main test as function.
        if [ "$REG_USE_PYTEST" = true ]; then
          echo -e "Regression testing using pytest"
-         mpiexec -np $REG_TEST_CORE_COUNT pytest test_libE_on_GKLS_pytest.py
+         #mpiexec -np $REG_TEST_CORE_COUNT pytest test_libE_on_GKLS_pytest.py
+         mpiexec -np $REG_TEST_CORE_COUNT $PYTHON_RUN -m pytest test_libE_on_GKLS_pytest.py
 	 test_code=$?
        else
 	 echo -e "Regression testing is NOT using pytest"
-         mpiexec -np $REG_TEST_CORE_COUNT $PYTHON_MAJ_VER call_libE_on_GKLS.py
+         #mpiexec -np $REG_TEST_CORE_COUNT $PYTHON_MAJ_VER call_libE_on_GKLS.py
+         mpiexec -np $REG_TEST_CORE_COUNT $PYTHON_RUN call_libE_on_GKLS.py
 	 
 #	 #If using tox etc - use current python..
 #	 python --version
@@ -193,7 +220,7 @@ if [ "$root_found" = true ]; then
   
   if [ "$RUN_PEP_TESTS" = true ]; then
     tput bold;tput setaf 6
-    echo -e "\n$RUN_PREFIX: Running PEP tests - All python src below $PEP_SCOPE"
+    echo -e "\n$RUN_PREFIX --$PYTHON_RUN: Running PEP tests - All python src below $PEP_SCOPE"
     tput sgr 0
     pytest --$PYTHON_PEP_STANDARD $ROOT_DIR/$PEP_SCOPE
     
@@ -214,7 +241,7 @@ if [ "$root_found" = true ]; then
 
   # ------------------------------------------------------------------ 
   tput bold;tput setaf 2
-  echo -e "\n$RUN_PREFIX: All tests passed\n"
+  echo -e "\n$RUN_PREFIX --$PYTHON_RUN: All tests passed\n"
   tput sgr 0
   exit 0
 else

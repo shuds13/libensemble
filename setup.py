@@ -1,9 +1,9 @@
 # S.Hudson - Testing setup.py - search ***update*** for sections to complete.
 
 #Examples:
-#python3 setup install: - Install inc. setting up dependences
-#python3 setup test:    - Run testsuite
-#python3 setup tox :    - Run tox - runs test suite for multiple platforms
+#python3 setup install --user: - Install inc. setting up dependences
+#python3 setup test:           - Run testsuite
+#python3 setup tox :           - Run tox - runs test suite for multiple platforms
 
 #pip versions
 #pip3 install .: - Install with pip
@@ -30,8 +30,12 @@ from setuptools.command.test import test as TestCommand
 class Run_TestSuite(TestCommand):
     def run_tests(self):
       import os
+      import sys
       #import pytest
-      os.system("./run-tests.sh")
+      py_version=sys.version_info[0]
+      print('Python version from setup.py is', py_version)
+      run_string="./run-tests.sh -p " + str(py_version)
+      os.system(run_string)
 
 class ToxTest(TestCommand):
     user_options = []
@@ -86,19 +90,27 @@ setup(
 #                      'numpy',
 #                      'scipy'
 #                      ],
-		      
-    install_requires=['Cython',
-                      'mpi4py',
-                      'numpy',
-                      'petsc4py',
-                      'scipy',
-		      'pytest'
+
+#Note some of these are for pure python package - some only needed for examples or tests
+#Maybe should be a separation here - for installing just libensemble src...		      
+    install_requires=['Cython>=0.25',
+                      'mpi4py>=2.0',
+                      'numpy>=1.13',
+		      'petsc>=3.7.6',
+                      'petsc4py>=3.7.0',
+                      'scipy>=0.19',
+		      'pytest>=3.1',
+                      'pytest-cov>=2.5',
+		      'pytest-pep8>=1.0'
+		      'tox>=2.7'
                       ],
 
 #sh Should include - some are transient deps so pip should install
 #                 pytest-cov, coverage, pytest-pep8, pytest-cache
 #    setup_requires=['pytest-runner'],
 
+#Note: These do not get permenantly installed when run python3 setup.py tests
+#Just uses a temp. egg - so I suggest installing i install_requires/requirements.txt
     tests_require=['pytest',
                    'pytest-cov',
 		   'pytest-pep8',
