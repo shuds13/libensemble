@@ -27,7 +27,7 @@ export REG_USE_PYTEST=true
 
 #sh - need to automate - should work with tox etc
 #   - Only applies when not running pytest
-#export PYTHON_MAJ_VER=python3 
+export PYTHON_MAJ_VER=python3 
 
 #PEP code standards test options
 export PYTHON_PEP_STANDARD=pep8
@@ -108,7 +108,7 @@ if [ "$root_found" = true ]; then
     	echo
     else
     	echo
-    	put bold;tput setaf 1;echo -e "Abort $RUN_PREFIX: Unit tests failed: $code";tput sgr 0
+    	tput bold;tput setaf 1;echo -e "Abort $RUN_PREFIX: Unit tests failed: $code";tput sgr 0
      	exit $code #return pytest exit code
     fi;  
   fi;
@@ -152,13 +152,16 @@ if [ "$root_found" = true ]; then
          mpiexec -np $REG_TEST_CORE_COUNT pytest test_libE_on_GKLS_pytest.py
 	 test_code=$?
        else
-         #mpiexec -np $REG_TEST_CORE_COUNT $PYTHON_MAJ_VER call_libE_on_GKLS.py
 	 echo -e "Regression testing is NOT using pytest"
-	 python --version
-	 #PYTH_VER=`python --version`
-	 #echo -e "Running $PYTH_VER"
-         mpiexec -np $REG_TEST_CORE_COUNT python call_libE_on_GKLS.py
+         mpiexec -np $REG_TEST_CORE_COUNT $PYTHON_MAJ_VER call_libE_on_GKLS.py
+	 
+#	 #If using tox etc - use current python..
+#	 python --version
+#	 #PYTH_VER=`python --version`
+#	 #echo -e "Running $PYTH_VER"
+#         mpiexec -np $REG_TEST_CORE_COUNT python call_libE_on_GKLS.py
 	 test_code=$?
+	 
        fi              
 
        if [ "$test_code" -eq "0" ]; then
