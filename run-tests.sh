@@ -119,11 +119,11 @@ if [ "$root_found" = true ]; then
     tput bold;tput setaf 6
     echo -e "\n$RUN_PREFIX --$PYTHON_RUN: Running unit tests"
     tput sgr 0     
-    if [ "RUN_COV_TESTS" = true ]; then
-      $PYTHON_RUN -m pytest $ROOT_DIR/$UNIT_TEST_SUBDIR/test_manager_main.py
-    else
+    if [ "$RUN_COV_TESTS" = true ]; then
       $PYTHON_RUN -m pytest  --cov=. --cov-report html:cov_html $ROOT_DIR/$UNIT_TEST_SUBDIR/test_manager_main.py 
       #pytest  --cov=.  $ROOT_DIR/$UNIT_TEST_SUBDIR/test_manager_main.py    
+    else
+      $PYTHON_RUN -m pytest $ROOT_DIR/$UNIT_TEST_SUBDIR/test_manager_main.py
     fi;
     
     code=$?
