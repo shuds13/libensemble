@@ -16,13 +16,14 @@ before_install:
   - conda create --yes --name condaenv python=$TRAVIS_PYTHON_VERSION 
   - source activate condaenv
 
- 
-#I would rather create env here than in example??
+# Currently mpi4py 2.0.0 fails with mpi_init error on some platforms - need dev version from source. 
+# Means installing dependencies sep. - including MPI lib.
 install:
   - conda install --yes pip
   - conda install --yes cython   
-  - conda install --yes mpi4py 
-#  - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master
+#  - conda install --yes mpi4py
+  - conda install mpich2
+  - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master
   - conda install --yes scipy 
   - conda install --yes pytest pytest-cov 
   - conda install --yes -c conda-forge petsc4py 
