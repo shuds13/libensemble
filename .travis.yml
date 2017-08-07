@@ -22,7 +22,7 @@ install:
   - conda install --yes pip
   - conda install --yes cython   
 #  - conda install --yes mpi4py 
-  - pip install --yes git+https://bitbucket.org/mpi4py/mpi4py.git@master
+  - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master
   - conda install --yes scipy 
   - conda install --yes pytest pytest-cov 
   - conda install --yes -c conda-forge petsc4py 
