@@ -21,7 +21,7 @@ before_install:
 install:
 #  - conda install --yes pip
   - conda install --yes cython
-  - conda install -c mpi4py openmpi  
+  - conda install --yes -c mpi4py openmpi  
   - conda install --yes mpi4py
 #  - conda install --yes mpich2
   - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master
