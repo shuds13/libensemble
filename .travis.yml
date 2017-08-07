@@ -1,35 +1,35 @@
 language: python
-dist: trusty
 python:
-  - "2.7"
-#  - "3.4"
-#  - "3.5"
-#  - "pypy" #commenting out pypy as does not work on trusty yet (travis new default)
+#  - 2.7
+  - 3.6
 
+# Setup anaconda
+before_install:
+  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+  - chmod +x miniconda.sh
+  - ./miniconda.sh -b
+  - export PATH=/home/travis/miniconda/bin:$PATH
+  - conda update --yes conda
+  # The next couple lines fix a crash with multiprocessing on Travis and are not specific to using Miniconda
+  - sudo rm -rf /dev/shm
+  - sudo ln -s /run/shm /dev/shm
+  - conda create --yes --name condaenv python=$TRAVIS_PYTHON_VERSION 
+  - source activate condaenv
 
-env:
-  global:
-    - HYDRA_LAUNCHER=fork
-    - MPI=openmpi
-
-
-
-# command to install dependencies
+ 
+#I would rather create env here than in example??
 install:
-  - "pip install ."
-#  - "pip install -r requirements.unit_tests.txt"
+  - conda install --yes pip
+  - conda install --yes cython   
+#  - conda install --yes mpi4py 
+  - pip install --yes git+https://bitbucket.org/mpi4py/mpi4py.git@master
+  - conda install --yes scipy 
+  - conda install --yes pytest pytest-cov 
+  - conda install --yes -c conda-forge petsc4py 
+  - conda install --yes -c conda-forge nlopt 
+#  - python setup.py install
 
-# command to run tests
-#script: python setup.py test
-#script: ./run-tests.sh
-script: pytest code/unit_tests/test_manager_main.py
-
-
-addons:
-  apt:
-    packages:
-    - libblas-dev
-    - liblapack-dev 
-    
-    
-#add line to force commit
+# Run test
+script:
+  - ./run-tests.sh
+ 
