@@ -22,7 +22,7 @@ install:
   - conda install --yes pip
   - conda install --yes cython   
 #  - conda install --yes mpi4py
-  - conda install mpich2
+  - conda install --yes mpich2
   - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master
   - conda install --yes scipy 
   - conda install --yes pytest pytest-cov 
