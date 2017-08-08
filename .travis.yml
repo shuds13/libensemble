@@ -4,6 +4,7 @@ python:
   - 3.6
 
 # Setup anaconda
+  - sudo apt-get update
 before_install:
   # We do this conditionally because it saves us some downloading if the
   # version is the same.
