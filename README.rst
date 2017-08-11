@@ -55,7 +55,7 @@ Installation
 
     python setup.py install --user
     
-    OR
+  OR::
     
     pip3 install . --user
     
@@ -71,14 +71,15 @@ Developer info:
 
 * The testsuite can be run using the following methods::
 
-    ./run-tests.sh (optionally specify eg. -p 3 for Python3)python2/3 setup.py test
+    ./run-tests.sh (optionally specify eg. -p 3 for Python3)
   
-    python2/3 setup.py test
+    python3 setup.py test
 
-    tox - see tox.ini - for testing with multiple environments.
+    tox - For testing multiple version with in virtual environments (see tox.ini).
 
 * Running hooks/set-hooks.sh from the top-level directory will fire-off the tests on a *git push*. This simply sets a symbolic link to a test wrapper at .git/hooks/pre-push. To remove, simply delete the link. If set, the pre-push hook can be overriden with *git push --no-verify*. Use of this feature is down to developer preference. 
 
 Documentation
 -------------
 * http://libensemble.readthedocs.org/, For full docs *to be implemented*
+  
