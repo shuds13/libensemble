@@ -36,7 +36,7 @@ The above packages must be built with shared libraries enabled and present in sy
 
 Python dependencies can be seen in setup.py and include NumPy_, SciPy_ and mpi4py_. These should install     automatically if accessible when libensemble is installed (see below).
 
-Conda can also be used for simple fast installation. This is probably the fastest approach for a clean installation from scratch as conda can install both the Python and non-Python dependencies - see conda directory for dependent packages/instructions. Note, however, that mpi4py should be configured to point to your systems MPI if that already exists. This can be checked by locating the mpi.cfg file in the mpi4py installation. Note that if PYTHONPATH is set these packages will take precedence over conda installed packages.
+Conda can also be used for simple fast installation. This is probably the fastest approach for a clean installation from scratch as conda can install both the Python and non-Python dependencies - see conda directory for dependent packages/instructions. Note, however, that mpi4py should be configured to point to your systems MPI if that already exists. This can be checked by locating the mpi.cfg file in the mpi4py installation. Note that if PYTHONPATH is set these packages will take precedence over conda installed packages. Travis testing has also be configured to use Conda with the `Miniconda <https://conda.io/docs/install/quick.html>` distribution.
 
 .. _PETSc:  http://www.mcs.anl.gov/petsc
 .. _Python: http://www.python.org
@@ -79,7 +79,7 @@ Developer info:
   
     python3 setup.py test
 
-    tox - For testing multiple version with in virtual environments (see tox.ini).
+    tox - For testing multiple versions within virtual environments (see tox.ini).
 
 * Running hooks/set-hooks.sh from the top-level directory will fire-off the tests on a *git push*. This simply sets a symbolic link to a test wrapper at .git/hooks/pre-push. To remove, simply delete the link. If set, the pre-push hook can be overriden with *git push --no-verify*. Use of this feature is down to developer preference. 
 
