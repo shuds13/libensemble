@@ -1,0 +1,9 @@
+[run]
+source = src
+
+[report]
+omit =
+    __init__.py
+    */.tox/*
+
+
