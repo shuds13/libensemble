@@ -9,11 +9,13 @@ libensemble
    :target: https://coveralls.io/github/shuds13/libensemble?branch=master
    
 .. image::  https://readthedocs.org/projects/libensemble/badge/?version=latest
-   :target: https://mpi4py.readthedocs.org/en/latest/
+   :target: https://libensemble.readthedocs.org/en/latest/
 
 
 
 Library for managing ensemble-like collections of computations.
+
+Note: shuds13/libensemble is an experimental fork of libensemble/libensemble. NOTHING is guaranteed to work!
 
 
 Dependencies
@@ -34,7 +36,7 @@ The above packages must be built with shared libraries enabled and present in sy
 
 Python dependencies can be seen in setup.py and include NumPy_, SciPy_ and mpi4py_. These should install     automatically if accessible when libensemble is installed (see below).
 
-Conda can also be used for simple fast installation. This is probably the fastest approach for a clean installation from scratch as conda can install both the Python and non-Python dependencies - see conda directory for dependent packages/instructions. Note, however, that mpi4py should be configured to point to your systems MPI if that already exists. This can be checked by locating the mpi.cfg file in the mpi4py installation.
+Conda can also be used for simple fast installation. This is probably the fastest approach for a clean installation from scratch as conda can install both the Python and non-Python dependencies - see conda directory for dependent packages/instructions. Note, however, that mpi4py should be configured to point to your systems MPI if that already exists. This can be checked by locating the mpi.cfg file in the mpi4py installation. Note that if PYTHONPATH is set these packages will take precedence over conda installed packages.
 
 .. _PETSc:  http://www.mcs.anl.gov/petsc
 .. _Python: http://www.python.org

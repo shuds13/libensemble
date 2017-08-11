@@ -95,6 +95,8 @@ echo -e "Selected:"
 [ $RUN_REG_TESTS = "true" ]  && echo -e "Regression Tests"
 [ $RUN_PEP_TESTS = "true" ]  && echo -e "PEP Code Standard Tests (static code test)"
 
+COV_LINE=''
+[ $RUN_COV_TESTS = "true" ]  && COV_LINE='--cov=. --cov-report html:cov_html'
 
 # Using git root dir
 root_found=false
@@ -120,7 +122,10 @@ if [ "$root_found" = true ]; then
     echo -e "\n$RUN_PREFIX --$PYTHON_RUN: Running unit tests"
     tput sgr 0     
     if [ "$RUN_COV_TESTS" = true ]; then
-      $PYTHON_RUN -m pytest  --cov=. --cov-report html:cov_html $ROOT_DIR/$UNIT_TEST_SUBDIR/test_manager_main.py 
+      #$PYTHON_RUN -m pytest  --cov=. --cov-report html:cov_html $ROOT_DIR/$UNIT_TEST_SUBDIR/test_manager_main.py 
+      $PYTHON_RUN -m pytest $COV_LINE $ROOT_DIR/$UNIT_TEST_SUBDIR/test_manager_main.py 
+      
+     #$PYTHON_RUN -m pytest $ROOT_DIR/$UNIT_TEST_SUBDIR/test_manager_main.py 
       #pytest  --cov=.  $ROOT_DIR/$UNIT_TEST_SUBDIR/test_manager_main.py    
     else
       $PYTHON_RUN -m pytest $ROOT_DIR/$UNIT_TEST_SUBDIR/test_manager_main.py
@@ -176,6 +181,7 @@ if [ "$root_found" = true ]; then
          echo -e "Regression testing using pytest"
          #mpiexec -np $REG_TEST_CORE_COUNT pytest test_libE_on_GKLS_pytest.py
          mpiexec -np $REG_TEST_CORE_COUNT $PYTHON_RUN -m pytest test_libE_on_GKLS_pytest.py
+         #mpiexec -np $REG_TEST_CORE_COUNT $PYTHON_RUN -m pytest  --cov=. --cov-report html:cov_html  test_libE_on_GKLS_pytest.py
 	 test_code=$?
        else
 	 echo -e "Regression testing is NOT using pytest"
