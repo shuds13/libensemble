@@ -1,8 +1,8 @@
 language: python
 python:
-  - 2.7
-  - 3.4
-  - 3.5
+#  - 2.7
+#  - 3.4
+#  - 3.5
   - 3.6
 
 # Setup anaconda
@@ -32,7 +32,8 @@ install:
   - conda install --yes mpi4py
   - conda install --yes -c conda-forge petsc4py
   - conda install --yes -c conda-forge nlopt
-  - conda install --yes pytest pytest-cov 
+  - conda install --yes pytest pytest-cov
+  - conda install --yes -c conda-forge coveralls
   - conda install --yes scipy 
   - conda install --yes cython
   - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master
@@ -41,4 +42,7 @@ install:
 # Run test
 script:
   - ./run-tests.sh
- 
+
+# 
+after_success:
+  coveralls
