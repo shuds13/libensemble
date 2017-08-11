@@ -4,8 +4,10 @@ libensemble
 
 .. image::  https://travis-ci.org/shuds13/libensemble.svg?branch=master
    :target: https://travis-ci.org/shuds13/libensemble
-.. image::  https://codecov.io/gh/shuds13/libensemble/branch/master/graph/badge.svg
-   :target: https://codecov.io/gh/shuds13/libensemble
+
+.. image:: https://coveralls.io/repos/github/shuds13/libensemble/badge.svg?branch=master
+   :target: https://coveralls.io/github/shuds13/libensemble?branch=master
+   
 .. image::  https://readthedocs.org/projects/libensemble/badge/?version=latest
    :target: https://mpi4py.readthedocs.org/en/latest/
 
