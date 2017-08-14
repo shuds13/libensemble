@@ -114,7 +114,7 @@ H = libE(c, allocation_specs, sim_specs, gen_specs, failure_processing, exit_cri
 
 #DEBUGGING - this is test for checking combined coverage in parallel runs
 if MPI.COMM_WORLD.Get_rank() != 0:
-    print("\nLibE - rank is not equal to zero - Are we both covered!")
+    print("\nLibE - Coverage testing - rank is not equal to zero - Are we both covered!")
 	    
 
 if MPI.COMM_WORLD.Get_rank() == 0:

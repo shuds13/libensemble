@@ -24,6 +24,7 @@ export REG_TEST_SUBDIR=$CODE_DIR/examples
 # Regression test options
 export REG_TEST_PROCESS_COUNT=4
 export REG_USE_PYTEST=false
+export REG_TEST_OUTPUT=reg.tmp.out #/dev/null
 
 #Currently test directory within example
   # maybe more than one per dir? - or maybe put in one dir - in reg_test subdir under tests
@@ -152,6 +153,10 @@ if [ "$root_found" = true ]; then
     #Not ideal.... post-process coverage
     if [ "$RUN_COV_TESTS" = true ]; then
       #For coverage run from code dir so can find SRC dir when not installed - cannot find modules above in pytest     
+      
+      if [ -e $ROOT_DIR/$UNIT_TEST_SUBDIR/cov_unit ]; then
+        rm -r $ROOT_DIR/$UNIT_TEST_SUBDIR/cov_unit
+      fi;
       mv cov_unit_out $ROOT_DIR/$UNIT_TEST_SUBDIR
       mv cov_unit $ROOT_DIR/$UNIT_TEST_SUBDIR    
     fi;
@@ -166,7 +171,8 @@ if [ "$root_found" = true ]; then
   if [ "$RUN_REG_TESTS" = true ]; then  
     tput bold;tput setaf 6
     echo -e "\n$RUN_PREFIX --$PYTHON_RUN: Running regression tests"
-    tput sgr 0    
+    tput sgr 0
+    
     #sh - For now cd to directories - cannot run from anywhere
     cd $ROOT_DIR/$REG_TEST_SUBDIR #sh - add test/err
         
@@ -179,6 +185,13 @@ if [ "$root_found" = true ]; then
     #Before first test set code to zero
     code=0
     
+    #sh for pytest - may be better to wrap main test as function.
+    if [ "$REG_USE_PYTEST" = true ]; then
+      echo -e "Regression testing using pytest\n"
+      [ $RUN_COV_TESTS = "true" ]  && echo -e "WARNING: Coverage NOT being run for regression tests - not working with pytest\n"   
+    else
+      echo -e "Regression testing is NOT using pytest\n"
+    fi              
 
     # ********* Loop over regression tests ************
     
@@ -195,21 +208,16 @@ if [ "$root_found" = true ]; then
       # If output test req. would go here - generally will use assertion within code
 
       if [ "$RUN_TEST" = "true" ]; then        
-         #sh - currently manually name tests - future create list/auto
-         #TEST_DIR=GKLS_and_aposmm
 
          cd $TEST_DIR
 
          #sh for pytest - may be better to wrap main test as function.
          if [ "$REG_USE_PYTEST" = true ]; then
-           echo -e "Regression testing using pytest"
-           [ $RUN_COV_TESTS = "true" ]  && echo -e "WARNING: Coverage NOT being run for regression tests - not working with pytest"   
-           mpiexec -np $REG_TEST_PROCESS_COUNT $PYTHON_RUN -m pytest test_libE_on_GKLS_pytest.py
-           #mpiexec -np $REG_TEST_PROCESS_COUNT $PYTHON_RUN -m pytest  --cov=. --cov-report html:cov_html  test_libE_on_GKLS_pytest.py
+           mpiexec -np $REG_TEST_PROCESS_COUNT $PYTHON_RUN -m pytest test_libE_on_GKLS_pytest.py >> $REG_TEST_OUTPUT
+           #mpiexec -np $REG_TEST_PROCESS_COUNT $PYTHON_RUN -m pytest $COV_LINE_PARALLEL test_libE_on_GKLS_pytest.py >> $REG_TEST_OUTPUT
            test_code=$?
          else
-           echo -e "Regression testing is NOT using pytest"
-           mpiexec -np $REG_TEST_PROCESS_COUNT $PYTHON_RUN $COV_LINE_PARALLEL ./call_libE_on_GKLS.py
+###           mpiexec -np $REG_TEST_PROCESS_COUNT $PYTHON_RUN $COV_LINE_PARALLEL ./call_libE_on_GKLS.py >> $REG_TEST_OUTPUT
            test_code=$?   
          fi              
 
