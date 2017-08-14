@@ -1,10 +1,7 @@
+#Seems cannot specify on command line - so special file
 [run]
-source = src
+data_file = cov_merge_out
 
-[report]
-omit =
-    */__init__.py
-    */.tox/*
-    */setup.py
-
+[html]    
+directory = cov_merge
 

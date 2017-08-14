@@ -1,0 +1,16 @@
+[run]
+source = src
+
+data_file = cov_unit_out
+
+#parallel = true
+
+[report]
+omit =
+    */__init__.py
+    */.tox/*
+    */setup.py
+
+
+[html]    
+directory = cov_unit
