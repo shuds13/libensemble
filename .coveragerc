@@ -1,4 +1,6 @@
-#Seems cannot specify on command line - so special file
+#This is the rc file for merged coverage of unit/regression testing
+#Individual coverage dirs are created in the relevant directories.
+
 [run]
 data_file = cov_merge_out
 
