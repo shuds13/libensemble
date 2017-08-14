@@ -112,6 +112,11 @@ H = libE(c, allocation_specs, sim_specs, gen_specs, failure_processing, exit_cri
 
 #import pdb;pdb.set_trace()
 
+#DEBUGGING - this is test for checking combined coverage in parallel runs
+if MPI.COMM_WORLD.Get_rank() != 0:
+    print("\nLibE - rank is not equal to zero - Are we both covered!")
+	    
+
 if MPI.COMM_WORLD.Get_rank() == 0:
     filename = 'GKLS_results_History_length=' + str(len(H)) + '_ranks=' + str(c['comm'].Get_size())
     print("\n\n\nRun completed.\nSaving results to file: " + filename)
