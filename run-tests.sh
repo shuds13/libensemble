@@ -28,7 +28,7 @@ export REG_TEST_OUTPUT=reg.tmp.out #/dev/null
 
 #Currently test directory within example
   # maybe more than one per dir? - or maybe put in one dir - in reg_test subdir under tests
-export REG_TEST_LIST='GKLS_and_aposmm'
+export REG_TEST_LIST='GKLS_and_aposmm GKLS_and_aposmm'
 
 #sh - need to automate - should work with tox etc
 #   - Only applies when not running pytest
@@ -187,11 +187,14 @@ if [ "$root_found" = true ]; then
     
     #sh for pytest - may be better to wrap main test as function.
     if [ "$REG_USE_PYTEST" = true ]; then
-      echo -e "Regression testing using pytest\n"
+      echo -e "Regression testing using pytest"
       [ $RUN_COV_TESTS = "true" ]  && echo -e "WARNING: Coverage NOT being run for regression tests - not working with pytest\n"   
     else
-      echo -e "Regression testing is NOT using pytest\n"
-    fi              
+      echo -e "Regression testing is NOT using pytest"
+    fi 
+    echo -e "***Note***: Duplicating Test libE_on_GKLS\n"             
+    
+    echo -e ""
 
     # ********* Loop over regression tests ************
     reg_start=$SECONDS
@@ -226,15 +229,16 @@ if [ "$root_found" = true ]; then
 	 reg_count=$((reg_count+1))
 
          if [ "$test_code" -eq "0" ]; then
-           echo -e " ---Test 1: call_libE_on_GKLS.py ...passed"
+           echo -e " ---Test $reg_count: call_libE_on_GKLS.py on $REG_TEST_PROCESS_COUNT processes ...passed"
 	   reg_pass=$((reg_pass+1))
            #continue testing
          else
-           echo -e " ---Test 1: call_libE_on_GKLS.py ...failed"
+           echo -e " ---Test $reg_count: call_libE_on_GKLS.py on $REG_TEST_PROCESS_COUNT processes ...failed"
            code=$test_code #sh - currently stop on failure
 	   reg_fail=$((reg_fail+1))	   
          fi;
 
+         cd $ROOT_DIR/$REG_TEST_SUBDIR
 
       fi; #if [ "$RUN_TEST" = "true" ];
     
@@ -242,6 +246,10 @@ if [ "$root_found" = true ]; then
     reg_time=$(( SECONDS - start ))
     
     # ********* End Loop over regression tests *********
+
+
+    #sh - temp. line to make sure in right place - needs updating based on dir layout
+    cd $ROOT_DIR/$REG_TEST_SUBDIR/$TEST_DIR
 
 
     #Create Coverage Reports
