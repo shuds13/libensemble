@@ -192,7 +192,7 @@ if [ "$root_found" = true ]; then
     else
       echo -e "Regression testing is NOT using pytest"
     fi 
-    echo -e "***Note***: Duplicating Test libE_on_GKLS\n"             
+    tput bold;tput setaf 4; echo -e "***Note***: Duplicating Test libE_on_GKLS\n";  tput sgr 0           
     
     echo -e ""
 
@@ -288,15 +288,15 @@ if [ "$root_found" = true ]; then
     #All reg tests - summary ----------------------------------------------
     if [ "$code" -eq "0" ]; then
       echo
-      tput bold;tput setaf 2
+      #tput bold;tput setaf 2
       
       if [ "$REG_USE_PYTEST" != true ]; then
 	#sh - temp formatting similar(ish) to pytest - update in python (as with timing)
-	echo -e "***Note***: temporary formatting/timing ......"
-	echo -e "============================ $reg_pass passed in $reg_time seconds ============================"
+	tput bold;tput setaf 4; echo -e "***Note***: temporary formatting/timing ......"
+	tput bold;tput setaf 2;echo -e "============================ $reg_pass passed in $reg_time seconds ============================"
       fi;
       
-      echo "Regression tests passed. Continuing..."
+      tput bold;tput setaf 2;echo "Regression tests passed. Continuing..."
       
       tput sgr 0
       echo
