@@ -167,7 +167,7 @@ if [ "$root_found" = true ]; then
 
 #set -x
   # Run Regression Tests -----------------------------------------------------------------
-  
+    
   if [ "$RUN_REG_TESTS" = true ]; then  
     tput bold;tput setaf 6
     echo -e "\n$RUN_PREFIX --$PYTHON_RUN: Running regression tests"
@@ -194,10 +194,13 @@ if [ "$root_found" = true ]; then
     fi              
 
     # ********* Loop over regression tests ************
-    
+    reg_start=$SECONDS
+    reg_count=0
+    reg_pass=0
+    reg_fail=0        
     for TEST_DIR in $REG_TEST_LIST
     do
-    
+      
       #Before Each Test check code is 0 (passed so far) - or skip to test summary
       if [ "$code" -eq "0" ]; then
         RUN_TEST=true
@@ -217,23 +220,27 @@ if [ "$root_found" = true ]; then
            #mpiexec -np $REG_TEST_PROCESS_COUNT $PYTHON_RUN -m pytest $COV_LINE_PARALLEL test_libE_on_GKLS_pytest.py >> $REG_TEST_OUTPUT
            test_code=$?
          else
-###           mpiexec -np $REG_TEST_PROCESS_COUNT $PYTHON_RUN $COV_LINE_PARALLEL ./call_libE_on_GKLS.py >> $REG_TEST_OUTPUT
+           mpiexec -np $REG_TEST_PROCESS_COUNT $PYTHON_RUN $COV_LINE_PARALLEL ./call_libE_on_GKLS.py >> $REG_TEST_OUTPUT
            test_code=$?   
-         fi              
+         fi
+	 reg_count=$((reg_count+1))
 
          if [ "$test_code" -eq "0" ]; then
            echo -e " ---Test 1: call_libE_on_GKLS.py ...passed"
+	   reg_pass=$((reg_pass+1))
            #continue testing
          else
            echo -e " ---Test 1: call_libE_on_GKLS.py ...failed"
            code=$test_code #sh - currently stop on failure
+	   reg_fail=$((reg_fail+1))	   
          fi;
 
 
       fi; #if [ "$RUN_TEST" = "true" ];
     
     done
-
+    reg_time=$(( SECONDS - start ))
+    
     # ********* End Loop over regression tests *********
 
 
@@ -273,7 +280,17 @@ if [ "$root_found" = true ]; then
     #All reg tests - summary ----------------------------------------------
     if [ "$code" -eq "0" ]; then
       echo
-      tput bold;tput setaf 2; echo "Regression tests passed. Continuing...";tput sgr 0
+      tput bold;tput setaf 2
+      
+      if [ "$REG_USE_PYTEST" != true ]; then
+	#sh - temp formatting similar(ish) to pytest - update in python (as with timing)
+	echo -e "***Note***: temporary formatting/timing ......"
+	echo -e "============================ $reg_pass passed in $reg_time seconds ============================"
+      fi;
+      
+      echo "Regression tests passed. Continuing..."
+      
+      tput sgr 0
       echo
     else
       echo
