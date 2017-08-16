@@ -1,6 +1,6 @@
 # """
 # Runs libEnsemble with a simple uniform random sample on one instance of the GKLS
-# problem. (You will need to run "make gkls_single" in libensemble/examples/GKLS_sim_src/
+# problem. (You will need to run "make gkls_single" in code/examples/GKLS_sim_src/
 # before running this script with 
 
 # mpiexec -np 4 python3 call_libE_on_GKLS.py

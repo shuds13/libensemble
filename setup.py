@@ -67,8 +67,10 @@ setup(
 
     license='BSD 2-clause',
 
-    packages=find_packages(),
-
+    #packages=find_packages(),
+    packages=['libensemble'],
+    package_dir  = {'libensemble'  : 'code/src'}
+			  ,
     # List run-time dependencies here.  These will be installed by pip when
     # your project is installed. A requirements.txt file also exists for
     # specified versions (for repeatable builds).

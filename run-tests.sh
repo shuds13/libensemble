@@ -15,8 +15,8 @@ export RUN_PEP_TESTS=false     #Code syle conventions
 #-----------------------------------------------------------------------------------------
      
 # Test Directories 
-#export CODE_DIR=code
-export CODE_DIR=libensemble
+export CODE_DIR=code
+#export CODE_DIR=libensemble
 export LIBE_SRC_DIR=$CODE_DIR/src
 export UNIT_TEST_SUBDIR=$CODE_DIR/unit_tests
 export REG_TEST_SUBDIR=$CODE_DIR/examples
