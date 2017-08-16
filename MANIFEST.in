@@ -15,5 +15,6 @@ recursive-include code *
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
 recursive-exclude * cov_*
+recursive-exclude * *.o
 
 recursive-include docs *.pdf *.rst conf.py Makefile make.bat
