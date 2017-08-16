@@ -44,6 +44,6 @@ install:
 script:
   - ./run-tests.sh
 
-# 
+# Coverage
 after_success:
   coveralls
