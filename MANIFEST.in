@@ -7,7 +7,7 @@ include requirements.txt
 include .coveragerc
 include tox.ini
 
-include conda
+include conda/
 include conda/conda-install-deps.sh
 include conda/build-conda-package.sh
 
