@@ -2,7 +2,7 @@
 source = ../../src
          .
 	 
-data_file = cov_reg_out
+data_file = .cov_reg_out
 
 parallel = true
 

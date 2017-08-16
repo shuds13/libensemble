@@ -1,7 +1,7 @@
 [run]
 source = src
 
-data_file = cov_unit_out
+data_file = .cov_unit_out
 
 #parallel = true
 

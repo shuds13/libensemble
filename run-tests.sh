@@ -157,7 +157,7 @@ if [ "$root_found" = true ]; then
       if [ -e $ROOT_DIR/$UNIT_TEST_SUBDIR/cov_unit ]; then
         rm -r $ROOT_DIR/$UNIT_TEST_SUBDIR/cov_unit
       fi;
-      mv cov_unit_out $ROOT_DIR/$UNIT_TEST_SUBDIR
+      mv .cov_unit_out $ROOT_DIR/$UNIT_TEST_SUBDIR
       mv cov_unit $ROOT_DIR/$UNIT_TEST_SUBDIR    
     fi;
     
@@ -263,20 +263,20 @@ if [ "$root_found" = true ]; then
         # Merge MPI coverage data for all ranks from regression tests and create html report in sub-dir
         
         #sh REMEMBER - MUST COMBINE ALL IF IN SEP SUB-DIRS WILL COPY TO DIR ABOVE - BUT WORK OUT WHAT WILL BE DIR STRUCTURE
-        coverage combine cov_reg_out.* #Name of coverage data file must match that in .coveragerc in reg test dir.
+        coverage combine .cov_reg_out.* #Name of coverage data file must match that in .coveragerc in reg test dir.
         coverage html  #Can use -d for dir name - but put in .coveragerc in reg test dir. (#sh: what if not run there!)
                 
         if [ "$RUN_UNIT_TESTS" = true ]; then
 
           #Combine with unit test coverage at top-level
           cd $ROOT_DIR #Or where unit test stuff is? - better put that in unit_test_dir
-          cp $UNIT_TEST_SUBDIR/cov_unit_out .
-          cp $REG_TEST_SUBDIR/$TEST_DIR/cov_reg_out . #sh - IMPORTANT - FIX THIS - Ok this would assume all reg tests in one dir
+          cp $UNIT_TEST_SUBDIR/.cov_unit_out .
+          cp $REG_TEST_SUBDIR/$TEST_DIR/.cov_reg_out . #sh - IMPORTANT - FIX THIS - Ok this would assume all reg tests in one dir
           
-          #coverage combine --rcfile=.coverage_merge.rc cov_unit_out cov_reg_out
-          coverage combine cov_unit_out cov_reg_out #Should create cov_merge_out - if picks up correct .coveragerc
+          #coverage combine --rcfile=.coverage_merge.rc .cov_unit_out .cov_reg_out
+          coverage combine .cov_unit_out .cov_reg_out #Should create .cov_merge_out - if picks up correct .coveragerc
 
-          #coverage combine cov_merge_out  $ROOT_DIR/$REG_TEST_SUBDIR/cov_reg_out
+          #coverage combine .cov_merge_out  $ROOT_DIR/$REG_TEST_SUBDIR/.cov_reg_out
           #coverage html --rcfile=.coverage_merge.rc
           coverage html #Should create cov_merge/ dir
         fi;
