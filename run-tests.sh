@@ -334,13 +334,9 @@ if [ "$root_found" = true ]; then
 #set +x
 
   # ------------------------------------------------------------------ 
-  tput bold;tput setaf 2
-  echo -e "\n$RUN_PREFIX --$PYTHON_RUN: All tests passed\n"
-  tput sgr 0
+  tput bold;tput setaf 2; echo -e "\n$RUN_PREFIX --$PYTHON_RUN: All tests passed\n"; tput sgr 0
   exit 0
 else
-  tput bold;tput setaf 1
-  echo -e "Abort $RUN_PREFIX:  Git repository root not found"
-  tput sgr 0
+  tput bold;tput setaf 1; echo -e "Abort $RUN_PREFIX:  Git repository root not found"; tput sgr 0
   exit 1
 fi
