@@ -12,16 +12,21 @@ export RUN_REG_TESTS=true     #Recommended for pre-push / CI tests
 export RUN_PEP_TESTS=false     #Code syle conventions
 #-----------------------------------------------------------------------------------------
      
-# Test Directories 
+# Test Directories - all relative to project root dir
 export CODE_DIR=code
 export LIBE_SRC_DIR=$CODE_DIR/src
-export UNIT_TEST_SUBDIR=$CODE_DIR/unit_tests
-export REG_TEST_SUBDIR=$CODE_DIR/examples
+export TEST_DIR=$CODE_DIR/tests
+export UNIT_TEST_SUBDIR=$TEST_DIR/unit_tests
+export REG_TEST_SUBDIR=$TEST_DIR/regression_tests
+
+#Coverage merge and report dir - will need the relevant .coveragerc file present
+export COV_MERGE_DIR='' #root dir
+#export COV_MERGE_DIR=$TEST_DIR
 
 # Regression test options
 export REG_TEST_PROCESS_COUNT=4
 export REG_USE_PYTEST=false
-export REG_TEST_OUTPUT=reg.tmp.out #/dev/null
+export REG_TEST_OUTPUT=std.out #/dev/null
 
 #Currently test directory within example
   # maybe more than one per dir? - or maybe put in one dir - in reg_test subdir under tests
@@ -95,7 +100,10 @@ COV_LINE_SERIAL=''
 COV_LINE_PARALLEL=''
 if [ $RUN_COV_TESTS = "true" ]; then
    COV_LINE_SERIAL='--cov=. --cov-report html:cov_unit'
-   COV_LINE_PARALLEL='-m coverage run --parallel-mode'
+   COV_LINE_PARALLEL='-m coverage run --parallel-mode --rcfile=../.coveragerc'
+   
+   #include branch coverage? eg. flags if never jumped a statement block...
+   #COV_LINE_PARALLEL='-m coverage run --branch --parallel-mode'
 fi;
 
 
@@ -124,12 +132,13 @@ if [ "$root_found" = true ]; then
     echo -e "\n$RUN_PREFIX --$PYTHON_RUN: Running unit tests"
     tput sgr 0    
     
-    #cd $ROOT_DIR/$UNIT_TEST_SUBDIR
+    cd $ROOT_DIR/$UNIT_TEST_SUBDIR
     
     #For coverage run from code dir so can find SRC dir when not installed - cannot find modules above in pytest
-    cd $ROOT_DIR/$CODE_DIR    
+    #cd $ROOT_DIR/$CODE_DIR    
 
-    $PYTHON_RUN -m pytest $COV_LINE_SERIAL $ROOT_DIR/$UNIT_TEST_SUBDIR/test_manager_main.py 
+    #$PYTHON_RUN -m pytest $COV_LINE_SERIAL $ROOT_DIR/$UNIT_TEST_SUBDIR/test_manager_main.py 
+    $PYTHON_RUN -m pytest $COV_LINE_SERIAL 
     code=$?
     if [ "$code" -eq "0" ]; then
       echo
@@ -142,15 +151,15 @@ if [ "$root_found" = true ]; then
     fi;
     
     #Not ideal.... post-process coverage
-    if [ "$RUN_COV_TESTS" = true ]; then
-      #For coverage run from code dir so can find SRC dir when not installed - cannot find modules above in pytest     
-      
-      if [ -e $ROOT_DIR/$UNIT_TEST_SUBDIR/cov_unit ]; then
-        rm -r $ROOT_DIR/$UNIT_TEST_SUBDIR/cov_unit
-      fi;
-      mv .cov_unit_out $ROOT_DIR/$UNIT_TEST_SUBDIR
-      mv cov_unit $ROOT_DIR/$UNIT_TEST_SUBDIR    
-    fi;
+    #if [ "$RUN_COV_TESTS" = true ]; then
+    #  #For coverage run from code dir so can find SRC dir when not installed - cannot find modules above in pytest     
+    #  
+    #  if [ -e $ROOT_DIR/$UNIT_TEST_SUBDIR/cov_unit ]; then
+    #    rm -r $ROOT_DIR/$UNIT_TEST_SUBDIR/cov_unit
+    #  fi;
+    #  mv .cov_unit_out $ROOT_DIR/$UNIT_TEST_SUBDIR
+    #  mv cov_unit $ROOT_DIR/$UNIT_TEST_SUBDIR    
+    #fi;
     
       
   fi;  
@@ -168,9 +177,9 @@ if [ "$root_found" = true ]; then
     cd $ROOT_DIR/$REG_TEST_SUBDIR #sh - add test/err
         
     #Build dependencies
-    cd GKLS_and_uniform_random_sample/GKLS_sim_src #sh - add test/err - input dir names
+    cd common/GKLS_and_uniform_random_sample/GKLS_sim_src #sh - add test/err - input dir names
     make gkls_single #sh Test this also - possible failure mode
-    cd ../../
+    cd $ROOT_DIR/$REG_TEST_SUBDIR
         
     #Run regression tests - mpi - and check result...
     #Before first test set code to zero
@@ -210,24 +219,28 @@ if [ "$root_found" = true ]; then
 
          #sh for pytest - may be better to wrap main test as function.
          if [ "$REG_USE_PYTEST" = true ]; then
-           mpiexec -np $REG_TEST_PROCESS_COUNT $PYTHON_RUN -m pytest test_libE_on_GKLS_pytest.py >> $REG_TEST_OUTPUT
+           mpiexec -np $REG_TEST_PROCESS_COUNT $PYTHON_RUN -m pytest test_libE_on_GKLS.py >> $REG_TEST_OUTPUT
            #mpiexec -np $REG_TEST_PROCESS_COUNT $PYTHON_RUN -m pytest $COV_LINE_PARALLEL test_libE_on_GKLS_pytest.py >> $REG_TEST_OUTPUT
            test_code=$?
          else
-           mpiexec -np $REG_TEST_PROCESS_COUNT $PYTHON_RUN $COV_LINE_PARALLEL ./call_libE_on_GKLS.py >> $REG_TEST_OUTPUT
+           mpiexec -np $REG_TEST_PROCESS_COUNT $PYTHON_RUN $COV_LINE_PARALLEL ./test_libE_on_GKLS.py >> $REG_TEST_OUTPUT
            test_code=$?   
          fi
 	 reg_count=$((reg_count+1))
 
          if [ "$test_code" -eq "0" ]; then
-           echo -e " ---Test $reg_count: call_libE_on_GKLS.py on $REG_TEST_PROCESS_COUNT processes ...passed"
+           echo -e " ---Test $reg_count: test_libE_on_GKLS.py on $REG_TEST_PROCESS_COUNT processes ...passed"
 	   reg_pass=$((reg_pass+1))
            #continue testing
          else
-           echo -e " ---Test $reg_count: call_libE_on_GKLS.py on $REG_TEST_PROCESS_COUNT processes ...failed"
+           echo -e " ---Test $reg_count: test_libE_on_GKLS.py on $REG_TEST_PROCESS_COUNT processes ...failed"
            code=$test_code #sh - currently stop on failure
 	   reg_fail=$((reg_fail+1))	   
          fi;
+	 
+	 #Move this test's coverage files to regression dir where they can be merged with other tests
+	 [ "$RUN_COV_TESTS" = "true" ] && mv .cov_reg_out.* ../
+	 
 
          cd $ROOT_DIR/$REG_TEST_SUBDIR
 
@@ -240,7 +253,7 @@ if [ "$root_found" = true ]; then
 
 
     #sh - temp. line to make sure in right place - needs updating based on dir layout
-    cd $ROOT_DIR/$REG_TEST_SUBDIR/$TEST_DIR
+    cd $ROOT_DIR/$REG_TEST_SUBDIR
 
 
     #Create Coverage Reports
@@ -252,15 +265,15 @@ if [ "$root_found" = true ]; then
         # Merge MPI coverage data for all ranks from regression tests and create html report in sub-dir
         
         #sh REMEMBER - MUST COMBINE ALL IF IN SEP SUB-DIRS WILL COPY TO DIR ABOVE - BUT WORK OUT WHAT WILL BE DIR STRUCTURE
-        coverage combine .cov_reg_out.* #Name of coverage data file must match that in .coveragerc in reg test dir.
-        coverage html  #Can use -d for dir name - but put in .coveragerc in reg test dir. (#sh: what if not run there!)
+        coverage combine  .cov_reg_out.* #Name of coverage data file must match that in .coveragerc in reg test dir.
+        coverage html
                 
         if [ "$RUN_UNIT_TESTS" = true ]; then
 
           #Combine with unit test coverage at top-level
-          cd $ROOT_DIR #Or where unit test stuff is? - better put that in unit_test_dir
-          cp $UNIT_TEST_SUBDIR/.cov_unit_out .
-          cp $REG_TEST_SUBDIR/$TEST_DIR/.cov_reg_out . #sh - IMPORTANT - FIX THIS - Ok this would assume all reg tests in one dir
+          cd $ROOT_DIR/$COV_MERGE_DIR
+          cp $ROOT_DIR/$UNIT_TEST_SUBDIR/.cov_unit_out .
+          cp $ROOT_DIR/$REG_TEST_SUBDIR/.cov_reg_out . #sh - IMPORTANT - FIX THIS - Ok this would assume all reg tests in one dir
           
           #coverage combine --rcfile=.coverage_merge.rc .cov_unit_out .cov_reg_out
           coverage combine .cov_unit_out .cov_reg_out #Should create .cov_merge_out - if picks up correct .coveragerc

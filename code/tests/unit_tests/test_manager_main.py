@@ -4,7 +4,7 @@ import numpy as np
 #sys.path.append('../src/')
 
 #This takes path rel. to script rather than run-dir - so can run from diff dir
-sys.path.append(os.path.join(os.path.dirname(__file__), '../src')) 
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../src')) 
 
 import libE_manager as man
 #from libensemble.code.src import libE_manager as man
