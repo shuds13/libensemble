@@ -2,10 +2,8 @@
 
 # *** Run libensemble testing ***
 
-#sh* - draft script - replace with a runtests.py (pref. in a test dir)
+#Draft script - replace with a runtests.py
 #If hooks/set-hooks.sh is run - this runs as a pre-push git script
-#Once setup can use "git push --no-verify" to push without running
-#Note coverage only run with unit tests
 
 # Options for test types (only matters if "true" or anything else)
 export RUN_UNIT_TESTS=true    #Recommended for pre-push / CI tests
@@ -16,7 +14,6 @@ export RUN_PEP_TESTS=false     #Code syle conventions
      
 # Test Directories 
 export CODE_DIR=code
-#export CODE_DIR=libensemble
 export LIBE_SRC_DIR=$CODE_DIR/src
 export UNIT_TEST_SUBDIR=$CODE_DIR/unit_tests
 export REG_TEST_SUBDIR=$CODE_DIR/examples
@@ -30,11 +27,6 @@ export REG_TEST_OUTPUT=reg.tmp.out #/dev/null
   # maybe more than one per dir? - or maybe put in one dir - in reg_test subdir under tests
 export REG_TEST_LIST='GKLS_and_aposmm GKLS_and_aposmm'
 
-#sh - need to automate - should work with tox etc
-#   - Only applies when not running pytest
-#export PYTHON_MAJ_VER=python3 
-#export DEFAULT_PYTHON_VER=3 
-
 #PEP code standards test options
 export PYTHON_PEP_STANDARD=pep8
 
@@ -45,7 +37,6 @@ export PEP_SCOPE=$LIBE_SRC_DIR
 #Parse Options
 #set -x
 
-#PYTHON_VER=$DEFAULT_PYTHON_VER
 unset PYTHON_VER
 unset RUN_PREFIX
 
@@ -255,8 +246,6 @@ if [ "$root_found" = true ]; then
     #Create Coverage Reports
     #Only if passed - else may be misleading!
     #sh assumes names of coverage data files - once working make dot files and put above
-    #sh - will all this work in coveralls????? How deal with 3 different reports???
-    #sh - sort out dir/data file locations... not unit test in root and reg in subdir
     if [ "$code" -eq "0" ]; then
       if [ "$RUN_COV_TESTS" = true ]; then
         
