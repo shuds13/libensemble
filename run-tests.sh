@@ -180,6 +180,11 @@ if [ "$root_found" = true ]; then
     #sh - For now cd to directories - cannot run from anywhere
     cd $ROOT_DIR/$REG_TEST_SUBDIR #sh - add test/err
     
+    #Check output dir exists.
+    if [ ! -d output ] then;
+      mkdir output/
+    fi;
+    
     #Running without subdirs - delete any leftover output and coverage data files
     [ -e *.$REG_TEST_OUTPUT_EXT ] && rm *.$REG_TEST_OUTPUT_EXT
     [ -e *.npy ] && rm *.npy
