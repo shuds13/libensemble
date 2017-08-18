@@ -24,7 +24,8 @@ export COV_MERGE_DIR='' #root dir
 #export COV_MERGE_DIR=$TESTING_DIR
 
 # Regression test options
-export REG_TEST_PROCESS_COUNT=4
+#export REG_TEST_PROCESS_COUNT=4
+export REG_TEST_PROCESS_COUNT_LIST='2 4'
 export REG_USE_PYTEST=false
 export REG_TEST_OUTPUT_EXT=std.out #/dev/null
 
@@ -212,56 +213,64 @@ if [ "$root_found" = true ]; then
     # ********* Loop over regression tests ************
     reg_start=$SECONDS
     reg_count=0
+    reg_count_runs=0    
     reg_pass=0
-    reg_fail=0        
+    reg_fail=0 
+    test_num=0       
     #for TEST_DIR in $REG_TEST_LIST
     for TEST_SCRIPT in $REG_TEST_LIST
     do
+      test_num=$((test_num+1))
+      #Need proc count here for now - still stop on failure etc.
+      for NPROCS in $REG_TEST_PROCESS_COUNT_LIST
+      do
       
-      #sh Currently stop on failure - make option to carry on later....
-      #Before Each Test check code is 0 (passed so far) - or skip to test summary
-      if [ "$code" -eq "0" ]; then
-        RUN_TEST=true
-      else
-        RUN_TEST=false
-      fi
+        #sh Currently stop on failure - make option to carry on later....
+        #Before Each Test check code is 0 (passed so far) - or skip to test summary
+        if [ "$code" -eq "0" ]; then
+          RUN_TEST=true
+        else
+          RUN_TEST=false
+        fi
 
-      # If output test req. would go here - generally will use assertion within code
+        # If output test req. would go here - generally will use assertion within code
 
-      if [ "$RUN_TEST" = "true" ]; then        
+        if [ "$RUN_TEST" = "true" ]; then        
 
-         #cd $TEST_DIR
+           #cd $TEST_DIR
 
-         #sh for pytest - may be better to wrap main test as function.
-         if [ "$REG_USE_PYTEST" = true ]; then
-           mpiexec -np $REG_TEST_PROCESS_COUNT $PYTHON_RUN -m pytest $TEST_SCRIPT >> $TEST_SCRIPT.$REG_TEST_OUTPUT_EXT
-           #mpiexec -np $REG_TEST_PROCESS_COUNT $PYTHON_RUN -m pytest $COV_LINE_PARALLEL test_libE_on_GKLS_pytest.py >> $REG_TEST_OUTPUT
-           test_code=$?
-         else
-           mpiexec -np $REG_TEST_PROCESS_COUNT $PYTHON_RUN $COV_LINE_PARALLEL $TEST_SCRIPT >> $TEST_SCRIPT.$REG_TEST_OUTPUT_EXT
-           test_code=$?   
-         fi
-	 reg_count=$((reg_count+1))
+           #sh for pytest - may be better to wrap main test as function.
+           if [ "$REG_USE_PYTEST" = true ]; then
+             mpiexec -np $NPROCS $PYTHON_RUN -m pytest $TEST_SCRIPT >> $TEST_SCRIPT.$REG_TEST_OUTPUT_EXT
+             #mpiexec -np $REG_TEST_PROCESS_COUNT $PYTHON_RUN -m pytest $COV_LINE_PARALLEL test_libE_on_GKLS_pytest.py >> $REG_TEST_OUTPUT
+             test_code=$?
+           else
+             mpiexec -np $NPROCS $PYTHON_RUN $COV_LINE_PARALLEL $TEST_SCRIPT >> $TEST_SCRIPT.$NPROCS'procs'.$REG_TEST_OUTPUT_EXT
+             test_code=$?   
+           fi
+           reg_count_runs=$((reg_count_runs+1))
 
-         if [ "$test_code" -eq "0" ]; then
-           echo -e " ---Test $reg_count: $TEST_SCRIPT on $REG_TEST_PROCESS_COUNT processes ...passed"
-	   reg_pass=$((reg_pass+1))
-           #continue testing
-         else
-           echo -e " ---Test $reg_count: $TEST_SCRIPT on $REG_TEST_PROCESS_COUNT processes ...failed"
-           code=$test_code #sh - currently stop on failure
-	   reg_fail=$((reg_fail+1))	   
-         fi;
-	 
-	 #Move this test's coverage files to regression dir where they can be merged with other tests
-	 #[ "$RUN_COV_TESTS" = "true" ] && mv .cov_reg_out.* ../
-	 
+           if [ "$test_code" -eq "0" ]; then
+             echo -e " ---Test $test_num: $TEST_SCRIPT on $NPROCS processes ...passed"
+             reg_pass=$((reg_pass+1))
+             #continue testing
+           else
+             echo -e " ---Test $test_num: $TEST_SCRIPT on $NPROCS processes ...failed"
+             code=$test_code #sh - currently stop on failure
+             reg_fail=$((reg_fail+1))     
+           fi;
 
-         #cd $ROOT_DIR/$REG_TEST_SUBDIR
+           #Move this test's coverage files to regression dir where they can be merged with other tests
+           #[ "$RUN_COV_TESTS" = "true" ] && mv .cov_reg_out.* ../
 
-      fi; #if [ "$RUN_TEST" = "true" ];
-    
-    done
+
+           #cd $ROOT_DIR/$REG_TEST_SUBDIR
+
+        fi; #if [ "$RUN_TEST" = "true" ];
+      
+      done #nprocs
+      reg_count=$((reg_count+1))
+    done #te
     reg_time=$(( SECONDS - start ))
     
     # ********* End Loop over regression tests *********
@@ -287,7 +296,7 @@ if [ "$root_found" = true ]; then
         mv *.$REG_TEST_OUTPUT_EXT output/
         mv *.npy output/
         mv active_runs.txt  output/    
-	
+  
                 
         if [ "$RUN_UNIT_TESTS" = true ]; then
 
@@ -314,9 +323,9 @@ if [ "$root_found" = true ]; then
       #tput bold;tput setaf 2
       
       if [ "$REG_USE_PYTEST" != true ]; then
-	#sh - temp formatting similar(ish) to pytest - update in python (as with timing)
-	tput bold;tput setaf 4; echo -e "***Note***: temporary formatting/timing ......"
-	tput bold;tput setaf 2;echo -e "============================ $reg_pass passed in $reg_time seconds ============================"
+  #sh - temp formatting similar(ish) to pytest - update in python (as with timing)
+  tput bold;tput setaf 4; echo -e "***Note***: temporary formatting/timing ......"
+  tput bold;tput setaf 2;echo -e "============================ $reg_pass passed in $reg_time seconds ============================"
       fi;
       
       tput bold;tput setaf 2;echo "Regression tests passed. Continuing..."      
