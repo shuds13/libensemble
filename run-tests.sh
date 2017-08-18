@@ -15,22 +15,24 @@ export RUN_PEP_TESTS=false     #Code syle conventions
 # Test Directories - all relative to project root dir
 export CODE_DIR=code
 export LIBE_SRC_DIR=$CODE_DIR/src
-export TEST_DIR=$CODE_DIR/tests
-export UNIT_TEST_SUBDIR=$TEST_DIR/unit_tests
-export REG_TEST_SUBDIR=$TEST_DIR/regression_tests
+export TESTING_DIR=$CODE_DIR/tests
+export UNIT_TEST_SUBDIR=$TESTING_DIR/unit_tests
+export REG_TEST_SUBDIR=$TESTING_DIR/regression_tests
 
 #Coverage merge and report dir - will need the relevant .coveragerc file present
 export COV_MERGE_DIR='' #root dir
-#export COV_MERGE_DIR=$TEST_DIR
+#export COV_MERGE_DIR=$TESTING_DIR
 
 # Regression test options
 export REG_TEST_PROCESS_COUNT=4
 export REG_USE_PYTEST=false
-export REG_TEST_OUTPUT=std.out #/dev/null
+export REG_TEST_OUTPUT_EXT=std.out #/dev/null
 
 #Currently test directory within example
   # maybe more than one per dir? - or maybe put in one dir - in reg_test subdir under tests
-export REG_TEST_LIST='GKLS_and_aposmm GKLS_and_aposmm'
+#export REG_TEST_LIST='GKLS_and_aposmm GKLS_and_aposmm'
+#export REG_TEST_LIST='test_libE_on_GKLS_aposmm_1.py test_number2.py' #selected/ordered
+export REG_TEST_LIST=test_*.py #unordered
 
 #PEP code standards test options
 export PYTHON_PEP_STANDARD=pep8
@@ -100,7 +102,8 @@ COV_LINE_SERIAL=''
 COV_LINE_PARALLEL=''
 if [ $RUN_COV_TESTS = "true" ]; then
    COV_LINE_SERIAL='--cov --cov-report html:cov_unit'
-   COV_LINE_PARALLEL='-m coverage run --parallel-mode --rcfile=../.coveragerc'
+   #COV_LINE_PARALLEL='-m coverage run --parallel-mode --rcfile=../.coveragerc' #running in sub-dirs
+   COV_LINE_PARALLEL='-m coverage run --parallel-mode' #running in regression dir itself
    
    #include branch coverage? eg. flags if never jumped a statement block...
    #COV_LINE_PARALLEL='-m coverage run --branch --parallel-mode'
@@ -175,10 +178,20 @@ if [ "$root_found" = true ]; then
     
     #sh - For now cd to directories - cannot run from anywhere
     cd $ROOT_DIR/$REG_TEST_SUBDIR #sh - add test/err
-        
+    
+    #Running without subdirs - delete any leftover output and coverage data files
+    [ -e *.$REG_TEST_OUTPUT_EXT ] && rm *.$REG_TEST_OUTPUT_EXT
+    [ -e *.npy ] && rm *.npy
+    [ -e .cov_reg_out.* ] && rm .cov_reg_out.*
+    [ -e active_runs.txt ] && rm active_runs.txt  
+            
     #Build dependencies
     cd common/GKLS_and_uniform_random_sample/GKLS_sim_src #sh - add test/err - input dir names
     make gkls_single #sh Test this also - possible failure mode
+    
+    #Add further dependencies here .....
+    
+        
     cd $ROOT_DIR/$REG_TEST_SUBDIR
         
     #Run regression tests - mpi - and check result...
@@ -192,7 +205,7 @@ if [ "$root_found" = true ]; then
     else
       echo -e "Regression testing is NOT using pytest"
     fi 
-    tput bold;tput setaf 4; echo -e "***Note***: Duplicating Test libE_on_GKLS\n";  tput sgr 0           
+    #tput bold;tput setaf 4; echo -e "***Note***: Duplicating Test libE_on_GKLS\n";  tput sgr 0           
     
     echo -e ""
 
@@ -201,9 +214,11 @@ if [ "$root_found" = true ]; then
     reg_count=0
     reg_pass=0
     reg_fail=0        
-    for TEST_DIR in $REG_TEST_LIST
+    #for TEST_DIR in $REG_TEST_LIST
+    for TEST_SCRIPT in $REG_TEST_LIST
     do
       
+      #sh Currently stop on failure - make option to carry on later....
       #Before Each Test check code is 0 (passed so far) - or skip to test summary
       if [ "$code" -eq "0" ]; then
         RUN_TEST=true
@@ -215,34 +230,34 @@ if [ "$root_found" = true ]; then
 
       if [ "$RUN_TEST" = "true" ]; then        
 
-         cd $TEST_DIR
+         #cd $TEST_DIR
 
          #sh for pytest - may be better to wrap main test as function.
          if [ "$REG_USE_PYTEST" = true ]; then
-           mpiexec -np $REG_TEST_PROCESS_COUNT $PYTHON_RUN -m pytest test_libE_on_GKLS.py >> $REG_TEST_OUTPUT
+           mpiexec -np $REG_TEST_PROCESS_COUNT $PYTHON_RUN -m pytest $TEST_SCRIPT >> $TEST_SCRIPT.$REG_TEST_OUTPUT_EXT
            #mpiexec -np $REG_TEST_PROCESS_COUNT $PYTHON_RUN -m pytest $COV_LINE_PARALLEL test_libE_on_GKLS_pytest.py >> $REG_TEST_OUTPUT
            test_code=$?
          else
-           mpiexec -np $REG_TEST_PROCESS_COUNT $PYTHON_RUN $COV_LINE_PARALLEL ./test_libE_on_GKLS.py >> $REG_TEST_OUTPUT
+           mpiexec -np $REG_TEST_PROCESS_COUNT $PYTHON_RUN $COV_LINE_PARALLEL $TEST_SCRIPT >> $TEST_SCRIPT.$REG_TEST_OUTPUT_EXT
            test_code=$?   
          fi
 	 reg_count=$((reg_count+1))
 
          if [ "$test_code" -eq "0" ]; then
-           echo -e " ---Test $reg_count: test_libE_on_GKLS.py on $REG_TEST_PROCESS_COUNT processes ...passed"
+           echo -e " ---Test $reg_count: $TEST_SCRIPT on $REG_TEST_PROCESS_COUNT processes ...passed"
 	   reg_pass=$((reg_pass+1))
            #continue testing
          else
-           echo -e " ---Test $reg_count: test_libE_on_GKLS.py on $REG_TEST_PROCESS_COUNT processes ...failed"
+           echo -e " ---Test $reg_count: $TEST_SCRIPT on $REG_TEST_PROCESS_COUNT processes ...failed"
            code=$test_code #sh - currently stop on failure
 	   reg_fail=$((reg_fail+1))	   
          fi;
 	 
 	 #Move this test's coverage files to regression dir where they can be merged with other tests
-	 [ "$RUN_COV_TESTS" = "true" ] && mv .cov_reg_out.* ../
+	 #[ "$RUN_COV_TESTS" = "true" ] && mv .cov_reg_out.* ../
 	 
 
-         cd $ROOT_DIR/$REG_TEST_SUBDIR
+         #cd $ROOT_DIR/$REG_TEST_SUBDIR
 
       fi; #if [ "$RUN_TEST" = "true" ];
     
@@ -267,6 +282,12 @@ if [ "$root_found" = true ]; then
         #sh REMEMBER - MUST COMBINE ALL IF IN SEP SUB-DIRS WILL COPY TO DIR ABOVE - BUT WORK OUT WHAT WILL BE DIR STRUCTURE
         coverage combine  .cov_reg_out.* #Name of coverage data file must match that in .coveragerc in reg test dir.
         coverage html
+
+        echo -e "\n..moving output files to output/ dir"
+        mv *.$REG_TEST_OUTPUT_EXT output/
+        mv *.npy output/
+        mv active_runs.txt  output/    
+	
                 
         if [ "$RUN_UNIT_TESTS" = true ]; then
 
@@ -298,8 +319,7 @@ if [ "$root_found" = true ]; then
 	tput bold;tput setaf 2;echo -e "============================ $reg_pass passed in $reg_time seconds ============================"
       fi;
       
-      tput bold;tput setaf 2;echo "Regression tests passed. Continuing..."
-      
+      tput bold;tput setaf 2;echo "Regression tests passed. Continuing..."      
       tput sgr 0
       echo
     else
