@@ -181,7 +181,7 @@ if [ "$root_found" = true ]; then
     cd $ROOT_DIR/$REG_TEST_SUBDIR #sh - add test/err
     
     #Check output dir exists.
-    if [ ! -d output ] then;
+    if [ ! -d output ]; then
       mkdir output/
     fi;
     
