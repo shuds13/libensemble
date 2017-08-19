@@ -10,6 +10,15 @@ export RUN_UNIT_TESTS=true    #Recommended for pre-push / CI tests
 export RUN_COV_TESTS=true     #Provide coverage report
 export RUN_REG_TESTS=true     #Recommended for pre-push / CI tests
 export RUN_PEP_TESTS=false     #Code syle conventions
+
+# Regression test options
+#export REG_TEST_LIST='test_libE_on_GKLS_aposmm_1.py test_number2.py' #selected/ordered
+export REG_TEST_LIST=test_*.py #unordered
+export REG_TEST_PROCESS_COUNT_LIST='2 4'
+export REG_USE_PYTEST=false
+export REG_TEST_OUTPUT_EXT=std.out #/dev/null
+export REG_STOP_ON_FAILURE=false
+
 #-----------------------------------------------------------------------------------------
      
 # Test Directories - all relative to project root dir
@@ -22,18 +31,6 @@ export REG_TEST_SUBDIR=$TESTING_DIR/regression_tests
 #Coverage merge and report dir - will need the relevant .coveragerc file present
 export COV_MERGE_DIR='' #root dir
 #export COV_MERGE_DIR=$TESTING_DIR
-
-# Regression test options
-#export REG_TEST_PROCESS_COUNT=4
-export REG_TEST_PROCESS_COUNT_LIST='2 4'
-export REG_USE_PYTEST=false
-export REG_TEST_OUTPUT_EXT=std.out #/dev/null
-
-#Currently test directory within example
-  # maybe more than one per dir? - or maybe put in one dir - in reg_test subdir under tests
-#export REG_TEST_LIST='GKLS_and_aposmm GKLS_and_aposmm'
-#export REG_TEST_LIST='test_libE_on_GKLS_aposmm_1.py test_number2.py' #selected/ordered
-export REG_TEST_LIST=test_*.py #unordered
 
 #PEP code standards test options
 export PYTHON_PEP_STANDARD=pep8
@@ -77,6 +74,11 @@ done
 PYTHON_RUN=python$PYTHON_VER
 echo -e "Python run: $PYTHON_RUN"
 
+textreset=$(tput sgr0)
+fail_color=$(tput bold;tput setaf 1) #red
+pass_color=$(tput bold;tput setaf 2) #green
+titl_colour=$(tput bold;tput setaf 6) #cyan
+hint_colour=$(tput bold;tput setaf 4) #blue
 
 #set +x
 #-----------------------------------------------------------------------------------------
@@ -186,10 +188,17 @@ if [ "$root_found" = true ]; then
     fi;
     
     #Running without subdirs - delete any leftover output and coverage data files
-    [ -e *.$REG_TEST_OUTPUT_EXT ] && rm *.$REG_TEST_OUTPUT_EXT
-    [ -e *.npy ] && rm *.npy
-    [ -e .cov_reg_out.* ] && rm .cov_reg_out.*
-    [ -e active_runs.txt ] && rm active_runs.txt  
+    #[ -e *.$REG_TEST_OUTPUT_EXT ] && rm *.$REG_TEST_OUTPUT_EXT
+    #[ -e *.npy ] && rm *.npy
+    #[ -e .cov_reg_out.* ] && rm .cov_reg_out.*
+    #[ -e active_runs.txt ] && rm active_runs.txt
+
+    #Running without subdirs - delete any leftover output and coverage data files
+    filelist=(*.$REG_TEST_OUTPUT_EXT); [ -e ${filelist[0]} ] && rm *.$REG_TEST_OUTPUT_EXT
+    filelist=(*.npy);                  [ -e ${filelist[0]} ] && rm *.npy
+    filelist=(.cov_reg_out.*);         [ -e ${filelist[0]} ] && rm .cov_reg_out.*
+    filelist=(*active_runs.txt);       [ -e ${filelist[0]} ] && rm *active_runs.txt
+    filelist=(*.err);                  [ -e ${filelist[0]} ] && rm *.err
             
     #Build dependencies
     cd common/GKLS_and_uniform_random_sample/GKLS_sim_src #sh - add test/err - input dir names
@@ -217,7 +226,7 @@ if [ "$root_found" = true ]; then
 
     # ********* Loop over regression tests ************
     reg_start=$SECONDS
-    reg_count=0
+    reg_count_tests=0
     reg_count_runs=0    
     reg_pass=0
     reg_fail=0 
@@ -228,17 +237,16 @@ if [ "$root_found" = true ]; then
       test_num=$((test_num+1))
       #Need proc count here for now - still stop on failure etc.
       for NPROCS in $REG_TEST_PROCESS_COUNT_LIST
-      do
-      
-        #sh Currently stop on failure - make option to carry on later....
-        #Before Each Test check code is 0 (passed so far) - or skip to test summary
-        if [ "$code" -eq "0" ]; then
-          RUN_TEST=true
-        else
-          RUN_TEST=false
+      do      
+        
+        RUN_TEST=true
+        if [ $REG_STOP_ON_FAILURE = "true" ]; then
+          #Before Each Test check code is 0 (passed so far) - or skip to test summary        
+          if [ "$code" -ne "0" ]; then
+            RUN_TEST=false
+            break
+          fi
         fi
-
-        # If output test req. would go here - generally will use assertion within code
 
         if [ "$RUN_TEST" = "true" ]; then        
 
@@ -246,22 +254,26 @@ if [ "$root_found" = true ]; then
 
            #sh for pytest - may be better to wrap main test as function.
            if [ "$REG_USE_PYTEST" = true ]; then
-             mpiexec -np $NPROCS $PYTHON_RUN -m pytest $TEST_SCRIPT >> $TEST_SCRIPT.$REG_TEST_OUTPUT_EXT
+             mpiexec -np $NPROCS $PYTHON_RUN -m pytest $TEST_SCRIPT >> $TEST_SCRIPT.$NPROCS'procs'.$REG_TEST_OUTPUT_EXT 2>test.err
              #mpiexec -np $REG_TEST_PROCESS_COUNT $PYTHON_RUN -m pytest $COV_LINE_PARALLEL test_libE_on_GKLS_pytest.py >> $REG_TEST_OUTPUT
              test_code=$?
            else
-             mpiexec -np $NPROCS $PYTHON_RUN $COV_LINE_PARALLEL $TEST_SCRIPT >> $TEST_SCRIPT.$NPROCS'procs'.$REG_TEST_OUTPUT_EXT
+             mpiexec -np $NPROCS $PYTHON_RUN $COV_LINE_PARALLEL $TEST_SCRIPT >> $TEST_SCRIPT.$NPROCS'procs'.$REG_TEST_OUTPUT_EXT 2>test.err
              test_code=$?   
            fi
            reg_count_runs=$((reg_count_runs+1))
 
            if [ "$test_code" -eq "0" ]; then
-             echo -e " ---Test $test_num: $TEST_SCRIPT on $NPROCS processes ...passed"
+             echo -e " ---Test $test_num: $TEST_SCRIPT on $NPROCS processes ${pass_color} ...passed ${textreset}"
              reg_pass=$((reg_pass+1))
              #continue testing
            else
-             echo -e " ---Test $test_num: $TEST_SCRIPT on $NPROCS processes ...failed"
+             echo -e " ---Test $test_num: $TEST_SCRIPT on $NPROCS processes ${fail_color}  ...failed ${textreset}"
              code=$test_code #sh - currently stop on failure
+             if [ $REG_STOP_ON_FAILURE != "true" ]; then
+               #Dump error to log file
+               echo -e "\nTest $test_num: $TEST_SCRIPT on $NPROCS processes:\n" >>log.err; cat test.err >>log.err
+             fi;
              reg_fail=$((reg_fail+1))     
            fi;
 
@@ -274,8 +286,11 @@ if [ "$root_found" = true ]; then
         fi; #if [ "$RUN_TEST" = "true" ];
       
       done #nprocs
-      reg_count=$((reg_count+1))
-    done #te
+      
+      [ $REG_STOP_ON_FAILURE = "true" ] && [ "$code" -ne "0" ] && cat test.err && break
+      reg_count_tests=$((reg_count_tests+1))
+      
+    done #tests
     reg_time=$(( SECONDS - start ))
     
     # ********* End Loop over regression tests *********
@@ -286,9 +301,17 @@ if [ "$root_found" = true ]; then
 
 
     #Create Coverage Reports
-    #Only if passed - else may be misleading!
-    #sh assumes names of coverage data files - once working make dot files and put above
+    #Only if passed
     if [ "$code" -eq "0" ]; then
+      
+      echo -e "\n..Moving output files to output dir"      
+      if [ "$(ls -A output)" ]; then
+        rm output/* #Avoid mixing test run results
+      fi;
+      mv *.$REG_TEST_OUTPUT_EXT output/
+      mv *.npy output/
+      mv active_runs.txt  output/    
+           
       if [ "$RUN_COV_TESTS" = true ]; then
         
         # Merge MPI coverage data for all ranks from regression tests and create html report in sub-dir
@@ -296,13 +319,8 @@ if [ "$root_found" = true ]; then
         #sh REMEMBER - MUST COMBINE ALL IF IN SEP SUB-DIRS WILL COPY TO DIR ABOVE - BUT WORK OUT WHAT WILL BE DIR STRUCTURE
         coverage combine  .cov_reg_out.* #Name of coverage data file must match that in .coveragerc in reg test dir.
         coverage html
-
-        echo -e "\n..moving output files to output/ dir"
-        mv *.$REG_TEST_OUTPUT_EXT output/
-        mv *.npy output/
-        mv active_runs.txt  output/    
-  
-                
+        echo -e "..Coverage HTML written to dir cov_reg"
+          
         if [ "$RUN_UNIT_TESTS" = true ]; then
 
           #Combine with unit test coverage at top-level
@@ -316,9 +334,11 @@ if [ "$root_found" = true ]; then
           #coverage combine .cov_merge_out  $ROOT_DIR/$REG_TEST_SUBDIR/.cov_reg_out
           #coverage html --rcfile=.coverage_merge.rc
           coverage html #Should create cov_merge/ dir
+          echo -e "..Combined Unit Test/Regression Test Coverage HTML written to top-level dir cov_merge/"
+
         fi;
         
-      fi;    
+      fi;
     fi;
 
 
@@ -328,18 +348,28 @@ if [ "$root_found" = true ]; then
       #tput bold;tput setaf 2
       
       if [ "$REG_USE_PYTEST" != true ]; then
-  #sh - temp formatting similar(ish) to pytest - update in python (as with timing)
-  tput bold;tput setaf 4; echo -e "***Note***: temporary formatting/timing ......"
-  tput bold;tput setaf 2;echo -e "============================ $reg_pass passed in $reg_time seconds ============================"
+        #sh - temp formatting similar(ish) to pytest - update in python (as with timing)
+        tput bold;tput setaf 4; echo -e "***Note***: temporary formatting/timing ......"
+        tput bold;tput setaf 2; echo -e "============================ $reg_pass passed in $reg_time seconds ============================"
       fi;
       
-      tput bold;tput setaf 2;echo "Regression tests passed. Continuing..."      
+      tput bold;tput setaf 2;echo "Regression tests passed ..."      
       tput sgr 0
       echo
     else
+      if [ $REG_STOP_ON_FAILURE != "true" ]; then
+        #echo -e "\nOut of a total of $reg_count_runs test runs:"
+        #echo -e "--$reg_pass passed"
+        #echo -e "--$reg_fail failed" 
+        echo -e ""
+        echo -e "\n..see error log at $REG_TEST_SUBDIR/log.err"
+        tput bold;tput setaf 4; echo -e "***Note***: temporary formatting/timing ......"
+        tput bold;tput setaf 1; echo -e "============================ $reg_fail failed, $reg_pass passed in $reg_time seconds ============================"
+
+      fi;
       echo
-      tput bold;tput setaf 1;echo -e "Abort $RUN_PREFIX: Regression tests failed";tput sgr 0
-      exit 1 #shudson - cld return pytest exit code
+      tput bold;tput setaf 1;echo -e "Abort $RUN_PREFIX: Regression tests failed (exit code $code)";tput sgr 0
+      exit $code #shudson - cld return pytest exit code
     fi;  
     
 
