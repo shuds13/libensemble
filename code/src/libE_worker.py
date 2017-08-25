@@ -1,6 +1,6 @@
 """
 libEnsemble worker routines
-====================================================
+#====================================================
 """
 from __future__ import division
 from __future__ import absolute_import
@@ -17,7 +17,7 @@ def worker_main(c):
     Evaluate calculations given to it by the manager 
 
     Parameters
-    ----------
+    
     comm: mpi4py communicator used to communicate with manager
 
     The data sent from the manager should have the following:

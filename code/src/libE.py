@@ -1,6 +1,6 @@
 """
 Main libEnsemble routine 
-============================================
+#============================================
 
 First tasks to be included in libEnsemble: [depends on]
     - generate input for simulations 
@@ -33,7 +33,6 @@ def libE(c, allocation_specs, sim_specs, gen_specs, failure_processing, exit_cri
 
     """ 
     Parameters
-    ----------
 
     """
     check_inputs(c, allocation_specs, sim_specs, gen_specs, failure_processing, exit_criteria)

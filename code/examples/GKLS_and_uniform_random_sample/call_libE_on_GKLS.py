@@ -11,10 +11,13 @@ from __future__ import division
 from __future__ import absolute_import
 
 from mpi4py import MPI # for libE communicator
+import os
 import sys             # for adding to path
 import numpy as np
 
-sys.path.append('../../src')
+#sys.path.append('../../src')
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../src'))
+
 from libE import libE
 
 # Declare the objective
