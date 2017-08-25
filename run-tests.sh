@@ -18,7 +18,6 @@ export REG_TEST_PROCESS_COUNT_LIST='2 4'
 export REG_USE_PYTEST=false
 export REG_TEST_OUTPUT_EXT=std.out #/dev/null
 export REG_STOP_ON_FAILURE=false
-
 #-----------------------------------------------------------------------------------------
      
 # Test Directories - all relative to project root dir
@@ -27,6 +26,10 @@ export LIBE_SRC_DIR=$CODE_DIR/src
 export TESTING_DIR=$CODE_DIR/tests
 export UNIT_TEST_SUBDIR=$TESTING_DIR/unit_tests
 export REG_TEST_SUBDIR=$TESTING_DIR/regression_tests
+
+#export GKLS_BUILD_DIR=$REG_TEST_SUBDIR/common/GKLS_and_uniform_random_sample/GKLS_sim_src
+#export GKLS_BUILD_DIR=$CODE_DIR/sim_funs/GKLS/GKLS_sim_src
+export GKLS_BUILD_DIR=$CODE_DIR/examples/sim_funs/GKLS/GKLS_sim_src
 
 #Coverage merge and report dir - will need the relevant .coveragerc file present
 export COV_MERGE_DIR='' #root dir
@@ -200,10 +203,11 @@ if [ "$root_found" = true ]; then
     filelist=(*active_runs.txt);       [ -e ${filelist[0]} ] && rm *active_runs.txt
     filelist=(*.err);                  [ -e ${filelist[0]} ] && rm *.err
             
-    #Build dependencies
-    cd common/GKLS_and_uniform_random_sample/GKLS_sim_src #sh - add test/err - input dir names
-    make gkls_single #sh Test this also - possible failure mode
-    
+    #Build sim/gen dependencies
+    cd $ROOT_DIR/$GKLS_BUILD_DIR 
+    make gkls_single
+    #make gkls
+        
     #Add further dependencies here .....
     
         

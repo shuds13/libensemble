@@ -15,9 +15,10 @@ import sys             # for adding to path
 import numpy as np
 
 sys.path.append('../../src')
-sys.path.append('../chwirut_and_aposmm')
 from libE import libE
 
+sys.path.append('../sim_funs')
+sys.path.append('../gen_funs')
 from chwirut1 import sum_squares, libE_func_wrapper
 from aposmm_logic import aposmm_logic, queue_update_function
 from math import *

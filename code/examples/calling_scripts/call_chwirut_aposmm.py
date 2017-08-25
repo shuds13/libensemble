@@ -17,6 +17,8 @@ import numpy as np
 sys.path.append('../../src')
 from libE import libE
 
+sys.path.append('../sim_funs')
+sys.path.append('../gen_funs')
 from chwirut1 import sum_squares, libE_func_wrapper
 from aposmm_logic import aposmm_logic
 from math import *

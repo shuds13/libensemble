@@ -17,5 +17,7 @@ omit =
     */code/tests/unit_tests/*    
     */code/tests/regression_tests/*
     */code/tests/regression_tests/common/*
+#    */code/examples/gen_funs/*
+#    */code/examples/sim_funs/*
     
     
