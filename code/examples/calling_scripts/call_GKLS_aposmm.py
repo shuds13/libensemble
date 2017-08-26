@@ -1,6 +1,6 @@
 # """
 # Runs libEnsemble with a simple uniform random sample on one instance of the GKLS
-# problem. (You will need to run "make gkls_single" in code/examples/GKLS_sim_src/
+# problem. (You will need to run "make gkls_single" in code/examples/sim_funs/GKLS/GKLS_sim_src/
 # before running this script with 
 
 # mpiexec -np 4 python3 call_libE_on_GKLS.py
@@ -19,10 +19,12 @@ sys.path.append('../../src')
 from libE import libE
 
 # Declare the objective
-sys.path.append('../GKLS_and_uniform_random_sample/GKLS_sim_src')
+GKLS_dir_name='../sim_funs/GKLS/GKLS_sim_src'
+sys.path.append(GKLS_dir_name)
 from GKLS_obj import call_GKLS as obj_func
 
-sys.path.append('../chwirut_and_aposmm')
+sys.path.append('../sim_funs')
+sys.path.append('../gen_funs')
 from chwirut1 import sum_squares
 from aposmm_logic import aposmm_logic
 
@@ -51,7 +53,7 @@ sim_specs = {'f': [obj_func],
                         'problem_dimension': 2,
                         'problem_number': 1,
                         # 'sim_dir': './GKLS_sim_src'}, # to be copied by each worker 
-                        'sim_dir': '../GKLS_and_uniform_random_sample/GKLS_sim_src'}, # to be copied by each worker 
+                        'sim_dir': GKLS_dir_name}, # to be copied by each worker 
              }
 
 
@@ -122,7 +124,7 @@ if MPI.COMM_WORLD.Get_rank() == 0:
     print("\n\n\nRun completed.\nSaving results to file: " + filename)
     np.save(filename, H)
 
-    minima_and_func_val_file = '../GKLS_and_uniform_random_sample/GKLS_sim_src/which_seeds_are_feasible/known_minima_and_func_values_for_n=' + str(sim_specs['params']['problem_dimension']) + '_prob=' + str(sim_specs['params']['problem_number']) + '_min=' + str(sim_specs['params']['number_of_minima'])
+    minima_and_func_val_file = os.path.join(GKLS_dir_name, 'which_seeds_are_feasible/known_minima_and_func_values_for_n=' + str(sim_specs['params']['problem_dimension']) + '_prob=' + str(sim_specs['params']['problem_number']) + '_min=' + str(sim_specs['params']['number_of_minima']))
 
     if os.path.isfile(minima_and_func_val_file):
         M = np.loadtxt(minima_and_func_val_file)

@@ -1,7 +1,9 @@
 [run]
 source = ../../src
-        common
+        ../../examples/sim_funs/
+        ../../examples/gen_funs/
         .
+        #common
 
 branch = true
 	 
