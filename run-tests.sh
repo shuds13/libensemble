@@ -83,6 +83,74 @@ pass_color=$(tput bold;tput setaf 2) #green
 titl_colour=$(tput bold;tput setaf 6) #cyan
 hint_colour=$(tput bold;tput setaf 4) #blue
 
+#-----------------------------------------------------------------------------------------
+#Functions
+
+#Print summary line like pytest
+#In:  String to print
+#Out: Prints line (nothing returned)
+print_summary_line() {
+  local phrase
+  phrase=$@
+  #Add two for the spaces
+  textsize=$((${#phrase}+2))
+  #echo $textsize
+  tsize=$(tput cols)
+  lsize=$((($tsize-$textsize)/2))
+
+  #Deal with result of integer division
+  tot_len=$((${lsize}+${lsize}+${textsize}))
+  shortfall=$(($tsize-$tot_len))
+
+  symbol_count=$lsize
+  while [ $symbol_count -gt 0 ]
+  do
+    printf "="
+    symbol_count=$((symbol_count-1))
+  done
+  printf " $phrase "
+  #printf '%*s' "$phrase"
+  #echo '$phrase'
+  symbol_count=$(($lsize+$shortfall))
+  while [ $symbol_count -gt 0 ]
+  do
+    printf "="
+    symbol_count=$((symbol_count-1))
+  done 
+}
+
+#Get current time in seconds
+#In:  Nothing
+#Out: Returns time in seconds (seconds since 1970-01-01 00:00:00 UTC) as a string
+#     Or if bc not available uses SECONDS (whole seconds that script has been running)
+current_time() {
+  local time
+  #Is bc present
+  USE_BC=f
+  bc --version >> /dev/null && USE_BC=t
+  if [ $USE_BC = 't' ]; then
+    time=$(date +%s.%N)
+  else
+    time=$SECONDS
+  fi;
+  echo "$time"
+}
+
+#Return a time difference
+#In:  Start and End times as strings
+#Out: Time difference as a string
+total_time() {
+  #Is bc present
+  USE_BC=f  
+  bc --version >> /dev/null && USE_BC=t
+  if [ $USE_BC = 't' ]; then
+    diff=$(echo "scale=2;($2 - $1)*100/100" | bc)
+  else
+    diff=$(( $2 - $1 ))
+  fi;
+  echo "$diff"
+}
+
 #set +x
 #-----------------------------------------------------------------------------------------
 
@@ -229,7 +297,9 @@ if [ "$root_found" = true ]; then
     echo -e ""
 
     # ********* Loop over regression tests ************
-    reg_start=$SECONDS
+    
+    #reg_start=$SECONDS
+    reg_start=$(current_time)
     reg_count_tests=0
     reg_count_runs=0    
     reg_pass=0
@@ -295,7 +365,9 @@ if [ "$root_found" = true ]; then
       reg_count_tests=$((reg_count_tests+1))
       
     done #tests
-    reg_time=$(( SECONDS - start ))
+    reg_end=$(current_time)
+    reg_time=$(total_time $reg_start $reg_end)
+    #reg_time=$(( SECONDS - start ))
     
     # ********* End Loop over regression tests *********
 
@@ -304,7 +376,7 @@ if [ "$root_found" = true ]; then
     cd $ROOT_DIR/$REG_TEST_SUBDIR
 
 
-    #Create Coverage Reports
+    #Create Coverage Reports ----------------------------------------------
     #Only if passed
     if [ "$code" -eq "0" ]; then
       
@@ -353,11 +425,15 @@ if [ "$root_found" = true ]; then
       
       if [ "$REG_USE_PYTEST" != true ]; then
         #sh - temp formatting similar(ish) to pytest - update in python (as with timing)
-        tput bold;tput setaf 4; echo -e "***Note***: temporary formatting/timing ......"
-        tput bold;tput setaf 2; echo -e "============================ $reg_pass passed in $reg_time seconds ============================"
+        #tput bold;tput setaf 4; echo -e "***Note***: temporary formatting/timing ......"
+        
+        summ_line="$reg_pass passed in $reg_time seconds"
+        tput bold;tput setaf 2;
+        print_summary_line $summ_line
+        tput sgr 0
       fi;
       
-      tput bold;tput setaf 2;echo "Regression tests passed ..."      
+      tput bold;tput setaf 2;echo -e "\nRegression tests passed ..."      
       tput sgr 0
       echo
     else
@@ -367,12 +443,16 @@ if [ "$root_found" = true ]; then
         #echo -e "--$reg_fail failed" 
         echo -e ""
         echo -e "\n..see error log at $REG_TEST_SUBDIR/log.err"
-        tput bold;tput setaf 4; echo -e "***Note***: temporary formatting/timing ......"
-        tput bold;tput setaf 1; echo -e "============================ $reg_fail failed, $reg_pass passed in $reg_time seconds ============================"
-
+        #tput bold;tput setaf 4; echo -e "***Note***: temporary formatting/timing ......"
+        
+        summ_line="$reg_fail failed, $reg_pass passed in $reg_time seconds"
+        tput bold;tput setaf 1;
+        print_summary_line $summ_line
+        tput sgr 0        
       fi;
       echo
-      tput bold;tput setaf 1;echo -e "Abort $RUN_PREFIX: Regression tests failed (exit code $code)";tput sgr 0
+      tput bold;tput setaf 1;echo -e "\nAbort $RUN_PREFIX: Regression tests failed (exit code $code)";tput sgr 0
+      echo
       exit $code #shudson - cld return pytest exit code
     fi;  
     
