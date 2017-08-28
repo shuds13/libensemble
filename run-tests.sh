@@ -433,7 +433,7 @@ if [ "$root_found" = true ]; then
         tput sgr 0
       fi;
       
-      tput bold;tput setaf 2;echo "Regression tests passed ..."      
+      tput bold;tput setaf 2;echo -e "\nRegression tests passed ..."      
       tput sgr 0
       echo
     else
@@ -451,7 +451,7 @@ if [ "$root_found" = true ]; then
         tput sgr 0        
       fi;
       echo
-      tput bold;tput setaf 1;echo -e "Abort $RUN_PREFIX: Regression tests failed (exit code $code)";tput sgr 0
+      tput bold;tput setaf 1;echo -e "\nAbort $RUN_PREFIX: Regression tests failed (exit code $code)";tput sgr 0
       echo
       exit $code #shudson - cld return pytest exit code
     fi;  
