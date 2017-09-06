@@ -43,7 +43,7 @@ setup(
                       'scipy>=0.17',
                       'pytest>=3.1',
                       'pytest-cov>=2.5',
-                      'pytest-pep8>=1.0'
+                      'pytest-pep8>=1.0',
                       'tox>=2.7'
                       ],
 
