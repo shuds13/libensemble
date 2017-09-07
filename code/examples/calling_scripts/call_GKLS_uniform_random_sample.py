@@ -1,9 +1,9 @@
 # """
 # Runs libEnsemble with a simple uniform random sample on one instance of the GKLS
-# problem. (You will need to run "make gkls_single" in code/examples/sim_funs/GKLS/GKLS_sim_src/
+# problem. (You will need to run "make gkls_single" in libensemble/code/examples/sim_funcs/GKLS/GKLS_sim_src/
 # before running this script with 
 
-# mpiexec -np 4 python3 call_libE_on_GKLS.py
+# mpiexec -np 4 python3 call_GKLS_uniform_random_sample.py
 
 # """
 
@@ -18,7 +18,7 @@ sys.path.append('../../src')
 from libE import libE
 
 # Declare the objective
-GKLS_dir_name='../sim_funs/GKLS/GKLS_sim_src'
+GKLS_dir_name='../sim_funcs/GKLS/GKLS_sim_src'
 sys.path.append(GKLS_dir_name)
 from GKLS_obj import call_GKLS_with_random_pause as obj_func
 
@@ -26,7 +26,7 @@ from GKLS_obj import call_GKLS_with_random_pause as obj_func
 # Below is the generating function that is called by LibEnsemble to generate
 # points to be evaluated. In this case, it is just a uniform random sample
 # over params['lb'] to params['ub']
-def uniform_random_sample(g_in,gen_out,params):
+def uniform_random_sample(g_in,gen_out,params,info):
     ub = params['ub']
     lb = params['lb']
 
@@ -49,23 +49,14 @@ def combine_fvec(F):
 
 
 ### Declare the run parameters/functions
-max_sim_evals = 100
+max_sim_budget = 100
 
-# (c) will contain information about the MPI communicator used by LibEnsemble to do it's evaluations
-c = {}
-c['comm'] = MPI.COMM_WORLD
-c['color'] = 0
-
-# Tell LibEnsemble one manager and the rest of the MPI ranks are workers (doing evaluations)
-allocation_specs = {'manager_ranks': set([0]), 
-                    'worker_ranks': set(range(1,c['comm'].Get_size()))
-                   }
 
 #State the objective function, its arguments, output, and necessary parameters (and their sizes)
-sim_specs = {'f': [obj_func],
+sim_specs = {'sim_f': [obj_func],
              'in': ['x'],
-             'out': [('fvec','float',3),
-                     ('f','float'),
+             'out': [('fvec',float,3),
+                     ('f',float),
                     ],
              'params': {'number_of_minima': 10,
                         'problem_dimension': 2,
@@ -76,32 +67,30 @@ sim_specs = {'f': [obj_func],
              }
 
 # State the generating function, its arguments, output, and necessary parameters.
-gen_specs = {'f': uniform_random_sample,
+gen_specs = {'gen_f': uniform_random_sample,
              'in': [],
-             'out': [('x','float',2),
-                     ('priority','float'),
+             'out': [('x',float,2),
+                     ('priority',float),
                     ],
              'params': {'lb': np.array([0,0]),
                         'ub': np.array([1,1]),
-                        'gen_batch_size': max_sim_evals,
+                        'gen_batch_size': max_sim_budget,
                        },
              'num_inst': 1,
              'batch_mode': True,
              }
 
-failure_processing = {}
-
 # Tell LibEnsemble when to stop
-exit_criteria = {'sim_eval_max': max_sim_evals, # must be provided
-                 'elapsed_clock_time': 100,
+exit_criteria = {'sim_max': max_sim_budget, # must be provided
+                 'elapsed_wallclock_time': 100,
                  'stop_val': ('f', -1), # key must be in sim_specs['out'] or gen_specs['out'] 
                 }
 
 np.random.seed(1)
 # Perform the run
-H = libE(c, allocation_specs, sim_specs, gen_specs, failure_processing, exit_criteria)
+H = libE(sim_specs, gen_specs, exit_criteria)
 
 if MPI.COMM_WORLD.Get_rank() == 0:
-    filename = 'GKLS_results_after_evals=' + str(max_sim_evals) + '_ranks=' + str(c['comm'].Get_size())
+    filename = 'GKLS_results_after_evals=' + str(max_sim_budget) + '_ranks=' + str(MPI.COMM_WORLD.Get_size())
     print("\n\n\nRun completed.\nSaving results to file: " + filename)
     np.save(filename, H)

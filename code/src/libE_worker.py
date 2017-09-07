@@ -30,44 +30,36 @@ def worker_main(c):
     """
     comm = c['comm']
     comm_color = c['color']
-
-
-    # size = comm.Get_size()
     rank = comm.Get_rank()
-    name = MPI.Get_processor_name()
     status = MPI.Status()
 
     while 1:
         D = comm.recv(buf=None, source=0, tag=MPI.ANY_TAG, status=status)
-        # print(D)
-        # sys.stdout.flush()
 
         if status.Get_tag() == STOP_TAG: break
 
-        if len(D['form_subcomm']):
-            sys.exit("Haven't implemented this yet")
+        assert len(D['form_subcomm'])==0, "Haven't implemented form_subcomm yet"
 
         if 'sim_dir' in D['calc_params']:
             saved_dir = os.getcwd()
-            # worker_dir = '/scratch/' + obj_dir + '_' + str(comm_color) + "_" + str(rank) 
             worker_dir = D['calc_params']['sim_dir'] + '_' + str(comm_color) + "_" + str(rank) 
+
+            if 'sim_dir_prefix' in D['calc_params']:
+                worker_dir = os.path.join(os.path.expanduser(D['calc_params']['sim_dir_prefix']), os.path.split(os.path.abspath(os.path.expanduser(worker_dir)))[1])
+
             # assert ~os.path.isdir(worker_dir), "Worker directory already exists."
             if not os.path.exists(worker_dir):
                 shutil.copytree(D['calc_params']['sim_dir'], worker_dir)
             os.chdir(worker_dir)
 
-        O = D['calc_f'](D['calc_in'],D['calc_out'],D['calc_params'])
+        O = D['calc_f'](D['calc_in'],D['calc_out'],D['calc_params'],D['calc_info'])
 
         if 'sim_dir' in D['calc_params']:
             os.chdir(saved_dir)
 
-        # print(O)
-        sys.stdout.flush()
-
         data_out = {'calc_out':O, 'calc_info': D['calc_info']}
         
         comm.send(obj=data_out, dest=0) 
-        # print("Worker: %d; Finished work on %r; finished sending" % (rank,[x,f_vec,f,0,0,rank]))
 
     # Clean up
     if 'saved_dir' in locals():

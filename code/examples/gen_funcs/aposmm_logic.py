@@ -15,7 +15,7 @@ from petsc4py import PETSc
 import nlopt
 
 # @profile
-def aposmm_logic(H,gen_out,params):
+def aposmm_logic(H,gen_out,params,info):
 
     """
     Receives the following data from H:
@@ -101,31 +101,33 @@ def aposmm_logic(H,gen_out,params):
             sorted_run_inds = np.where(H['iter_plus_1_in_run_id'][:,run])[0]
             sorted_run_inds.sort()
                         
-            if all(H['returned'][sorted_run_inds]):
+            assert all(H['returned'][sorted_run_inds])
 
-                x_new = np.ones((1,n))*np.inf; pt_in_run = 0; total_pts_in_run = len(sorted_run_inds)
-                x_opt, exit_code = advance_localopt_method(H, params, sorted_run_inds, c_flag)
+            x_new = np.ones((1,n))*np.inf; pt_in_run = 0; total_pts_in_run = len(sorted_run_inds)
+            x_opt, exit_code = advance_localopt_method(H, params, sorted_run_inds, c_flag)
 
-                if np.isinf(x_new).all():
-                    # No new point was added. Hopefully at a minimum 
-                    if exit_code > 0:
-                        update_history_optimal(x_opt, H, sorted_run_inds)
-                        inactive_runs.add(run)
-                        updated_inds.update(sorted_run_inds) 
-                    else:
-                        sys.exit("Exit code not zero, but no information in x_new.\n Local opt run " + str(run) + " after " + str(len(sorted_run_inds)) + " evaluations.\n Worker crashing!")
-                else: 
-                    add_points_to_O(O, x_new, len(H), params, c_flag, local_flag=1, sorted_run_inds=sorted_run_inds, run=run)
+            if np.isinf(x_new).all():
+                # No new point was added. Hopefully at a minimum 
+                if exit_code > 0:
+                    update_history_optimal(x_opt, H, sorted_run_inds)
+                    inactive_runs.add(run)
+                    updated_inds.update(sorted_run_inds) 
+                else:
+                    sys.exit("Exit code not zero, but no information in x_new.\n Local opt run " + str(run) + " after " + str(len(sorted_run_inds)) + " evaluations.\n Worker crashing!")
+            else: 
+                add_points_to_O(O, x_new, len(H), params, c_flag, local_flag=1, sorted_run_inds=sorted_run_inds, run=run)
 
         for i in inactive_runs:
             active_runs.remove(i)
 
         update_existing_runs_file(active_runs)
 
-    if 'min_batch_size' in params:
+    if len(H) == 0:
+        samples_needed = params['initial_sample']
+    elif 'min_batch_size' in params:
         samples_needed = params['min_batch_size'] - len(O)
     else:
-        samples_needed = int(not bool(O)) # 1 if len(O)==0, 0 otherwise
+        samples_needed = int(not bool(len(O))) # 1 if len(O)==0, 0 otherwise
 
     if samples_needed > 0:
         x_new = np.random.uniform(0,1,(samples_needed,n))
@@ -137,7 +139,7 @@ def aposmm_logic(H,gen_out,params):
     return O
 
 def add_points_to_O(O, pts, len_H, params, c_flag, local_flag=0, sorted_run_inds=[], run=[]):
-    assert(not local_flag or len(pts) == 1), "add_points_to_O does not support this functionality"
+    assert not local_flag or len(pts) == 1, "add_points_to_O does not support this functionality"
 
     original_len_O = len(O)
 
@@ -146,8 +148,8 @@ def add_points_to_O(O, pts, len_H, params, c_flag, local_flag=0, sorted_run_inds
     if c_flag:
         m = params['components']
 
-        assert (len_H % m == 0), "Number of points in len_H not congruent to 0 mod 'components'"
-        pt_ids = np.sort(np.tile(np.arange((len_H+original_len_O)/m,(len_H+original_len_O)/m + len(pts)),(1,len(pts)))) 
+        assert len_H % m == 0, "Number of points in len_H not congruent to 0 mod 'components'"
+        pt_ids = np.sort(np.tile(np.arange((len_H+original_len_O)/m,(len_H+original_len_O)/m + len(pts)),(1,m))) 
         pts = np.tile(pts,(m,1))
 
     num_pts = len(pts)
@@ -166,13 +168,14 @@ def add_points_to_O(O, pts, len_H, params, c_flag, local_flag=0, sorted_run_inds
     O['ind_of_better_s'][-num_pts:] = -1
 
     if c_flag:
-        O['obj_component'][-num_pts:] = np.tile(range(0,m),(num_pts//m,1))
+        O['obj_component'][-num_pts:] = np.tile(range(0,m),(1,num_pts//m))
         O['pt_id'][-num_pts:] = pt_ids
     
     if local_flag:
         O['iter_plus_1_in_run_id'][-num_pts,run] = len(sorted_run_inds)+1
         O['num_active_runs'][-num_pts] += 1
-        O['priority'][-num_pts:] = 1
+        # O['priority'][-num_pts:] = 1
+        O['priority'][-num_pts:] = np.random.uniform(0,1,num_pts) 
     else:
         if c_flag:
             # p_tmp = np.sort(np.tile(np.random.uniform(0,1,num_pts/m),(m,1))) # If you want all "duplicate points" to have the same priority (meaning LibE gives them all at once)
@@ -191,14 +194,14 @@ def get_active_run_inds(H):
             os.remove(filename)
             return set()
         else:
-            a = np.loadtxt(filename,dtype='int')
+            a = np.loadtxt(filename,dtype=int)
             return set(np.atleast_1d(a))
     else:
         return set()
     
 def update_existing_runs_file(active_runs):    
     filename = 'active_runs.txt'    
-    np.savetxt(filename,np.array(list(active_runs),dtype='int'), fmt='%i')
+    np.savetxt(filename,np.array(list(active_runs),dtype=int), fmt='%i')
 
 def update_history_dist(H, params, c_flag):
     # Update distances for any new points that have been evaluated
@@ -215,9 +218,9 @@ def update_history_dist(H, params, c_flag):
             H['f'][inds] = np.inf
             H['f'][np.where(inds)[0][0]] = params['combine_component_func'](H['f_i'][inds])
 
-        p = np.logical_and(H['returned'],H['obj_component']==0)
+        p = np.logical_and.reduce((H['returned'],H['obj_component']==0,~np.isnan(H['f'])))
     else:
-        p = H['returned']
+        p = np.logical_and.reduce((H['returned'],~np.isnan(H['f'])))
 
     H['known_to_aposmm'][new_inds] = True # These points are now known to APOSMM
 
@@ -232,12 +235,14 @@ def update_history_dist(H, params, c_flag):
 
             # Update any other points if new_ind is closer and better
             if H['local_pt'][new_ind]:
-                updates = np.where(np.logical_and(dist_to_all < H['dist_to_better_l'][p], new_better_than))[0]
-                H['dist_to_better_l'][updates] = dist_to_all[updates]
+                inds_of_p = np.logical_and(dist_to_all < H['dist_to_better_l'][p], new_better_than)
+                updates = np.where(p)[0][inds_of_p]
+                H['dist_to_better_l'][updates] = dist_to_all[inds_of_p]
                 H['ind_of_better_l'][updates] = new_ind
             else:
-                updates = np.where(np.logical_and(dist_to_all < H['dist_to_better_s'][p], new_better_than))[0]
-                H['dist_to_better_s'][updates] = dist_to_all[updates]
+                inds_of_p = np.logical_and(dist_to_all < H['dist_to_better_s'][p], new_better_than)
+                updates = np.where(p)[0][inds_of_p]
+                H['dist_to_better_s'][updates] = dist_to_all[inds_of_p]
                 H['ind_of_better_s'][updates] = new_ind
             updated_inds.update(updates)
 
@@ -300,7 +305,7 @@ def advance_localopt_method(H, params, sorted_run_inds, c_flag):
             Run_H = H[['x_on_cube','f','fvec']][sorted_run_inds] 
 
             if c_flag:
-                Run_H_F = np.zeros(len(Run_H),dtype=[('fvec','float',params['components'])])
+                Run_H_F = np.zeros(len(Run_H),dtype=[('fvec',float,params['components'])])
 
                 for i in range(len(Run_H)):
                     pt_id = H['pt_id'][sorted_run_inds[i]] 
@@ -322,7 +327,7 @@ def advance_localopt_method(H, params, sorted_run_inds, c_flag):
 
         if np.equal(x_new,H['x_on_cube']).all(1).any():
             # import ipdb; ipdb.set_trace()
-            sys.exit("Generated an already evaluated point")
+            sys.exit("Generated an already evaluated point. Exiting")
         else:
             break
 
@@ -359,7 +364,12 @@ def set_up_and_run_nlopt(Run_H, params):
 
     # Care must be taken here because a too-large initial step causes nlopt to move the starting point!
     dist_to_bound = min(min(ub-x0),min(x0-lb))
-    opt.set_initial_step(dist_to_bound)
+
+    if 'dist_to_bound_multiple' in params:
+        opt.set_initial_step(dist_to_bound*params['dist_to_bound_multiple'])
+    else:
+        opt.set_initial_step(dist_to_bound)
+
     opt.set_maxeval(len(Run_H)+1) # evaluate one more point
     opt.set_min_objective(lambda x, grad: nlopt_obj_fun(x, grad, Run_H))
     opt.set_xtol_rel(params['xtol_rel'])
@@ -515,15 +525,17 @@ def decide_where_to_start_localopt(H, n_s, rk_const, lhs_divisions=0, mu=0, nu=0
             )) # (L5) is always true when nu = 0
 
     if gamma_quantile < 1:
-        cut_off_value = np.sort(H['f'][~H['local_pt']])[np.floor(gamma_quantile*(sum(~H['local_pt'])-1)).astype('int')]
-    else:
-        cut_off_value = np.inf
+        print("This is not supported yet. What is the best way to decide this when there are NaNs present in H['f']?")
+    #     cut_off_value = np.sort(H['f'][~H['local_pt']])[np.floor(gamma_quantile*(sum(~H['local_pt'])-1)).astype(int)]
+    # else:
+    #     cut_off_value = np.inf
 
     ### Find the indices of points that...
     sample_seeds = np.logical_and.reduce((
            ~H['local_pt'],               # are not localopt points
-           H['f'] <= cut_off_value,      # have a small enough objective value
+           # H['f'] <= cut_off_value,      # have a small enough objective value
            ~np.isinf(H['f']),            # have a non-infinity objective value
+           ~np.isnan(H['f']),            # have a non-NaN objective value
            test_2_through_5,             # satisfy tests 2 through 5
          ))
 
@@ -539,6 +551,7 @@ def decide_where_to_start_localopt(H, n_s, rk_const, lhs_divisions=0, mu=0, nu=0
             H['local_pt'],               # are localopt points
             H['dist_to_better_l'] > r_k, # no better local point within r_k (L1)
            ~np.isinf(H['f']),            # have a non-infinity objective value
+           ~np.isnan(H['f']),            # have a non-NaN objective value
             test_2_through_5,
             H['num_active_runs'] == 0,   # are not in an active run (L6)
            ~H['local_min'] # are not a local min (L7)
@@ -661,7 +674,7 @@ def calc_rk(H, n, n_s, rk_const, lhs_divisions=0):
     if lhs_divisions == 0:
         r_k = rk_const*(log(n_s)/n_s)**(1/n)
     else:
-        k = np.floor(n_s/lhs_divisions).astype('int')
+        k = np.floor(n_s/lhs_divisions).astype(int)
         if k <= 1: # to prevent r_k=0
             r_k = np.inf
         else:
@@ -715,10 +728,11 @@ def queue_update_function(H,gen_specs):
         if any(complete_fvals_flag) and len(pt_ids)>1:
             fvals = np.array([gen_specs['params']['combine_component_func'](H['f_i'][H['pt_id']==i]) for i in pt_ids])
 
-            worse_flag = fvals > np.min(fvals[complete_fvals_flag])
+            if any(~np.isnan(fvals[complete_fvals_flag])):
+                worse_flag = fvals > np.nanmin(fvals[complete_fvals_flag])
 
-            # Pause incompete evaluations with worse_flag==True
-            pt_ids_to_pause.update(pt_ids[np.logical_and(worse_flag,~complete_fvals_flag)])
+                # Pause incompete evaluations with worse_flag==True
+                pt_ids_to_pause.update(pt_ids[np.logical_and(worse_flag,~complete_fvals_flag)])
 
     H['paused'][np.in1d(H['pt_id'],list(pt_ids_to_pause))] = 1
 
