@@ -46,4 +46,4 @@ script:
 
 # Coverage
 after_success:
-  coveralls
+  coveralls -d code/tests/cov_merge/.cov_merge_out
