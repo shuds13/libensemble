@@ -2,8 +2,8 @@ language: python
 python:
   - 2.7
 #  - 3.4
-#  - 3.5
-  - 3.6
+  - 3.5
+#  - 3.6
 
 cache: pip
 
@@ -41,12 +41,10 @@ install:
 
 # Run test
 script:
-  - pwd
   - code/tests/run-tests.sh
 
 # Coverage
 after_success:
-  - mv code/tests/.cov* .
-  - coveralls
-  #coveralls -d code/tests/.cov_merge_out
+  #- coveralls
+  coveralls -d code/tests/.cov_merge_out --config_file=code/tests/.coveragerc
 
