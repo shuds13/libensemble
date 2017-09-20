@@ -45,6 +45,8 @@ script:
 
 # Coverage
 after_success:
+  coveralls
+  #coveralls -d code/tests/.cov_merge_out --config_file=code/tests/.coveragerc
+  #- mv code/tests/.cov* .
   #- coveralls
-  coveralls -d code/tests/.cov_merge_out --config_file=code/tests/.coveragerc
 
