@@ -44,6 +44,7 @@ install:
 script:
 #  - cd code/tests
 #  - ./run-tests.sh
+  - pwd
   - code/tests/run-tests.sh
 
 # Coverage
