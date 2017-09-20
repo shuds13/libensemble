@@ -6,9 +6,9 @@ python:
   - 3.6
 
 cache: 
-  - pip
+   pip: true
    directories:
-     - $HOME/miniconda
+   - $HOME/miniconda
 
 # Setup anaconda
 before_install:
@@ -52,7 +52,7 @@ script:
 
 # Coverage
 after_success:
-  mv code/tests/.cov* .
-  coveralls
+  - mv code/tests/.cov* .
+  - coveralls
   #coveralls -d code/tests/.cov_merge_out
 
