@@ -12,8 +12,8 @@ cache:
    - $HOME/miniconda
 
 env:
-global:
- - MINICONDA_DIR="$HOME/miniconda"
+  global:
+   - MINICONDA_DIR="$HOME/miniconda"
 
 # Setup anaconda
 before_install:
