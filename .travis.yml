@@ -42,8 +42,10 @@ install:
 
 # Run test
 script:
+  - cd code/tests
   - ./run-tests.sh
 
 # Coverage
 after_success:
-  coveralls -d code/tests/cov_merge/.cov_merge_out
+  coveralls
+  #coveralls -d code/tests/cov_merge/.cov_merge_out
