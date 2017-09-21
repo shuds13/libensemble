@@ -30,7 +30,7 @@ setup(
     description='Library for managing ensemble-like collections of computations',
     url='https://github.com/libensemble/libensemble',
     author='Jeff Larson',
-    author_email='jmlarson@anl.gov',
+    author_email='libensemble@lists.mcs.anl.gov',
     license='BSD 2-clause',
     packages=['libensemble'],
     package_dir={'libensemble'  : 'code/src'},
@@ -57,7 +57,7 @@ setup(
     # pytest_plugins = ['pytest_profiling']
         
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: BSD License',
@@ -70,7 +70,6 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
-        'Programming Language :: C',
         'Programming Language :: Python :: Implementation :: CPython',
         'Topic :: Scientific/Engineering',
         'Topic :: Software Development :: Libraries :: Python Modules',  
