@@ -12,7 +12,7 @@ from __future__ import absolute_import
 from mpi4py import MPI # for libE communicator
 import sys, os             # for adding to path
 import numpy as np
-from math import *
+from math import gamma, sqrt, pi
 
 # Import libEnsemble main
 sys.path.append('../../src')
@@ -40,7 +40,7 @@ sim_specs = {'sim_f': [libE_func_wrapper],
              'params': {}, 
              }
 
-out = [('x',float,n),
+gen_out = [('x',float,n),
       ('x_on_cube',float,n),
       ('sim_id',int),
       ('priority',float),
@@ -61,13 +61,13 @@ out = [('x',float,n),
       ]
 
 gen_specs = {'gen_f': aposmm_logic,
-             'in': [o[0] for o in out] + ['f_i', 'returned'],
-             'out': out,
+             'in': [o[0] for o in gen_out] + ['f_i', 'returned'],
+             'out': gen_out,
              'params': {'lb': -2*np.ones(3),
                         'ub':  2*np.ones(3),
-                        'initial_sample': 10, # All 214 residuals must be done
-                        'localopt_method': 'LN_BOBYQA',
-                        # 'localopt_method': 'pounders',
+                        'initial_sample': 5, # All 214 residuals must be done
+                        # 'localopt_method': 'LN_BOBYQA',
+                        'localopt_method': 'pounders',
                         'delta_0_mult': 0.5,
                         'grtol': 1e-4,
                         'gatol': 1e-4,
@@ -96,6 +96,7 @@ np.random.seed(1)
 H, flag = libE(sim_specs, gen_specs, exit_criteria)
 
 if MPI.COMM_WORLD.Get_rank() == 0:
+    assert len(H) >= max_sim_budget
     short_name = script_name.split("test_", 1).pop()
     filename = short_name + '_results_after_evals=' + str(max_sim_budget) + '_ranks=' + str(MPI.COMM_WORLD.Get_size())
     print("\n\n\nRun completed.\nSaving results to file: " + filename)

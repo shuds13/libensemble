@@ -12,7 +12,6 @@ from __future__ import absolute_import
 from mpi4py import MPI # for libE communicator
 import sys, os             # for adding to path
 import numpy as np
-from math import *
 
 # Import libEnsemble main
 sys.path.append('../../src')
@@ -41,7 +40,7 @@ sim_specs = {'sim_f': [libE_func_wrapper],
              'params': {}, 
              }
 
-out = [('x',float,n),
+gen_out = [('x',float,n),
       ('priority',float),
       ('obj_component',int),
       ('pt_id',int),
@@ -49,7 +48,7 @@ out = [('x',float,n),
 
 gen_specs = {'gen_f': uniform_random_sample_obj_components,
              'in': ['pt_id'],
-             'out': out,
+             'out': gen_out,
              'params': {'lb': -2*np.ones(3),
                         'ub':  2*np.ones(3),
                         'gen_batch_size': 2,
@@ -72,6 +71,7 @@ np.random.seed(1)
 H, flag = libE(sim_specs, gen_specs, exit_criteria)
 
 if MPI.COMM_WORLD.Get_rank() == 0:
+    assert flag == 0
     short_name = script_name.split("test_", 1).pop()    
     filename = short_name + '_results_after_evals=' + str(max_sim_budget) + '_ranks=' + str(MPI.COMM_WORLD.Get_size())
     print("\n\n\nRun completed.\nSaving results to file: " + filename)

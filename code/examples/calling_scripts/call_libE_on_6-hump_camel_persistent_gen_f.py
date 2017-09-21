@@ -13,9 +13,6 @@ from __future__ import absolute_import
 from mpi4py import MPI # for libE communicator
 import sys             # for adding to path
 import numpy as np
-from math import *
-
-import time
 
 sys.path.append('../../src')
 from libE import libE
@@ -36,18 +33,19 @@ def six_hump_camel(H, sim_out, obj_params):
     # v = np.random.uniform(0,10)
     # print('About to sleep for :' + str(v))
     # time.sleep(v)
-    O['f'] = sum(H['x']*H['x'])
-    O['grad'] = 2*H['x']
-    O['Hess_inv'] = 2*np.eye(len(H['x']))
+    O['f'] = 0.5*sum(H['x']*H['x'])
+    O['grad'] = H['x']
+    O['Hess_inv'] = np.eye(len(H['x']))
     
     return O
 
-def newton_method(g_in,gen_out,params):
+def persistent_Newton(g_in,gen_out,params,info):
+    import ipdb; ipdb.set_trace()
     x = params['x0']
 
     while 1:
         D = comm.recv(buf=None, source=0, tag=MPI.ANY_TAG, status=status)
-        # if status.Get_tag() == STOP_TAG: break
+        if status.Get_tag() == STOP_TAG: break
                 
         x = x - g_in['Hess_inv']*g_in['grad']
 
@@ -65,7 +63,7 @@ sim_specs = {'sim_f': [six_hump_camel], # This is the function whose output is b
              'in': ['x'], # These keys will be given to the above function
              'out': [('f',float),
                      ('grad',float,n),
-                     ('Hess_inv',float,(n,n),
+                     ('Hess_inv',float,(n,n))
                     ],
              'params': {'x0': np.array([1, 2])},
              }
@@ -76,12 +74,8 @@ gen_specs = {'gen_f': persistent_Newton,
              'out': [('x',float,n),
                      ('priority',float),
                     ],
-             'params': {'lb': np.array([-3,-2]),
-                        'ub': np.array([ 3, 2]),
-                        'initial_batch_size': 5,
-                       },
+             'params': {},
              'num_inst': 1,
-             'batch_mode': False,
              'persistent': True,
              }
 
