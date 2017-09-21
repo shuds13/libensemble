@@ -13,9 +13,6 @@ from __future__ import absolute_import
 from mpi4py import MPI # for libE communicator
 import sys, os             # for adding to path
 import numpy as np
-from math import *
-
-import time
 
 # Import libEnsemble main
 sys.path.append('../../src')
@@ -62,9 +59,11 @@ np.random.seed(1)
 # Perform the run
 H, flag = libE(sim_specs, gen_specs, exit_criteria)
 
-short_name = script_name.split("test_", 1).pop()
-filename = short_name + '_results_History_length=' + str(len(H)) + '_evals=' + str(sum(H['returned'])) + '_ranks=' + str(MPI.COMM_WORLD.Get_size())
-print("\n\n\nRun completed.\nSaving results to file: " + filename)
-if flag == 2:
-    print("\n\n\nKilling COMM_WORLD")
-    MPI.COMM_WORLD.Abort()
+if MPI.COMM_WORLD.Get_rank() == 0:
+    assert flag == 2
+    short_name = script_name.split("test_", 1).pop()
+    filename = short_name + '_results_History_length=' + str(len(H)) + '_evals=' + str(sum(H['returned'])) + '_ranks=' + str(MPI.COMM_WORLD.Get_size())
+    print("\n\n\nRun completed.\nSaving results to file: " + filename)
+    # if flag == 2:
+    #     print("\n\n\nKilling COMM_WORLD")
+    #     MPI.COMM_WORLD.Abort()

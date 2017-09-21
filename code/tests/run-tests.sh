@@ -12,9 +12,8 @@ export RUN_PEP_TESTS=false     #Code syle conventions
 
 # Regression test options
 #export REG_TEST_LIST='test_libE_on_GKLS_aposmm_1.py test_number2.py' #selected/ordered
-export REG_TEST_LIST='test_GKLS_aposmm.py' #ordered
-#export REG_TEST_LIST=test_*.py #unordered
-export REG_TEST_PROCESS_COUNT_LIST='2'
+export REG_TEST_LIST=test_*.py #unordered
+export REG_TEST_PROCESS_COUNT_LIST='2 4'
 export REG_USE_PYTEST=false
 export REG_TEST_OUTPUT_EXT=std.out #/dev/null
 export REG_STOP_ON_FAILURE=false
