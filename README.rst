@@ -9,7 +9,7 @@ libensemble
    :target: https://coveralls.io/github/Libensemble/libensemble?branch=master
    
 .. image::  https://readthedocs.org/projects/libensemble/badge/?version=latest
-   :target: https://fork_libensemble.readthedocs.org/en/latest/
+   :target: https://fork-libensemble.readthedocs.org/en/latest/
 
 
 Library for managing ensemble-like collections of computations.
