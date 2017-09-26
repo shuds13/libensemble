@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from setuptools import setup, find_packages
-from setuptools.command.install import install as InstallCommand
+from setuptools import setup
 from setuptools.command.test import test as TestCommand
 
 class Run_TestSuite(TestCommand):
@@ -11,7 +10,7 @@ class Run_TestSuite(TestCommand):
         import sys
         py_version=sys.version_info[0]
         print('Python version from setup.py is', py_version)
-        run_string="./run-tests.sh -p " + str(py_version)
+        run_string="code/tests/run-tests.sh -p " + str(py_version)
         os.system(run_string)
 
 class ToxTest(TestCommand):
@@ -35,26 +34,17 @@ setup(
     packages=['libensemble'],
     package_dir={'libensemble'  : 'code/src'},
 
-    install_requires=['Cython>=0.24',
+    install_requires=['Cython>=0.22',
                       'mpi4py>=2.0',
-                      'numpy>=1.13',
-                      'petsc>=3.7.6',
-                      'petsc4py>=3.7.0',
-                      'scipy>=0.17',
-                      'pytest>=3.1',
-                      'pytest-cov>=2.5',
-                      'pytest-pep8>=1.0',
-                      'tox>=2.7'
+                      'numpy',
                       ],
 
-    tests_require=['pytest',
-                   'pytest-cov',
-                   'pytest-pep8',
+    #If run tests through setup.py - downloads these but does not install
+    tests_require=['pytest>=3.1',
+                   'pytest-cov>=2.5',
+                   'pytest-pep8>=1.0',
                    'tox>=2.7'
                   ],
-       
-    # Enable the fixture explicitly in your tests or conftest.py
-    # pytest_plugins = ['pytest_profiling']
         
     classifiers=[
         'Development Status :: 3 - Alpha',
@@ -62,7 +52,7 @@ setup(
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',   
-        'Operating System :: Linux',
+        'Operating System :: POSIX :: Linux',
         'Operating System :: Unix',         
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
@@ -72,7 +62,7 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: Implementation :: CPython',
         'Topic :: Scientific/Engineering',
-        'Topic :: Software Development :: Libraries :: Python Modules',  
+        'Topic :: Software Development :: Libraries :: Python Modules'  
     ],
 
     cmdclass = {'test': Run_TestSuite,
