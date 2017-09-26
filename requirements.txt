@@ -1,3 +1,0 @@
-Cython>=0.22
-mpi4py>=2.0.0
-numpy
