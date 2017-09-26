@@ -37,6 +37,7 @@ print(sys.path)
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
+extensions = ['sphinx.ext.autodoc']
 #extensions = ['sphinx.ext.autodoc', 'breathe']
 #breathe_projects = { "libensemble": "../code/src/xml/" }
 ##breathe_projects = { "libensemble": "/home/shudson/libensemble/fork/sphinx-test-2-nkAGwrs/libensemble/code/src/xml/" }

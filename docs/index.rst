@@ -16,7 +16,6 @@ Intro here...
    custodian_modules
    manager_modules
    worker_modules
-   doxygen_files
  
 
 Indices and tables
