@@ -21,10 +21,6 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.append(os.path.abspath('../code/src'))
-#sys.path.append(os.path.abspath('../code/examples/GKLS_and_uniform_random_sample'))
-#sys.path.append(os.path.abspath('../code/examples/GKLS_and_uniform_random_sample/GKLS_sim_src'))
-
-#sys.path.append("/home/shudson/miniconda3/envs/py3new/lib/python3.6/site-packages/breathe")
 
 print(sys.path)
 
@@ -40,7 +36,6 @@ print(sys.path)
 extensions = ['sphinx.ext.autodoc']
 #extensions = ['sphinx.ext.autodoc', 'breathe']
 #breathe_projects = { "libensemble": "../code/src/xml/" }
-##breathe_projects = { "libensemble": "/home/shudson/libensemble/fork/sphinx-test-2-nkAGwrs/libensemble/code/src/xml/" }
 #breathe_default_project = "libensemble"
 
 ##breathe_projects_source = {"libensemble" : ( "../code/src/", ["libE.py", "test.cpp"] )}
@@ -98,8 +93,8 @@ todo_include_todos = False
 # a list of builtin themes.
 #
 #html_theme = 'alabaster'
+#html_theme = 'default'
 #html_theme = 'graphite'
-#html_theme = "alabaster"
 html_theme = 'sphinxdoc'
 
 

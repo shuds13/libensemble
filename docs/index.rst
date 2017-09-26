@@ -6,7 +6,7 @@
 Welcome to libensemble's documentation!
 =======================================
 
-Intro here...
+Library for managing ensemble-like collections of computations.
 
 .. toctree::
    :maxdepth: 2
