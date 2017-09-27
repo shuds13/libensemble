@@ -37,6 +37,9 @@ setup(
     install_requires=['Cython>=0.22',
                       'mpi4py>=2.0',
                       'numpy',
+                      'scipy',                      
+                      'petsc>=3.5',
+                      'petsc4py>=3.5'
                       ],
 
     #If run tests through setup.py - downloads these but does not install

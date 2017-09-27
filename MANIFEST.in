@@ -4,17 +4,20 @@ include *.rst
 include LICENSE
 include CONTRIBUTING
 include requirements.txt
-include .coveragerc
+#include .coveragerc
 include tox.ini
 
-include conda/
+#include conda/
 include conda/conda-install-deps.sh
-include conda/build-conda-package.sh
+#include conda/build-conda-package.sh
 
 recursive-include code *
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
 recursive-exclude * cov_*
 recursive-exclude * *.o
+recursive-exclude * *.npy
+recursive-exclude * *.gitignore
+recursive-exclude * gkls_single gkls
 
 recursive-include docs *.pdf *.rst conf.py Makefile make.bat

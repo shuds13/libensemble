@@ -1,10 +1,7 @@
 """
-    import IPython; IPython.embed()
-    sys.stdout.flush()
-    import ipdb; ipdb.set_trace()
-    import pdb; pdb.set_trace()
 libEnsemble manager routines
 ====================================================
+
 """
 
 from __future__ import division
