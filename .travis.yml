@@ -29,6 +29,7 @@ before_install:
 install:
 #  - conda install --yes mpi4py
 #  - conda install -c mpi4py openmpi
+  - /home/travis/miniconda/envs/condaenv/bin/mpicc --version
   - conda install --yes -c conda-forge petsc4py
   - conda install --yes -c conda-forge nlopt
   - conda install --yes scipy  
