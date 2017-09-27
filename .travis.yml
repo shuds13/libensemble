@@ -28,14 +28,14 @@ before_install:
 # Means installing dependencies sep. - including MPI lib.
 install:
 #  - conda install --yes mpi4py
-  - conda install -c mpi4py openmpi
+#  - conda install -c mpi4py openmpi
   - conda install --yes -c conda-forge petsc4py
   - conda install --yes -c conda-forge nlopt
+  - conda install --yes scipy  
   - conda install --yes pytest pytest-cov
   - conda install --yes -c conda-forge coveralls
-  - conda install --yes scipy 
   - conda install --yes cython
-#  - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master
+  - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master
 #  - python setup.py install
 
 # Run test
