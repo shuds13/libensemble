@@ -35,6 +35,7 @@ install:
   - conda install --yes pytest pytest-cov
   - conda install --yes -c conda-forge coveralls
   - conda install --yes cython
+  - sudo apt-get install -q mpich2 libmpich2-3 libmpich2-dev
   - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master
 #  - python setup.py install
 
