@@ -35,7 +35,7 @@ install:
   - conda install --yes pytest pytest-cov
   - conda install --yes -c conda-forge coveralls
   - conda install --yes cython
-#  - sudo apt-get install -y -q mpich libmpich-dev
+  - sudo apt-get install -y -q mpich libmpich-dev
   - conda install --yes libgcc
   - /home/travis/miniconda/envs/condaenv/bin/mpicc --version  
   - /home/travis/miniconda/envs/bin/mpicc --version    
