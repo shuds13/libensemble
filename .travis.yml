@@ -29,7 +29,6 @@ before_install:
 install:
 #  - conda install --yes mpi4py
 #  - conda install -c mpi4py openmpi
-  - /home/travis/miniconda/envs/condaenv/bin/mpicc --version
   - conda install --yes -c conda-forge petsc4py
   - conda install --yes -c conda-forge nlopt
   - conda install --yes scipy  
@@ -37,6 +36,7 @@ install:
   - conda install --yes -c conda-forge coveralls
   - conda install --yes cython
   - sudo apt-get install -y -q mpich libmpich-dev
+  - /home/travis/miniconda/envs/condaenv/bin/mpicc --version  
   - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master
 #  - python setup.py install
 
