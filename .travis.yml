@@ -34,7 +34,7 @@ install:
   - conda install --yes -c conda-forge coveralls
   - conda install --yes scipy 
   - conda install --yes cython
-  - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master
+  - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@maint
 #  - python setup.py install
 
 # Run test
