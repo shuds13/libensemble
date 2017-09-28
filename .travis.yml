@@ -7,7 +7,6 @@ cache: pip
 
 # Setup Miniconda
 before_install:
-  - sudo apt-get update
   # Do this conditionally because it saves some downloading if the
   # version is the same.
   - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
@@ -27,14 +26,13 @@ before_install:
 # Currently mpi4py 2.0.0 fails with mpi_init error on some platforms - need dev version from source. 
 # Means installing dependencies sep. - including MPI lib.
 install:
-  - conda install --yes mpi4py
   - conda install --yes -c conda-forge petsc4py
   - conda install --yes -c conda-forge nlopt
   - conda install --yes pytest pytest-cov
   - conda install --yes -c conda-forge coveralls
   - conda install --yes scipy 
   - conda install --yes cython
-  - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@maint
+  - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master
 #  - python setup.py install
 
 # Run test
