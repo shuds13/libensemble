@@ -38,12 +38,12 @@ install:
 #  - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master
 #  - conda install --yes gcc=5.2.0
   - conda install --yes mpi4py
-#  - pip install mpi4py
-  - conda install --yes scipy   
+  - conda install --yes scipy
   - conda install --yes -c conda-forge petsc4py
   - conda install --yes -c conda-forge nlopt
+  - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master
   - conda install --yes pytest pytest-cov
-  - conda install --yes -c conda-forge coveralls  
+  - conda install --yes -c conda-forge coveralls
 #  - python setup.py install
 
 # Run test
