@@ -34,6 +34,7 @@ install:
 #  - conda install --yes -c conda-forge mpich
 #  - conda install --yes cython=0.25.2
 #  - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master
+  - conda install --yes gcc=5.2.0
   - pip install mpi4py
   - conda install --yes scipy   
   - conda install --yes -c conda-forge petsc4py
