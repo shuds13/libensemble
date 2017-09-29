@@ -3,9 +3,9 @@ python:
   - 2.7
   - 3.5
 
-cache: 
-  pip: true
-  apt: true
+#cache: 
+#  pip: true
+#  apt: true
 
 # Setup Miniconda
 before_install:
