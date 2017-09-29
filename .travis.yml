@@ -18,6 +18,7 @@ before_install:
     fi
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
+  - export HYDRA_LAUNCHER=fork
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
@@ -29,13 +30,15 @@ before_install:
 # Means installing dependencies sep. - including MPI lib.
 install:
   - sudo hostname localhost
-  - sudo apt-get install -y -q mpich libmpich-dev
-  - pip install cython
+#  - sudo apt-get install -y -q mpich libmpich-dev
+#  - pip install cython
+  - conda install cython
 #  - conda install --yes -c conda-forge mpich
 #  - conda install --yes cython=0.25.2
 #  - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master
-  - conda install --yes gcc=5.2.0
-  - pip install mpi4py
+#  - conda install --yes gcc=5.2.0
+  - conda install --yes mpi4py
+#  - pip install mpi4py
   - conda install --yes scipy   
   - conda install --yes -c conda-forge petsc4py
   - conda install --yes -c conda-forge nlopt
