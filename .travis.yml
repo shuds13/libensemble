@@ -3,7 +3,9 @@ python:
   - 2.7
   - 3.5
 
-cache: pip
+cache: 
+  pip: true
+  apt: true
 
 # Setup Miniconda
 before_install:
@@ -31,7 +33,8 @@ install:
   - pip install cython
 #  - conda install --yes -c conda-forge mpich
 #  - conda install --yes cython=0.25.2
-  - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master
+#  - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master
+  - pip install mpi4py
   - conda install --yes scipy   
   - conda install --yes -c conda-forge petsc4py
   - conda install --yes -c conda-forge nlopt
