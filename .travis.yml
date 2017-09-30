@@ -40,6 +40,7 @@ before_install:
 # Currently mpi4py 2.0.0 fails with mpi_init error on some platforms - need dev version from source. 
 # Means installing dependencies sep. - including MPI lib.
 install:
+  - sudo hostname localhost #try for mpi_init error
   # Install on top of MPI library
   - if [[ "$MPI" == "mpich" ]]; then
       sudo apt-get install -y -q mpich libmpich-dev;
