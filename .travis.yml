@@ -31,13 +31,13 @@ before_install:
 install:
   - sudo hostname localhost
 #  - sudo apt-get install -y -q mpich libmpich-dev
-#  - pip install cython
-  - conda install cython
+  - pip install Cython
+#  - conda install cython
 #  - conda install --yes -c conda-forge mpich
 #  - conda install --yes cython=0.25.2
 #  - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master
 #  - conda install --yes gcc=5.2.0
-  - conda install --yes mpi4py
+  - conda install --yes mpi4py #Get MPI library
   - conda install --yes scipy
   - conda install --yes -c conda-forge petsc4py
   - conda install --yes -c conda-forge nlopt
