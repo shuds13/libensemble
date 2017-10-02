@@ -8,9 +8,9 @@ libensemble
 .. image:: https://coveralls.io/repos/github/shuds13/libensemble/badge.svg?branch=master
    :target: https://coveralls.io/github/shuds13/libensemble?branch=master
    
-.. image::  https://readthedocs.org/projects/libensemble/badge/?version=latest
-   :target: https://libensemble.readthedocs.org/en/latest/
-
+.. image:: https://readthedocs.org/projects/libensemble/badge/?version=latest
+:target: http://libensemble.readthedocs.io/en/latest/?badge=latest
+:alt: Documentation Status
 
 
 Library for managing ensemble-like collections of computations.
