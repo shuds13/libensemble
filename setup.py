@@ -25,7 +25,7 @@ class ToxTest(TestCommand):
 
 setup(
     name='libensemble',
-    version='0.1.0',    
+    version='0.1.1',    
     description='Library for managing ensemble-like collections of computations',
     url='https://github.com/libensemble/libensemble',
     author='Jeff Larson',
