@@ -44,11 +44,9 @@ install:
   - sudo hostname localhost #try for mpi_init error
   # Install on top of MPI library
   - if [[ "$MPI" == "mpich" ]]; then
-      conda install -c conda-forge mpich; #Conda install maybe can use container instead of GCE...
-      #sudo apt-get install -y -q mpich libmpich-dev;      
+      sudo apt-get install -y -q mpich libmpich-dev;      
     elif [[ "$MPI" == "openmpi" ]]; then
-      conda install -c mpi4py openmpi; #Conda install maybe can use container instead of GCE...
-      #sudo apt-get install -y -q openmpi-bin libopenmpi-dev;
+      sudo apt-get install -y -q openmpi-bin libopenmpi-dev;
     fi
   - pip install Cython #skip dodgy Cython version
   - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master  
