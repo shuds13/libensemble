@@ -5,8 +5,7 @@ python:
   
 os: linux
 dist: trusty
-#Need Google Compute Engine virtual env if going to use apt (to get MPI)
-sudo: required
+sudo: false
 
 env:
   global:
@@ -30,7 +29,6 @@ before_install:
     fi
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
-  - export HYDRA_LAUNCHER=fork
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
@@ -41,12 +39,11 @@ before_install:
 # Currently mpi4py 2.0.0 fails with mpi_init error on some platforms - need dev version from source. 
 # Means installing dependencies sep. - including MPI lib.
 install:
-  - sudo hostname localhost #try for mpi_init error
   # Install on top of MPI library
   - if [[ "$MPI" == "mpich" ]]; then
-      sudo apt-get install -y -q mpich libmpich-dev;      
+      conda install -c conda-forge mpich;      
     elif [[ "$MPI" == "openmpi" ]]; then
-      sudo apt-get install -y -q openmpi-bin libopenmpi-dev;
+      conda install -c mpi4py openmpi;
     fi
   - pip install Cython #skip dodgy Cython version
   - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master  
