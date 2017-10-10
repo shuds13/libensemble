@@ -15,9 +15,9 @@ env:
     - MPI=mpich
     - MPI=openmpi
     
-#cache: 
+cache: 
   pip: true
-  apt: true
+#  apt: true
 
 # Setup Miniconda
 before_install:
