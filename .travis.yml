@@ -5,6 +5,7 @@ python:
   
 os: linux
 dist: trusty
+#Need Google Compute Engine virtual env if going to use apt (to get MPI)
 sudo: required
 
 env:
@@ -43,16 +44,18 @@ install:
   - sudo hostname localhost #try for mpi_init error
   # Install on top of MPI library
   - if [[ "$MPI" == "mpich" ]]; then
-      sudo apt-get install -y -q mpich libmpich-dev;
+      conda install -c conda-forge mpich; #Conda install maybe can use container instead of GCE...
+      #sudo apt-get install -y -q mpich libmpich-dev;      
     elif [[ "$MPI" == "openmpi" ]]; then
-      sudo apt-get install -y -q openmpi-bin libopenmpi-dev;
+      conda install -c mpi4py openmpi; #Conda install maybe can use container instead of GCE...
+      #sudo apt-get install -y -q openmpi-bin libopenmpi-dev;
     fi
   - pip install Cython #skip dodgy Cython version
   - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master  
 #  - conda install cython
 #  - conda install --yes mpi4py #Get MPI library
   - conda install --yes scipy
-  - conda install --yes -c conda-forge petsc4py
+  - conda install --yes --no-update-deps -c conda-forge petsc4py #Will still conflict if using openMPI... no openmpi version???
   - conda install --yes -c conda-forge nlopt
   - conda install --yes pytest pytest-cov
   - conda install --yes -c conda-forge coveralls
