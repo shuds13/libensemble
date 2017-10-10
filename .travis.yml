@@ -50,7 +50,7 @@ install:
 #  - conda install cython
 #  - conda install --yes mpi4py #Get MPI library
   - conda install --yes --no-update-deps -c mpi4py mpi4py
-  - python3 find_mpi.py #locate compilers
+  - python find_mpi.py #locate compilers
   - mpiexec --version #Show MPI library details
   - conda install --yes scipy
   - conda install --yes --no-update-deps -c conda-forge petsc4py #Will still conflict if using openMPI... no openmpi version???
