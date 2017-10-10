@@ -41,12 +41,14 @@ before_install:
 install:
   # Install on top of MPI library
   - if [[ "$MPI" == "mpich" ]]; then
-      conda install -c conda-forge mpich;      
+      conda install -c conda-forge mpich;
+      conda install --yes mpi4py;
     elif [[ "$MPI" == "openmpi" ]]; then
       conda install -c mpi4py openmpi;
+      conda install -c mpi4py mpi4py;      
     fi
-  - pip install Cython #skip dodgy Cython version
-  - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master  
+#  - pip install Cython #skip dodgy Cython version
+#  - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master
 #  - conda install cython
 #  - conda install --yes mpi4py #Get MPI library
   - conda install --yes scipy
