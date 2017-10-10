@@ -51,6 +51,7 @@ install:
 #  - conda install --yes mpi4py #Get MPI library
   - conda install --yes --no-update-deps mpi4py
   - python3 find_mpi.py
+  - mpiexec --version
   - conda install --yes scipy
   - conda install --yes --no-update-deps -c conda-forge petsc4py #Will still conflict if using openMPI... no openmpi version???
   - conda install --yes -c conda-forge nlopt
