@@ -39,11 +39,8 @@ before_install:
 # Currently mpi4py 2.0.0 fails with mpi_init error on some platforms - need dev version from source. 
 # Means installing dependencies sep. - including MPI lib.
 install:
-  # Install on top of MPI library - prob shld put ev on one line to select matching versions
-  #- conda install mpi4py $MPI cython
   - conda install $MPI cython #Install mpi4py and petsc from src to match these - until conda packages all match
-  #- pip install Cython
-   - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master
+  - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master
   - python find_mpi.py #locate compilers
   - mpiexec --version #Show MPI library details
   - conda install scipy
