@@ -40,13 +40,16 @@ before_install:
 # Means installing dependencies sep. - including MPI lib.
 install:
   - conda install $MPI cython #Install mpi4py and petsc from src to match these - until conda packages all match
-  - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master
+  #- pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master
+  - conda install mpi4py
   - python find_mpi.py #locate compilers
   - mpiexec --version #Show MPI library details
   - conda install scipy
   #- conda install --no-update-deps petsc4py #Will still conflict if using openMPI... no openmpi version???
-  - pip install petsc petsc4py
-  - conda install --no-update-deps nlopt
+  #- pip install petsc petsc4py
+  - conda install petsc
+  - conda install petsc4py
+  - conda install nlopt
   - conda install pytest pytest-cov
   - conda install coveralls
 #  - python setup.py install
