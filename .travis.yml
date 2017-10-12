@@ -25,7 +25,8 @@ addons:
 cache: 
   pip: true
   apt: true
-  petsc: true
+  directories:
+  - petsc
 
 # Setup Miniconda
 before_install:
@@ -39,6 +40,7 @@ before_install:
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
   - hash -r
+  - PETSC_DIR=`pwd`/petsc
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
   - conda info -a # For debugging any issues with conda
