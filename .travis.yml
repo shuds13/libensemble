@@ -25,8 +25,6 @@ addons:
 cache: 
   pip: true
   apt: true
-  directories:
-  - petsc
 
 # Setup Miniconda
 before_install:
@@ -40,34 +38,29 @@ before_install:
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
   - hash -r
-  - PETSC_DIR=`pwd`/petsc
-  - echo $PETSC_DIR
-  - ls -lFrt $PETSC_DIR
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
   - conda info -a # For debugging any issues with conda
   - conda config --add channels conda-forge  
   - conda create --yes --name condaenv python=$TRAVIS_PYTHON_VERSION 
   - source activate condaenv
-# Currently mpi4py 2.0.0 fails with mpi_init error on some platforms - need dev version from source. 
-# Means installing dependencies sep. - including MPI lib.
+
+# Currently mpi4py 2.0.0 fails with mpi_init error on some platforms - need dev version from source.
+# Mpich can work with conda install - but currently for multiple MPI versions - need to get mpi4py and petsc from source
+# ...until conda has a better MPI solution. Could try caching built dependencies to cut time???
 install:
   - conda install $MPI cython #Install mpi4py and petsc from src to match these - until conda packages all match
-  - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master
-  - python find_mpi.py #locate compilers
-  - mpiexec --version #Show MPI library details
   - conda install scipy
-  #- conda install --no-update-deps petsc4py #Ok for mpich - Will still conflict if using openMPI
-  
-  #Caching petsc build - bit of a kluge till conda provides better generic MPI solution
-  - if [[ ! -e $PETSC_DIR/configure ]]; then
-      pip install petsc;
-    fi
-  - pip install petsc4py
+  - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master
+  - pip install petsc petsc4py
   - conda install --no-update-deps nlopt
   - conda install pytest pytest-cov
   - conda install coveralls
-#  - python setup.py install
+  # For confirmation of MPI library being used.
+  - python find_mpi.py #locate compilers
+  - mpiexec --version #Show MPI library details
+  
+  #  - python setup.py install
 
 # Run test
 script:
@@ -80,4 +73,3 @@ after_success:
 
 after_failure:
   - cat code/tests/regression_tests/log.err
-  
