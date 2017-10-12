@@ -41,6 +41,8 @@ before_install:
   - export PATH="$HOME/miniconda/bin:$PATH"
   - hash -r
   - PETSC_DIR=`pwd`/petsc
+  - echo $PETSC_DIR
+  - ls -lFrt $PETSC_DIR
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
   - conda info -a # For debugging any issues with conda
@@ -55,8 +57,13 @@ install:
   - python find_mpi.py #locate compilers
   - mpiexec --version #Show MPI library details
   - conda install scipy
-  #- conda install --no-update-deps petsc4py #Will still conflict if using openMPI... no openmpi version???
-  - pip install petsc petsc4py
+  #- conda install --no-update-deps petsc4py #Ok for mpich - Will still conflict if using openMPI
+  
+  #Caching petsc build - bit of a kluge till conda provides better generic MPI solution
+  - if [[ ! -e $PETSC_DIR/configure ]]; then
+      pip install petsc;
+    fi
+  - pip install petsc4py
   - conda install --no-update-deps nlopt
   - conda install pytest pytest-cov
   - conda install coveralls
