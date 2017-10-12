@@ -25,6 +25,7 @@ addons:
 cache: 
   pip: true
   apt: true
+  petsc: true
 
 # Setup Miniconda
 before_install:
