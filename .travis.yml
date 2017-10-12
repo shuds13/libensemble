@@ -10,7 +10,7 @@ sudo: false
 env:
   global:
     - HYDRA_LAUNCHER=fork
-    - FC=gfortran
+
   matrix:
     - MPI=mpich
     - MPI=openmpi
