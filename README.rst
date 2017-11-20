@@ -8,7 +8,7 @@ libensemble
 .. image:: https://coveralls.io/repos/github/shuds13/libensemble/badge.svg?branch=master
    :target: https://coveralls.io/github/shuds13/libensemble?branch=master
    
-.. image:: https://readthedocs.org/projects/libensemble/badge/?version=latest
+.. image:: https://readthedocs.org/projects/libensemble/badge/?maxAge=2592000
    :target: http://libensemble.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
 
