@@ -49,9 +49,11 @@ before_install:
 # Mpich can work with conda install - but currently for multiple MPI versions - need to get mpi4py and petsc from source
 # ...until conda has a better MPI solution. Could try caching built dependencies to cut time???
 install:
-  - conda install $MPI cython #Install mpi4py and petsc from src to match these - until conda packages all match
+  #- conda install $MPI cython #Install mpi4py and petsc from src to match these - until conda packages all match
+  - conda install $MPI
   - conda install scipy
-  - pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master
+  #- pip install git+https://bitbucket.org/mpi4py/mpi4py.git@master
+  - pip install mpi4py
   - pip install petsc petsc4py
   - conda install --no-update-deps nlopt
   - conda install pytest pytest-cov
