@@ -63,7 +63,7 @@ sim_specs = {'sim_f': [six_hump_camel], # This is the function whose output is b
              'in': ['x'], # These keys will be given to the above function
              'out': [('f',float), # This is the output from the function being minimized
                     ],
-             'params': {'constant': 10},
+             'constant': 10,
              # 'save_every_k': 10
              }
 
@@ -72,16 +72,15 @@ gen_specs = {'gen_f': uniform_random_sample,
              'in': ['sim_id'],
              'out': [('x',float,2),
                     ],
-             'params': {'lb': np.array([-3,-2]),
-                        'ub': np.array([ 3, 2]),
-                        'initial_batch_size': 5,
-                       },
+             'lb': np.array([-3,-2]),
+             'ub': np.array([ 3, 2]),
+             'initial_batch_size': 5,
              'num_inst': 1,
              'batch_mode': False,
              # 'save_every_k': 10
              }
 
-# Tell LibEnsemble when to stop
+# Tell libEnsemble when to stop
 exit_criteria = {'sim_max': 10}
 
 np.random.seed(1)
@@ -106,6 +105,6 @@ if MPI.COMM_WORLD.Get_rank() == 0:
     #     print(np.min(np.sum((H['x']-m)**2,1)))
     #     assert np.min(np.sum((H['x']-m)**2,1)) < tol
 
-    #     print("\nLibEnsemble with APOSMM has identified the 6 minima within a tolerance " + str(tol))
+    #     print("\nlibEnsemble with APOSMM has identified the 6 minima within a tolerance " + str(tol))
 
 

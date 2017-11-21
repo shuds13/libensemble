@@ -220,13 +220,17 @@ y[211] =    10.0500;  t[211] =   3.7500;
 y[212] =    28.9000;  t[212] =   1.7500;
 y[213] =    28.9500;  t[213] =   1.7500;
 
-def EvaluateFunction(x):
-    f = np.zeros(NOBSERVATIONS)
-
-    for i in range(NOBSERVATIONS):
-        f[i] = y[i] - np.exp(-x[0]*t[i])/(x[1] + x[2]*t[i])
+def EvaluateFunction(x,component=np.nan):
+    if np.isnan(component):
+        f = np.zeros(NOBSERVATIONS)
+        for i in range(NOBSERVATIONS):
+            f[i] = y[i] - np.exp(-x[0]*t[i])/(x[1] + x[2]*t[i])
+    else:
+        i = component
+        f = y[i] - np.exp(-x[0]*t[i])/(x[1] + x[2]*t[i])
 
     return f
+
 
 def EvaluateJacobian(x):
     j = np.zeros((NOBSERVATIONS,3))
@@ -243,29 +247,34 @@ def EvaluateJacobian(x):
 def sum_squares(x):
     return np.sum(np.power(x,2))
 
-def libE_func_wrapper(H,sim_out,params,info):
+def libE_func_wrapper(H,gen_info,sim_specs,libE_info):
+    del libE_info # Ignored parameter
 
     batch = len(H['x'])
-    O = np.zeros(batch,dtype=sim_out)
+    O = np.zeros(batch,dtype=sim_specs['out'])
 
     for i,x in enumerate(H['x']):
         if 'obj_component' in H.dtype.names:
-            O['f_i'][i] = EvaluateFunction(x)[H['obj_component'][i]]
+            if 'component_nan_frequency' in sim_specs and np.random.uniform(0,1)< sim_specs['component_nan_frequency']:
+                O['f_i'][i] = np.nan
+            else:
+                O['f_i'][i] = EvaluateFunction(x, H['obj_component'][i])
+
         else:
             O['fvec'][i] = EvaluateFunction(x)
-            O['f'][i] = params['combine_component_func'](O['fvec'][i])
+            O['f'][i] = sim_specs['combine_component_func'](O['fvec'][i])
 
-    return O
+    return O, gen_info
         
-if __name__ == '__main__':
-    x = np.zeros(3)
-    x[0] = 0.15;
-    x[1] = 0.008;
-    x[2] = 0.010;
+# if __name__ == '__main__':
+#     x = np.zeros(3)
+#     x[0] = 0.15;
+#     x[1] = 0.008;
+#     x[2] = 0.010;
 
-    f = EvaluateFunction(x)
-    J = EvaluateJacobian(x)
+#     f = EvaluateFunction(x)
+#     J = EvaluateJacobian(x)
 
-    print(f,J)
+#     print(f,J)
 
 

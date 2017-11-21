@@ -9,23 +9,18 @@ from mpi4py import MPI
 
 from numpy.lib.recfunctions import merge_arrays
 
-from math import log
+from math import log, gamma, pi, sqrt
 
 from petsc4py import PETSc
 import nlopt
 
-# @profile
-def aposmm_logic(H,gen_out,params,info):
-
+def aposmm_logic(H,gen_info,gen_specs,libE_info):
+    del libE_info # Ignored parameter
     """
     Receives the following data from H:
-        'x_on_cube', 'fvec', 'f', 'local_pt', 'iter_plus_1_in_run_id',
+        'x_on_cube', 'fvec', 'f', 'local_pt', 
         'dist_to_unit_bounds', 'dist_to_better_l', 'dist_to_better_s',
         'ind_of_better_l', 'ind_of_better_s', 'started_run', 'num_active_runs', 'local_min'
-
-    Most are self-explanatory. The columns of 'iter_plus_1_in_run_id'
-    corresponding to each run. Rows of 'iter_plus_1_in_run_id' contain the
-    iteration number (plus 1) of a point in a given run
 
     import IPython; IPython.embed()
     import ipdb; ipdb.set_trace() 
@@ -60,34 +55,34 @@ def aposmm_logic(H,gen_out,params,info):
     samples_needed:   counts the number of additional uniformly drawn samples needed
     """
 
-    n, n_s, c_flag, O = initialize_APOSMM(H, gen_out, params)
+    n, n_s, c_flag, O, rk_const, lhs_divisions, mu, nu = initialize_APOSMM(H, gen_specs)
 
-    # np.savez('H'+str(len(H)),H=H,gen_out=gen_out,params=params)
+    # np.savez('H'+str(len(H)),H=H,gen_specs=gen_specs)
     # import ipdb; ipdb.set_trace()
-    if n_s < params['initial_sample']:
+    if n_s < gen_specs['initial_sample']:
         updated_inds = set() 
 
     else:
         global x_new, pt_in_run, total_pts_in_run # Used to generate a next local opt point
 
-        updated_inds = update_history_dist(H, params, c_flag)        
+        updated_inds = update_history_dist(H, gen_specs, c_flag)        
 
-        starting_inds = decide_where_to_start_localopt(H, n_s, params['rk_const'])        
+        starting_inds = decide_where_to_start_localopt(H, n_s, rk_const, lhs_divisions, mu, nu)        
         updated_inds.update(starting_inds) 
                 
-        active_runs = get_active_run_inds(H)
-        
         for ind in starting_inds:
             # Find the run number 
-            if np.max(H['iter_plus_1_in_run_id']) == 0:
-                new_run_col = 0
-            else:
-                new_run_col = np.max(np.where(np.sum(H['iter_plus_1_in_run_id'],axis=0))[0])+1
-        
+            if not np.any(H['started_run']):
+                gen_info['active_runs'] = set()
+                gen_info['run_order'] = {}
+
+            new_run_num = len(gen_info['run_order'])
+
             H['started_run'][ind] = 1
             H['num_active_runs'][ind] += 1
-            H['iter_plus_1_in_run_id'][ind,new_run_col] = 1
-            active_runs.update([new_run_col])
+
+            gen_info['run_order'][new_run_num] = [ind] 
+            gen_info['active_runs'].update([new_run_num])
             
         # Find the next point for any uncompleted runs. I currently save this
         # information to file and re-load. (Given a history of points, I don't
@@ -97,14 +92,9 @@ def aposmm_logic(H,gen_out,params,info):
                 
         inactive_runs = set()
 
-        for run in active_runs:
-            sorted_run_inds = np.where(H['iter_plus_1_in_run_id'][:,run])[0]
-            sorted_run_inds.sort()
-                        
-            assert all(H['returned'][sorted_run_inds])
-
-            x_new = np.ones((1,n))*np.inf; pt_in_run = 0; total_pts_in_run = len(sorted_run_inds)
-            x_opt, exit_code = advance_localopt_method(H, params, sorted_run_inds, c_flag)
+        for run in gen_info['active_runs']:
+            
+            x_opt, exit_code, gen_info, sorted_run_inds = advance_localopt_method(H, gen_specs, c_flag, run, gen_info)
 
             if np.isinf(x_new).all():
                 assert exit_code>0, "Exit code not zero, but no information in x_new.\n Local opt run " + str(run) + " after " + str(len(sorted_run_inds)) + " evaluations.\n Worker crashing!"
@@ -114,38 +104,48 @@ def aposmm_logic(H,gen_out,params,info):
                 updated_inds.update(sorted_run_inds) 
 
             else: 
-                add_points_to_O(O, x_new, len(H), params, c_flag, local_flag=1, sorted_run_inds=sorted_run_inds, run=run)
+                gen_info = add_points_to_O(O, x_new, len(H), gen_specs, c_flag, gen_info, local_flag=1, sorted_run_inds=sorted_run_inds, run=run)
 
         for i in inactive_runs:
-            active_runs.remove(i)
-
-        update_existing_runs_file(active_runs)
+            gen_info['active_runs'].remove(i)
 
     if len(H) == 0:
-        samples_needed = params['initial_sample']
-    elif 'min_batch_size' in params:
-        samples_needed = params['min_batch_size'] - len(O)
+        samples_needed = gen_specs['initial_sample']
+    elif 'min_batch_size' in gen_specs:
+        samples_needed = gen_specs['min_batch_size'] - len(O)
     else:
         samples_needed = int(not bool(len(O))) # 1 if len(O)==0, 0 otherwise
 
     if samples_needed > 0:
-        x_new = np.random.uniform(0,1,(samples_needed,n))
+        # x_new = np.random.uniform(0,1,(samples_needed,n))
+        x_new = gen_info['rand_stream'][MPI.COMM_WORLD.Get_rank()].uniform(0,1,(samples_needed,n))
 
-        add_points_to_O(O, x_new, len(H), params, c_flag)
+        gen_info = add_points_to_O(O, x_new, len(H), gen_specs, c_flag, gen_info)
 
-    O = np.append(H[[o[0] for o in gen_out]][np.array(list(updated_inds),dtype=int)],O)
+    # O = np.append(H[[o[0] for o in gen_specs['out']]][np.array(list(updated_inds),dtype=int)],O)
 
-    return O
+    O = np.append(H[np.array(list(updated_inds),dtype=int)][[o[0] for o in gen_specs['out']]],O)
 
-def add_points_to_O(O, pts, len_H, params, c_flag, local_flag=0, sorted_run_inds=[], run=[]):
+    # if len(updated_inds) == 0 :
+    #     return O
+    # elif len(O) == 0: 
+    #     return H(updated_inds)
+    # else: 
+    #     vec = np.array(list(updated_inds),dtype=int)
+    #     B = H[vec][[o[0] for o in gen_specs['out']]]
+    #     # B = H[[o[0] for o in gen_specs['out']]][vec]
+    #     O = np.append(B,O)
+    return O, gen_info
+
+def add_points_to_O(O, pts, len_H, gen_specs, c_flag, gen_info, local_flag=0, sorted_run_inds=[], run=[]):
     assert not local_flag or len(pts) == 1, "add_points_to_O does not support this functionality"
 
     original_len_O = len(O)
 
-    ub = params['ub']
-    lb = params['lb']
+    ub = gen_specs['ub']
+    lb = gen_specs['lb']
     if c_flag:
-        m = params['components']
+        m = gen_specs['components']
 
         assert len_H % m == 0, "Number of points in len_H not congruent to 0 mod 'components'"
         pt_ids = np.sort(np.tile(np.arange((len_H+original_len_O)/m,(len_H+original_len_O)/m + len(pts)),(1,m))) 
@@ -171,38 +171,27 @@ def add_points_to_O(O, pts, len_H, params, c_flag, local_flag=0, sorted_run_inds
         O['pt_id'][-num_pts:] = pt_ids
     
     if local_flag:
-        O['iter_plus_1_in_run_id'][-num_pts,run] = len(sorted_run_inds)+1
         O['num_active_runs'][-num_pts] += 1
         # O['priority'][-num_pts:] = 1
-        O['priority'][-num_pts:] = np.random.uniform(0,1,num_pts) 
+        # O['priority'][-num_pts:] = np.random.uniform(0,1,num_pts) 
+        O['priority'][-num_pts:] = gen_info['rand_stream'][MPI.COMM_WORLD.Get_rank()].uniform(0,1,num_pts)
+        gen_info['run_order'][run].append(O[-num_pts]['sim_id'])
     else:
         if c_flag:
-            # p_tmp = np.sort(np.tile(np.random.uniform(0,1,num_pts/m),(m,1))) # If you want all "duplicate points" to have the same priority (meaning LibE gives them all at once)
-            p_tmp = np.random.uniform(0,1,num_pts)
+            # p_tmp = np.sort(np.tile(np.random.uniform(0,1,num_pts/m),(m,1))) # If you want all "duplicate points" to have the same priority (meaning libEnsemble gives them all at once)
+            # p_tmp = np.random.uniform(0,1,num_pts)
+            p_tmp = gen_info['rand_stream'][MPI.COMM_WORLD.Get_rank()].uniform(0,1,num_pts)
         else:
-            p_tmp = np.random.uniform(0,1,num_pts)
+            # p_tmp = np.random.uniform(0,1,num_pts)
+            # gen_info['rand_stream'][MPI.COMM_WORLD.Get_rank()].uniform(lb,ub,(1,n))
+            p_tmp = gen_info['rand_stream'][MPI.COMM_WORLD.Get_rank()].uniform(0,1,num_pts)
         O['priority'][-num_pts:] = p_tmp
         # O['priority'][-num_pts:] = 1
 
-def get_active_run_inds(H):
-    filename = 'active_runs.txt'
-    if os.path.exists(filename) and os.stat(filename).st_size > 0:
-        if np.max(H['iter_plus_1_in_run_id']) == 0:
-            print('Removing old active runs file')
-            sys.stdout.flush()
-            os.remove(filename)
-            return set()
-        else:
-            a = np.loadtxt(filename,dtype=int)
-            return set(np.atleast_1d(a))
-    else:
-        return set()
-    
-def update_existing_runs_file(active_runs):    
-    filename = 'active_runs.txt'    
-    np.savetxt(filename,np.array(list(active_runs),dtype=int), fmt='%i')
+    return gen_info
 
-def update_history_dist(H, params, c_flag):
+
+def update_history_dist(H, gen_specs, c_flag):
     # Update distances for any new points that have been evaluated
 
     n = len(H['x_on_cube'][0])
@@ -215,7 +204,7 @@ def update_history_dist(H, params, c_flag):
         for v in np.unique(H['pt_id'][new_inds]):
             inds = H['pt_id']==v
             H['f'][inds] = np.inf
-            H['f'][np.where(inds)[0][0]] = params['combine_component_func'](H['f_i'][inds])
+            H['f'][np.where(inds)[0][0]] = gen_specs['combine_component_func'](H['f_i'][inds])
 
         p = np.logical_and.reduce((H['returned'],H['obj_component']==0,~np.isnan(H['f'])))
     else:
@@ -223,12 +212,12 @@ def update_history_dist(H, params, c_flag):
 
     H['known_to_aposmm'][new_inds] = True # These points are now known to APOSMM
 
-    # Loop over new returned points and update their distances
     for new_ind in new_inds:
-        if p[new_ind]:
-            # Compute distance to boundary
-            H['dist_to_unit_bounds'][new_ind] = min(min(np.ones(n) - H['x_on_cube'][new_ind]),min(H['x_on_cube'][new_ind] - np.zeros(n)))
+        # Compute distance to boundary
+        H['dist_to_unit_bounds'][new_ind] = min(min(np.ones(n) - H['x_on_cube'][new_ind]),min(H['x_on_cube'][new_ind] - np.zeros(n)))
 
+        # Loop over new returned points and update their distances
+        if p[new_ind]:
             dist_to_all = sp.spatial.distance.cdist(np.atleast_2d(H['x_on_cube'][new_ind]), H['x_on_cube'][p], 'euclidean').flatten()
             new_better_than = H['f'][new_ind] < H['f'][p]
 
@@ -245,21 +234,25 @@ def update_history_dist(H, params, c_flag):
                 H['ind_of_better_s'][updates] = new_ind
             updated_inds.update(updates)
 
-            # If we allow equality, have to prevent new_ind from being its own "better point"
-            better_than_new_l = np.logical_and.reduce((H['f'][new_ind] >= H['f'][p],  H['local_pt'][p], H['sim_id'][p] != new_ind))
-            better_than_new_s = np.logical_and.reduce((H['f'][new_ind] >= H['f'][p], ~H['local_pt'][p], H['sim_id'][p] != new_ind))
+            # Since we allow equality when deciding better_than_new_l and
+            # better_than_new_s, we have to prevent new_ind from being its own
+            # better point.
+            better_than_new_l = np.logical_and.reduce((~new_better_than,  H['local_pt'][p], H['sim_id'][p] != new_ind))
+            better_than_new_s = np.logical_and.reduce((~new_better_than, ~H['local_pt'][p], H['sim_id'][p] != new_ind))
 
             # Who is closest to ind and better 
             if np.any(better_than_new_l):
-                H['dist_to_better_l'][new_ind] = dist_to_all[better_than_new_l].min()
-                H['ind_of_better_l'][new_ind] = H['sim_id'][p][np.ix_(better_than_new_l)[0][dist_to_all[better_than_new_l].argmin()]]
+                ind = dist_to_all[better_than_new_l].argmin()
+                H['ind_of_better_l'][new_ind] = H['sim_id'][p][np.nonzero(better_than_new_l)[0][ind]]
+                H['dist_to_better_l'][new_ind] = dist_to_all[better_than_new_l][ind]
 
             if np.any(better_than_new_s):
-                H['dist_to_better_s'][new_ind] = dist_to_all[better_than_new_s].min()
-                H['ind_of_better_s'][new_ind] = H['sim_id'][p][np.ix_(better_than_new_s)[0][dist_to_all[better_than_new_s].argmin()]]
+                ind = dist_to_all[better_than_new_s].argmin()
+                H['ind_of_better_s'][new_ind] = H['sim_id'][p][np.nonzero(better_than_new_s)[0][ind]]
+                H['dist_to_better_s'][new_ind] = dist_to_all[better_than_new_s][ind]
 
             # if not ignore_L8:
-            #     r_k = calc_rk(H, len(H['x_on_cube'][0]), n_s, rk_const, lhs_divisions)
+            #     r_k = calc_rk(len(H['x_on_cube'][0]), n_s, rk_const, lhs_divisions)
             #     H['worse_within_rk'][new_ind][p] = np.logical_and.reduce((H['f'][new_ind] <= H['f'][p], dist_to_all <= r_k))
 
             #     # Add trues if new point is 'worse_within_rk' 
@@ -285,66 +278,68 @@ def update_history_optimal(x_opt, H, run_inds):
 
 
 
-def advance_localopt_method(H, params, sorted_run_inds, c_flag):
+def advance_localopt_method(H, gen_specs, c_flag, run, gen_info):
+    global x_new, pt_in_run, total_pts_in_run # Used to generate a next local opt point
 
-    while 1: 
-        Run_H = H[['x_on_cube','f']][sorted_run_inds] 
-        if params['localopt_method'] in ['LN_SBPLX', 'LN_BOBYQA', 'LN_NELDERMEAD', 'LD_MMA']:
+    while 1:
+        sorted_run_inds = gen_info['run_order'][run]
+        assert all(H['returned'][sorted_run_inds])
+
+        x_new = np.ones((1,len(gen_specs['ub'])))*np.inf; pt_in_run = 0; total_pts_in_run = len(sorted_run_inds)
+
+        if gen_specs['localopt_method'] in ['LN_SBPLX', 'LN_BOBYQA', 'LN_NELDERMEAD', 'LD_MMA']:
+
+            if gen_specs['localopt_method'] in ['LD_MMA']:
+                Run_H = H[['x_on_cube','f','grad']][sorted_run_inds] 
+            else:
+                Run_H = H[['x_on_cube','f']][sorted_run_inds] 
 
             try:
-                x_opt, exit_code = set_up_and_run_nlopt(Run_H, params)
+                # import ipdb; ipdb.set_trace() 
+                x_opt, exit_code = set_up_and_run_nlopt(Run_H, gen_specs)
             except Exception as e:
                 exit_code = 0
                 print(e.__doc__)
                 print(e.args)
                 print(Run_H['x_on_cube'])
 
-    
-        elif params['localopt_method'] in ['pounders']:
-            # if 'fvec' in H.dtype.names:
-            #     Run_H = H[['x_on_cube','f','fvec']][sorted_run_inds] 
-            # else:
-            #     Run_H = np.zeros(len(sorted_run_inds),dtype=[('x_on_cube',float,len(H['x']),('f',float),'fvec'
-            #     Run_H = H[['x_on_cube','f']][sorted_run_inds] 
-            #     if 'single_component_at_a_time' in params:
-            #         for i, ind in enumerate(sorted_run_inds):
-            #             Run_H['fvec'][i] = 
-            #     else:
-            #         Run_H['fvec'] = Run_H['f']
+
+        elif gen_specs['localopt_method'] in ['pounders']:
                 
             if c_flag:
-                Run_H_F = np.zeros(len(Run_H),dtype=[('fvec',float,params['components'])])
-
-                for i in range(len(Run_H)):
-                    pt_id = H['pt_id'][sorted_run_inds[i]] 
-                    for j in range(params['components']):
-                        Run_H_F['fvec'][i][j] = H['f_i'][np.logical_and(H['pt_id']==pt_id, H['obj_component']==j)]
-
-                Run_H = merge_arrays([Run_H,Run_H_F],flatten=True)
-
+                Run_H_F = np.zeros(len(sorted_run_inds),dtype=[('fvec',float,gen_specs['components'])])
+                for i,ind in enumerate(sorted_run_inds):
+                    for j in range(gen_specs['components']):
+                        Run_H_F['fvec'][i][j] = H['f_i'][np.logical_and(H['pt_id']==H['pt_id'][ind], H['obj_component']==j)]
+                Run_H = merge_arrays([H[['x_on_cube']][sorted_run_inds],Run_H_F],flatten=True)
+            else: 
+                Run_H = H[['x_on_cube','fvec']][sorted_run_inds]
 
             try: 
-                x_opt, exit_code = set_up_and_run_tao(Run_H, params)
+                x_opt, exit_code = set_up_and_run_tao(Run_H, gen_specs)
             except Exception as e:
                 exit_code = 0
                 print(e.__doc__)
                 print(e.args)
 
         else:
-            sys.exit("Unknown localopt method")
+            sys.exit("Unknown localopt method. Exiting")
 
-        if np.equal(x_new,H['x_on_cube']).all(1).any():
-            # import ipdb; ipdb.set_trace()
-            sys.exit("Generated an already evaluated point. Exiting")
+        matching_ind = np.equal(x_new,H['x_on_cube']).all(1)
+        if ~matching_ind.any():
+            # Generated a new point
+            break 
         else:
-            break
-
-    return x_opt, exit_code
-
+            # We need to add a previously evaluated point into this run
+            gen_info['run_order'][run].append(np.nonzero(matching_ind)[0][0])
 
 
+    return x_opt, exit_code, gen_info, sorted_run_inds
 
-def set_up_and_run_nlopt(Run_H, params):
+
+
+
+def set_up_and_run_nlopt(Run_H, gen_specs):
     """ Set up objective and runs nlopt
 
     Declares the appropriate syntax for our special objective function to read
@@ -352,17 +347,18 @@ def set_up_and_run_nlopt(Run_H, params):
     """
 
     def nlopt_obj_fun(x, grad, Run_H):
-        if params['localopt_method'] in ['LN_SBPLX', 'LN_BOBYQA', 'LN_NELDERMEAD']:
-            return look_in_history(x, Run_H)
-        elif params['localopt_method'] in ['LD_MMA']:
-            (f,g) = look_in_history_true_grad(x, Run_H)
-            grad[:] = g;
-            # print(x,f,grad)
-            return f
+        # import ipdb; ipdb.set_trace() 
+        out = look_in_history(x, Run_H)
 
-    n = len(params['ub'])
+        if gen_specs['localopt_method'] in ['LD_MMA']:
+            grad[:] = out[1]
+            out = out[0]
 
-    opt = nlopt.opt(getattr(nlopt,params['localopt_method']), n)
+        return out
+
+    n = len(gen_specs['ub'])
+
+    opt = nlopt.opt(getattr(nlopt,gen_specs['localopt_method']), n)
 
     lb = np.zeros(n)
     ub = np.ones(n)
@@ -373,14 +369,14 @@ def set_up_and_run_nlopt(Run_H, params):
     # Care must be taken here because a too-large initial step causes nlopt to move the starting point!
     dist_to_bound = min(min(ub-x0),min(x0-lb))
 
-    if 'dist_to_bound_multiple' in params:
-        opt.set_initial_step(dist_to_bound*params['dist_to_bound_multiple'])
+    if 'dist_to_bound_multiple' in gen_specs:
+        opt.set_initial_step(dist_to_bound*gen_specs['dist_to_bound_multiple'])
     else:
         opt.set_initial_step(dist_to_bound)
 
     opt.set_maxeval(len(Run_H)+1) # evaluate one more point
     opt.set_min_objective(lambda x, grad: nlopt_obj_fun(x, grad, Run_H))
-    opt.set_xtol_rel(params['xtol_rel'])
+    opt.set_xtol_rel(gen_specs['xtol_rel'])
     
     x_opt = opt.optimize(x0)
     exit_code = opt.last_optimize_result()
@@ -391,24 +387,24 @@ def set_up_and_run_nlopt(Run_H, params):
     return x_opt, exit_code
 
 
-def set_up_and_run_tao(Run_H, params):
+def set_up_and_run_tao(Run_H, gen_specs):
     """ Set up objective and runs PETSc on the comm_self communicator
 
     Declares the appropriate syntax for our special objective function to read
     through Run_H, sets the parameters and starting points for the run.
     """
     tao_comm = MPI.COMM_SELF
-    n = len(params['ub'])
+    n = len(gen_specs['ub'])
     m = len(Run_H['fvec'][0])
 
     def pounders_obj_func(tao, X, F, Run_H):
         F.array = look_in_history(X.array, Run_H, vector_return=True)
         return F
 
-    def blmvm_obj_func(tao, X, G, Run_H):
-        (f, grad) = look_in_history_fd_grad(X.array, Run_H)
-        G.array = grad
-        return f
+    # def blmvm_obj_func(tao, X, G, Run_H):
+    #     (f, grad) = look_in_history_fd_grad(X.array, Run_H)
+    #     G.array = grad
+    #     return f
 
     # Create starting point, bounds, and tao object
     x = PETSc.Vec().create(tao_comm)
@@ -420,31 +416,31 @@ def set_up_and_run_tao(Run_H, params):
     lb.array = 0*np.ones(n)
     ub.array = 1*np.ones(n)
     tao = PETSc.TAO().create(tao_comm)
-    tao.setType(params['localopt_method'])
+    tao.setType(gen_specs['localopt_method'])
 
-    if params['localopt_method'] == 'pounders':
-        f = PETSc.Vec().create(tao_comm)
-        f.setSizes(m)
-        f.setFromOptions()
+    # if gen_specs['localopt_method'] == 'pounders':
+    f = PETSc.Vec().create(tao_comm)
+    f.setSizes(m)
+    f.setFromOptions()
 
-        delta_0 = params['delta_0_mult']*np.min([np.min(ub.array-x.array), np.min(x.array-lb.array)])
+    delta_0 = gen_specs['delta_0_mult']*np.min([np.min(ub.array-x.array), np.min(x.array-lb.array)])
 
-        PETSc.Options().setValue('-tao_pounders_delta',str(delta_0))
-        PETSc.Options().setValue('-pounders_subsolver_tao_type','bqpip')
-        tao.setSeparableObjective(lambda tao, x, f: pounders_obj_func(tao, x, f, Run_H), f)
-    elif params['localopt_method'] == 'blmvm':
-        g = PETSc.Vec().create(tao_comm)
-        g.setSizes(n)
-        g.setFromOptions()
-        tao.setObjectiveGradient(lambda tao, x, g: blmvm_obj_func(tao, x, g, Run_H))
+    PETSc.Options().setValue('-tao_pounders_delta',str(delta_0))
+    # PETSc.Options().setValue('-pounders_subsolver_tao_type','bqpip')
+    tao.setSeparableObjective(lambda tao, x, f: pounders_obj_func(tao, x, f, Run_H), f)
+    # elif gen_specs['localopt_method'] == 'blmvm':
+    #     g = PETSc.Vec().create(tao_comm)
+    #     g.setSizes(n)
+    #     g.setFromOptions()
+    #     tao.setObjectiveGradient(lambda tao, x, g: blmvm_obj_func(tao, x, g, Run_H))
 
     # Set everything for tao before solving
     PETSc.Options().setValue('-tao_max_funcs',str(total_pts_in_run+1))
     tao.setFromOptions()
     tao.setVariableBounds((lb,ub))
-    # tao.setObjectiveTolerances(fatol=params['fatol'], frtol=params['frtol'])
-    # tao.setGradientTolerances(grtol=params['grtol'], gatol=params['gatol'])
-    tao.setTolerances(grtol=params['grtol'], gatol=params['gatol'])
+    # tao.setObjectiveTolerances(fatol=gen_specs['fatol'], frtol=gen_specs['frtol'])
+    # tao.setGradientTolerances(grtol=gen_specs['grtol'], gatol=gen_specs['gatol'])
+    tao.setTolerances(grtol=gen_specs['grtol'], gatol=gen_specs['gatol'])
     tao.setInitial(x)
 
     tao.solve(x)
@@ -455,10 +451,10 @@ def set_up_and_run_tao(Run_H, params):
     # print(tao.view())
     # print(x_opt)
 
-    if params['localopt_method'] == 'pounders':
-        f.destroy()
-    elif params['localopt_method'] == 'blmvm':
-        g.destroy()
+    # if gen_specs['localopt_method'] == 'pounders':
+    f.destroy()
+    # elif gen_specs['localopt_method'] == 'blmvm':
+    #     g.destroy()
 
     lb.destroy()
     ub.destroy()
@@ -466,15 +462,6 @@ def set_up_and_run_tao(Run_H, params):
     tao.destroy()
 
     return x_opt, exit_code
-
-
-
-
-
-
-
-
-
 
 
 
@@ -514,14 +501,14 @@ def decide_where_to_start_localopt(H, n_s, rk_const, lhs_divisions=0, mu=0, nu=0
     """
 
     n = len(H['x_on_cube'][0])
-    r_k = calc_rk(H, n, n_s, rk_const)
+    r_k = calc_rk(n, n_s, rk_const, lhs_divisions)
 
     if nu > 0:
         test_2_through_5 = np.logical_and.reduce((
                 H['returned'] == 1,          # have a returned function value
                 H['dist_to_better_s'] > r_k, # no better sample point within r_k (L2)
                ~H['started_run'],            # have not started a run (L3)
-                H['dist_to_unit_bounds'] >= mu, # have all components at least mu away from ub (L4)
+                H['dist_to_unit_bounds'] >= mu, # have all components at least mu away from bounds (L4)
                 np.all(sp.spatial.distance.cdist(H['x_on_cube'], H['x_on_cube'][H['local_min']]) >= nu,axis=1) # distance nu away from known local mins (L5)
             ))
     else:
@@ -529,11 +516,11 @@ def decide_where_to_start_localopt(H, n_s, rk_const, lhs_divisions=0, mu=0, nu=0
                 H['returned'] == 1,          # have a returned function value
                 H['dist_to_better_s'] > r_k, # no better sample point within r_k (L2)
                ~H['started_run'],            # have not started a run (L3)
-                H['dist_to_unit_bounds'] >= mu, # have all components at least mu away from ub (L4)
+                H['dist_to_unit_bounds'] >= mu, # have all components at least mu away from bounds (L4)
             )) # (L5) is always true when nu = 0
 
-    if gamma_quantile < 1:
-        print("This is not supported yet. What is the best way to decide this when there are NaNs present in H['f']?")
+    assert gamma_quantile == 1, "This is not supported yet. What is the best way to decide this when there are NaNs present in H['f']?"
+    # if gamma_quantile < 1:
     #     cut_off_value = np.sort(H['f'][~H['local_pt']])[np.floor(gamma_quantile*(sum(~H['local_pt'])-1)).astype(int)]
     # else:
     #     cut_off_value = np.inf
@@ -565,79 +552,82 @@ def decide_where_to_start_localopt(H, n_s, rk_const, lhs_divisions=0, mu=0, nu=0
            ~H['local_min'] # are not a local min (L7)
          ))
 
+
+    local_start_inds2 = list(np.ix_(local_seeds)[0])
     # if ignore_L8:
-    if True:
-        local_start_inds2 = list(np.ix_(local_seeds)[0])
-    else:
-        # ### For L8, search for an rk-ascent path for a sample point
-        # lb = np.zeros(n)
-        # ub = np.ones(n)
-        # local_start_inds = []
-        # for i in np.ix_(local_seeds)[0]:
-        #     old_local_on_rk_ascent = np.array(np.zeros(len(H)), dtype=bool)
-        #     local_on_rk_ascent = np.array(np.eye(len(H))[i,:], dtype=bool)
+    # if True:
+    #     local_start_inds2 = list(np.ix_(local_seeds)[0])
+    # else:
+    #     # ### For L8, search for an rk-ascent path for a sample point
+    #     # lb = np.zeros(n)
+    #     # ub = np.ones(n)
+    #     # local_start_inds = []
+    #     # for i in np.ix_(local_seeds)[0]:
+    #     #     old_local_on_rk_ascent = np.array(np.zeros(len(H)), dtype=bool)
+    #     #     local_on_rk_ascent = np.array(np.eye(len(H))[i,:], dtype=bool)
 
-        #     done_with_i = False
-        #     while not done_with_i and not np.array_equiv(old_local_on_rk_ascent, local_on_rk_ascent):
-        #         old_local_on_rk_ascent = local_on_rk_ascent.copy()
-        #         to_add = np.array(np.zeros(len(H)),dtype=bool)
-        #         for j in np.ix_(local_on_rk_ascent)[0]:
-        #             if keep_pdist: 
-        #                 samples_on_rk_ascent_from_j = np.logical_and.reduce((H['f'][j] <= H['f'], ~H['local_pt'], H['dist_to_all'][:,j] <= r_k))
-        #             else: 
-        #                 ind_of_last = np.max(np.ix_(H['returned']))
-        #                 pdist_vec = sp.spatial.distance.cdist([H['x_on_cube'][j]], H['x_on_cube'][:ind_of_last+1], 'euclidean').flatten()
-        #                 pdist_vec = np.append(pdist_vec, np.zeros(len(H)-ind_of_last-1))
-        #                 samples_on_rk_ascent_from_j = np.logical_and.reduce((H['f'][j] <= H['f'], ~H['local_pt'], pdist_vec <= r_k))
+    #     #     done_with_i = False
+    #     #     while not done_with_i and not np.array_equiv(old_local_on_rk_ascent, local_on_rk_ascent):
+    #     #         old_local_on_rk_ascent = local_on_rk_ascent.copy()
+    #     #         to_add = np.array(np.zeros(len(H)),dtype=bool)
+    #     #         for j in np.ix_(local_on_rk_ascent)[0]:
+    #     #             if keep_pdist: 
+    #     #                 samples_on_rk_ascent_from_j = np.logical_and.reduce((H['f'][j] <= H['f'], ~H['local_pt'], H['dist_to_all'][:,j] <= r_k))
+    #     #             else: 
+    #     #                 ind_of_last = np.max(np.ix_(H['returned']))
+    #     #                 pdist_vec = sp.spatial.distance.cdist([H['x_on_cube'][j]], H['x_on_cube'][:ind_of_last+1], 'euclidean').flatten()
+    #     #                 pdist_vec = np.append(pdist_vec, np.zeros(len(H)-ind_of_last-1))
+    #     #                 samples_on_rk_ascent_from_j = np.logical_and.reduce((H['f'][j] <= H['f'], ~H['local_pt'], pdist_vec <= r_k))
 
-        #             if np.any(np.logical_and(samples_on_rk_ascent_from_j, sample_seeds)):
-        #                 done_with_i = True
-        #                 local_start_inds.append(i)
-        #                 break
+    #     #             if np.any(np.logical_and(samples_on_rk_ascent_from_j, sample_seeds)):
+    #     #                 done_with_i = True
+    #     #                 local_start_inds.append(i)
+    #     #                 break
 
-        #             if keep_pdist: 
-        #                 feasible_locals_on_rk_ascent_from_j = np.logical_and.reduce((H['f'][j] <= H['f'], 
-        #                                                                              np.all(ub - H['x_on_cube'] >= 0, axis=1),
-        #                                                                              np.all(H['x_on_cube'] - lb >= 0, axis=1),
-        #                                                                              H['local_pt'], 
-        #                                                                              H['dist_to_all'][:,j] <= r_k
-        #                                                                            ))
-        #             else: 
-        #                 feasible_locals_on_rk_ascent_from_j = np.logical_and.reduce((H['f'][j] <= H['f'], 
-        #                                                                              np.all(ub - H['x_on_cube'] >= 0, axis=1),
-        #                                                                              np.all(H['x_on_cube'] - lb >= 0, axis=1),
-        #                                                                              H['local_pt'], 
-        #                                                                              pdist_vec <= r_k
-        #                                                                            ))
+    #     #             if keep_pdist: 
+    #     #                 feasible_locals_on_rk_ascent_from_j = np.logical_and.reduce((H['f'][j] <= H['f'], 
+    #     #                                                                              np.all(ub - H['x_on_cube'] >= 0, axis=1),
+    #     #                                                                              np.all(H['x_on_cube'] - lb >= 0, axis=1),
+    #     #                                                                              H['local_pt'], 
+    #     #                                                                              H['dist_to_all'][:,j] <= r_k
+    #     #                                                                            ))
+    #     #             else: 
+    #     #                 feasible_locals_on_rk_ascent_from_j = np.logical_and.reduce((H['f'][j] <= H['f'], 
+    #     #                                                                              np.all(ub - H['x_on_cube'] >= 0, axis=1),
+    #     #                                                                              np.all(H['x_on_cube'] - lb >= 0, axis=1),
+    #     #                                                                              H['local_pt'], 
+    #     #                                                                              pdist_vec <= r_k
+    #     #                                                                            ))
 
-        #             to_add = np.logical_or(to_add, feasible_locals_on_rk_ascent_from_j)
-        #         local_on_rk_ascent = to_add.copy()
+    #     #             to_add = np.logical_or(to_add, feasible_locals_on_rk_ascent_from_j)
+    #     #         local_on_rk_ascent = to_add.copy()
 
-        #     if not done_with_i: 
-        #         # sys.exit("We have an i satisfying (L1-L7) but failing L8")
-        #         print("\n\n We have ind %d satisfying (L1-L7) but failing L8 \n\n" % i)
+    #     #     if not done_with_i: 
+    #     #         # sys.exit("We have an i satisfying (L1-L7) but failing L8")
+    #     #         print("\n\n We have ind %d satisfying (L1-L7) but failing L8 \n\n" % i)
 
-        local_start_inds2 = []
-        for i in np.ix_(local_seeds)[0]:
-            old_pts_on_rk_ascent = np.array(np.zeros(len(H)), dtype=bool)
-            pts_on_rk_ascent = H['worse_within_rk'][i]
+    #     # ### Faster L8 test
+    #     local_start_inds2 = []
+    #     for i in np.ix_(local_seeds)[0]:
+    #         old_pts_on_rk_ascent = np.array(np.zeros(len(H)), dtype=bool)
+    #         pts_on_rk_ascent = H['worse_within_rk'][i]
 
-            done_with_i = False
-            while not done_with_i and not np.array_equiv(old_pts_on_rk_ascent, pts_on_rk_ascent):
-                old_pts_on_rk_ascent = pts_on_rk_ascent.copy()
-                to_add = np.array(np.zeros(len(H)),dtype=bool)
-                for j in np.ix_(pts_on_rk_ascent)[0]:
-                    to_add = np.logical_or(to_add, H['worse_within_rk'][i])
-                pts_on_rk_ascent = to_add
-                if np.any(np.logical_and(to_add, sample_seeds)):
-                    done_with_i = True
-                    local_start_inds2.append(i)
-                    break
-            if not done_with_i:
-                print("Again, we have ind %d satisfying (L1-L7) but failing L8\n" % i)
+    #         done_with_i = False
+    #         while not done_with_i and not np.array_equiv(old_pts_on_rk_ascent, pts_on_rk_ascent):
+    #             old_pts_on_rk_ascent = pts_on_rk_ascent.copy()
+    #             to_add = np.array(np.zeros(len(H)),dtype=bool)
+    #             for j in np.ix_(pts_on_rk_ascent)[0]:
+    #                 to_add = np.logical_or(to_add, H['worse_within_rk'][i])
+    #             pts_on_rk_ascent = to_add
+    #             if np.any(np.logical_and(to_add, sample_seeds)):
+    #                 done_with_i = True
+    #                 local_start_inds2.append(i)
+    #                 break
+    #         if not done_with_i:
+    #             print("Again, we have ind %d satisfying (L1-L7) but failing L8\n" % i)
 
-        # assert local_start_inds.sort() == local_start_inds2.sort(), "Something didn't match up"
-    # start_inds = list(sample_start_inds) + local_start_inds
+    #     # assert local_start_inds.sort() == local_start_inds2.sort(), "Something didn't match up"
+    # # start_inds = list(sample_start_inds) + local_start_inds
     start_inds = list(sample_start_inds) + local_start_inds2
     return start_inds
 
@@ -651,12 +641,13 @@ def look_in_history(x, Run_H, vector_return=False):
     if vector_return:
         to_return = 'fvec'
     else:
-        to_return = 'f'
+        if 'grad' in Run_H.dtype.names:
+            to_return = ['f','grad']
+        else:
+            to_return = 'f'
 
     if pt_in_run < total_pts_in_run:
         # Return the value in history to the localopt algorithm. 
-        if not np.allclose(x, Run_H['x_on_cube'][pt_in_run], rtol=1e-08, atol=1e-08):
-            print(x,Run_H['x_on_cube'])
         assert np.allclose(x, Run_H['x_on_cube'][pt_in_run], rtol=1e-08, atol=1e-08), \
             "History point does not match Localopt point"
         f_out = Run_H[to_return][pt_in_run]
@@ -670,7 +661,7 @@ def look_in_history(x, Run_H, vector_return=False):
         # point has been identified.
         # f_out = np.finfo(np.float64).max
         # f_out = Run_H[to_return][total_pts_in_run-1] 
-        f_out = Run_H[to_return][total_pts_in_run-1]*0 
+        f_out = Run_H[to_return][total_pts_in_run-1] 
 
     pt_in_run += 1
 
@@ -678,7 +669,7 @@ def look_in_history(x, Run_H, vector_return=False):
 
 
 
-def calc_rk(H, n, n_s, rk_const, lhs_divisions=0):
+def calc_rk(n, n_s, rk_const, lhs_divisions=0):
     """ Calculate the critical distance r_k """ 
 
     if lhs_divisions == 0:
@@ -692,34 +683,61 @@ def calc_rk(H, n, n_s, rk_const, lhs_divisions=0):
 
     return r_k
 
-def initialize_APOSMM(H, gen_out, params):
+def initialize_APOSMM(H, gen_specs):
 
-    n = len(params['ub'])
+    n = len(gen_specs['ub'])
 
-    if 'single_component_at_a_time' in params and params['single_component_at_a_time']:
+    if 'single_component_at_a_time' in gen_specs and gen_specs['single_component_at_a_time']:
         c_flag = True
     else:
         c_flag = False
 
 
     if c_flag:
-        pt_ids = np.unique(H['pt_id'])
-        completely_returned_pt_ids = []
-        for i in pt_ids:
-            if np.logical_and.reduce(H['returned'][H['pt_id']==i]):
-                completely_returned_pt_ids.append(i)
+        completely_returned_pt_ids = np.where([np.all(H['returned'][H['pt_id']==j]) for j in np.unique(H['pt_id'])])[0]
         n_s = np.sum(np.logical_and.reduce((~H['local_pt'], np.in1d(H['pt_id'],completely_returned_pt_ids), H['obj_component']==0 ))) # Number of returned sampled points
     else:
         n_s = np.sum(np.logical_and(~H['local_pt'], H['returned'])) # Number of returned sampled points
 
     # Rather than build up a large output, we will just make changes in the 
     # given H, and then send back the rows corresponding to updated H entries. 
-    O = np.empty(0,dtype=gen_out)
+    O = np.empty(0,dtype=gen_specs['out'])
 
-    return n, n_s, c_flag, O
+    if 'rk_const' in gen_specs:
+        rk_c = gen_specs['rk_const']
+    else:
+        rk_c = ((gamma(1+(n/2.0))*5.0)**(1.0/n))/sqrt(pi)
+
+    if 'lhs_divisions' in gen_specs:
+        ld = gen_specs['lhs_divisions']
+    else:
+        ld = 0
+
+    if 'mu' in gen_specs:
+        mu = gen_specs['mu']
+    else:
+        mu = 0
+
+    if 'nu' in gen_specs:
+        nu = gen_specs['nu']
+    else:
+        nu = 0
+
+    return n, n_s, c_flag, O, rk_c, ld, mu, nu
 
 
-def queue_update_function(H,gen_specs):
+def queue_update_function(H, gen_specs, persistent_data):
+
+    if len(persistent_data) == 0:
+        persistent_data['complete'] = set() 
+        persistent_data['has_nan'] = set() 
+        persistent_data['already_paused'] = set() 
+        persistent_data['H_len'] = 0
+
+    if len(H)==persistent_data['H_len']:
+        return H, persistent_data
+    else:
+        persistent_data['H_len']=len(H)
 
     pt_ids_to_pause = set()
 
@@ -733,23 +751,47 @@ def queue_update_function(H,gen_specs):
     # local_opt point).
     if 'stop_partial_fvec_eval' in gen_specs and gen_specs['stop_partial_fvec_eval']:
         pt_ids = np.unique(H['pt_id'])
-        complete_fvals_flag = np.array([all(H['returned'][H['pt_id']==i]) for i in pt_ids],dtype=bool)
 
-        if any(complete_fvals_flag) and len(pt_ids)>1:
-            fvals = np.array([gen_specs['params']['combine_component_func'](H['f_i'][H['pt_id']==i]) for i in pt_ids])
+        complete_fvals_flag = np.zeros(len(pt_ids),dtype=bool)
+        for i,pt_id in enumerate(pt_ids):
+            if pt_id in persistent_data['has_nan']:
+                continue 
 
-            if any(~np.isnan(fvals[complete_fvals_flag])):
-                worse_flag = fvals > np.nanmin(fvals[complete_fvals_flag])
+            a1 = H['pt_id']==pt_id
+            if np.any(np.isnan(H['f_i'][a1])):
+                persistent_data['has_nan'].add(pt_id)
+                continue
 
-                # Pause incompete evaluations with worse_flag==True
-                pt_ids_to_pause.update(pt_ids[np.logical_and(worse_flag,~complete_fvals_flag)])
+            if np.all(H['returned'][a1]):
+                complete_fvals_flag[i] = True
+                persistent_data['complete'].add(pt_id)
 
-    H['paused'][np.in1d(H['pt_id'],list(pt_ids_to_pause))] = 1
+        # complete_fvals_flag = np.array([np.all(H['returned'][H['pt_id']==i]) for i in pt_ids],dtype=bool)
+
+        if np.any(complete_fvals_flag) and len(pt_ids)>1:
+            # Ensure combine_component_func calculates partial fevals correctly
+            # with H['f_i'] = 0 for non-returned point
+            possibly_partial_fvals = np.array([gen_specs['combine_component_func'](H['f_i'][H['pt_id']==i]) for i in pt_ids])
+
+            best_complete = np.nanmin(possibly_partial_fvals[complete_fvals_flag])
+
+            worse_flag = np.zeros(len(pt_ids),dtype=bool)
+            for i in range(len(pt_ids)):
+                if not np.isnan(possibly_partial_fvals[i]) and possibly_partial_fvals[i] > best_complete: 
+                    worse_flag[i] = True
+
+            # Pause incompete evaluations with worse_flag==True
+            pt_ids_to_pause.update(pt_ids[np.logical_and(worse_flag,~complete_fvals_flag)])
+
+    if not pt_ids_to_pause.issubset(persistent_data['already_paused']):
+        persistent_data['already_paused'].update(pt_ids_to_pause)
+        H['paused'][np.in1d(H['pt_id'],list(pt_ids_to_pause))] = True
+
+    return H, persistent_data
 
 
-if __name__ == "__main__":
-    [H,gen_out,params] = [np.load('H856.npz')[i] for i in ['H','gen_out','params']]
-    params = params.item()
-    gen_out = list(gen_out)
-    import ipdb; ipdb.set_trace() 
-    aposmm_logic(H,gen_out,params)
+# if __name__ == "__main__":
+#     [H,gen_specs] = [np.load('H856.npz')[i] for i in ['H','gen_specs']]
+#     gen_specs = gen_specs.item()
+#     import ipdb; ipdb.set_trace() 
+#     aposmm_logic(H,[],gen_specs,{})

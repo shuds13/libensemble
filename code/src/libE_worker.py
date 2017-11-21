@@ -11,8 +11,10 @@ import numpy as np
 import os, shutil 
 
 from message_numbers import STOP_TAG # manager tells worker to stop
+from message_numbers import EVAL_SIM_TAG 
+from message_numbers import EVAL_GEN_TAG 
 
-def worker_main(c):
+def worker_main(c, sim_specs, gen_specs):
     """ 
     Evaluate calculations given to it by the manager 
 
@@ -33,33 +35,59 @@ def worker_main(c):
     rank = comm.Get_rank()
     status = MPI.Status()
 
+    dtypes = {}
+
+    dtypes[EVAL_SIM_TAG] = comm.recv(buf=None, source=0)
+    dtypes[EVAL_GEN_TAG] = comm.recv(buf=None, source=0)
+
+    
+    locations = {}
+
+    # Make the directory for the worker to do their sim work in
+    if 'sim_dir' in sim_specs:
+        worker_dir = sim_specs['sim_dir'] + '_' + str(comm_color) + "_" + str(rank) 
+
+        if 'sim_dir_prefix' in sim_specs:
+            worker_dir = os.path.join(os.path.expanduser(sim_specs['sim_dir_prefix']), os.path.split(os.path.abspath(os.path.expanduser(worker_dir)))[1])
+
+        assert ~os.path.isdir(worker_dir), "Worker directory already exists."
+        # if not os.path.exists(worker_dir):
+        shutil.copytree(sim_specs['sim_dir'], worker_dir)
+
+        locations[EVAL_SIM_TAG] = worker_dir 
+
     while 1:
-        D = comm.recv(buf=None, source=0, tag=MPI.ANY_TAG, status=status)
+        libE_info = comm.recv(buf=None, source=0, tag=MPI.ANY_TAG, status=status)
+        calc_tag = status.Get_tag()
+        if calc_tag == STOP_TAG: break
 
-        if status.Get_tag() == STOP_TAG: break
+        gen_info = comm.recv(buf=None, source=0, tag=MPI.ANY_TAG, status=status)
+        calc_in = np.zeros(len(libE_info['H_rows']),dtype=dtypes[calc_tag])
 
-        assert len(D['form_subcomm'])==0, "Haven't implemented form_subcomm yet"
+        if len(calc_in) > 0: 
+            calc_in = comm.recv(buf=None, source=0)
+            # for i in calc_in.dtype.names: 
+            #     # d = comm.recv(buf=None, source=0)
+            #     # data = np.empty(calc_in[i].shape, dtype=d)
+            #     data = np.empty(calc_in[i].shape, dtype=calc_in[i].dtype)
+            #     comm.Recv(data,source=0)
+            #     calc_in[i] = data
 
-        if 'sim_dir' in D['calc_params']:
+        if calc_tag in locations:
             saved_dir = os.getcwd()
-            worker_dir = D['calc_params']['sim_dir'] + '_' + str(comm_color) + "_" + str(rank) 
+            os.chdir(locations[calc_tag])
 
-            if 'sim_dir_prefix' in D['calc_params']:
-                worker_dir = os.path.join(os.path.expanduser(D['calc_params']['sim_dir_prefix']), os.path.split(os.path.abspath(os.path.expanduser(worker_dir)))[1])
+        if calc_tag == EVAL_SIM_TAG: 
+            H, gen_info = sim_specs['sim_f'][0](calc_in,gen_info,sim_specs,libE_info)
+        else: 
+            H, gen_info = gen_specs['gen_f'](calc_in,gen_info,gen_specs,libE_info)
 
-            # assert ~os.path.isdir(worker_dir), "Worker directory already exists."
-            if not os.path.exists(worker_dir):
-                shutil.copytree(D['calc_params']['sim_dir'], worker_dir)
-            os.chdir(worker_dir)
-
-        O = D['calc_f'](D['calc_in'],D['calc_out'],D['calc_params'],D['calc_info'])
-
-        if 'sim_dir' in D['calc_params']:
+        if calc_tag in locations:
             os.chdir(saved_dir)
 
-        data_out = {'calc_out':O, 'calc_info': D['calc_info']}
+        data_out = {'calc_out':H, 'gen_info':gen_info, 'libE_info': libE_info}
         
-        comm.send(obj=data_out, dest=0) 
+        comm.send(obj=data_out, dest=0, tag=calc_tag) 
 
     # Clean up
     if 'saved_dir' in locals():

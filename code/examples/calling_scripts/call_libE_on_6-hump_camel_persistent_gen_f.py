@@ -65,7 +65,7 @@ sim_specs = {'sim_f': [six_hump_camel], # This is the function whose output is b
                      ('grad',float,n),
                      ('Hess_inv',float,(n,n))
                     ],
-             'params': {'x0': np.array([1, 2])},
+             'x0': np.array([1, 2]),
              }
 
 # State the generating function, its arguments, output, and necessary parameters.
@@ -74,12 +74,11 @@ gen_specs = {'gen_f': persistent_Newton,
              'out': [('x',float,n),
                      ('priority',float),
                     ],
-             'params': {},
              'num_inst': 1,
              'persistent': True,
              }
 
-# Tell LibEnsemble when to stop
+# Tell libEnsemble when to stop
 exit_criteria = {'sim_max': 10}
 
 np.random.seed(1)
@@ -104,6 +103,6 @@ if MPI.COMM_WORLD.Get_rank() == 0:
     #     print(np.min(np.sum((H['x']-m)**2,1)))
     #     assert np.min(np.sum((H['x']-m)**2,1)) < tol
 
-    #     print("\nLibEnsemble with APOSMM has identified the 6 minima within a tolerance " + str(tol))
+    #     print("\nlibEnsemble with APOSMM has identified the 6 minima within a tolerance " + str(tol))
 
 

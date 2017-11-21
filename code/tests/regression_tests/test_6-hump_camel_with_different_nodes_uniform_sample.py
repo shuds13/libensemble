@@ -36,7 +36,7 @@ sim_specs = {'sim_f': [six_hump_camel_with_different_ranks_and_nodes], # This is
              'in': ['x','num_nodes','ranks_per_node'], # These keys will be given to the above function
              'out': [('f',float), # This is the output from the function being minimized
                     ],
-             'params': {'nodelist': libE_machinefile},
+             'nodelist': libE_machinefile,
              # 'save_every_k': 10
              }
 
@@ -48,25 +48,24 @@ gen_specs = {'gen_f': uniform_random_sample_with_different_nodes_and_ranks,
                      ('num_nodes',int),
                      ('ranks_per_node',int),
                     ],
-             'params': {'lb': np.array([-3,-2]),
-                        'ub': np.array([ 3, 2]),
-                        'initial_batch_size': 5,
-                        'max_ranks_per_node': 8,
-                        'max_num_nodes': MPI.COMM_WORLD.Get_size()-1,
-                       },
+             'lb': np.array([-3,-2]),
+             'ub': np.array([ 3, 2]),
+             'initial_batch_size': 5,
+             'max_ranks_per_node': 8,
+             'max_num_nodes': MPI.COMM_WORLD.Get_size()-1,
              'num_inst': 1,
              'batch_mode': False,
              'give_all_with_same_priority': True,
              # 'save_every_k': 10
              }
 
-# Tell LibEnsemble when to stop
+# Tell libEnsemble when to stop
 exit_criteria = {'sim_max': 10}
 
 np.random.seed(1)
 
 # Perform the run
-H, flag = libE(sim_specs, gen_specs, exit_criteria)
+H, gen_info, flag = libE(sim_specs, gen_specs, exit_criteria)
 
 if MPI.COMM_WORLD.Get_rank() == 0:
     assert flag == 0
@@ -87,6 +86,6 @@ if MPI.COMM_WORLD.Get_rank() == 0:
     #     print(np.min(np.sum((H['x']-m)**2,1)))
     #     assert np.min(np.sum((H['x']-m)**2,1)) < tol
 
-    #     print("\nLibEnsemble with APOSMM has identified the 6 minima within a tolerance " + str(tol))
+    #     print("\nlibEnsemble with APOSMM has identified the 6 minima within a tolerance " + str(tol))
 
 

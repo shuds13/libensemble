@@ -19,7 +19,7 @@ from libE import libE
 
 # Import sim_func 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../examples/sim_funcs'))
-from chwirut1 import sum_squares, libE_func_wrapper
+from chwirut1 import sum_squares, libE_func_wrapper, EvaluateJacobian
 
 # Import gen_func 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../examples/gen_funcs'))
@@ -30,12 +30,13 @@ script_name = os.path.splitext(os.path.basename(__file__))[0]
 ### Declare the run parameters/functions
 m = 214
 n = 3
-max_sim_budget = 10*m
+max_sim_budget = 10
 
 sim_specs = {'sim_f': [libE_func_wrapper],
-             'in': ['x', 'obj_component'],
-             'out': [('f_i',float),
+             'in': ['x'],
+             'out': [('f',float), ('fvec',float,m),
                      ],
+             'combine_component_func': sum_squares,
              }
 
 gen_out = [('x',float,n),
@@ -52,13 +53,11 @@ gen_out = [('x',float,n),
       ('started_run',bool),
       ('num_active_runs',int), # Number of active runs point is involved in
       ('local_min',bool),
-      ('obj_component',int),
-      ('f',float), # To store the point's combined objective function value (after all f_i are computed)
       ('pt_id',int), # To be used by APOSMM to identify points evaluated by different simulations
       ]
 
 gen_specs = {'gen_f': aposmm_logic,
-             'in': [o[0] for o in gen_out] + ['f_i','returned'],
+             'in': [o[0] for o in gen_out] + ['f', 'fvec', 'returned'],
              'out': gen_out,
              'lb': -2*np.ones(3),
              'ub':  2*np.ones(3),
@@ -69,13 +68,9 @@ gen_specs = {'gen_f': aposmm_logic,
              'gatol': 1e-4,
              'frtol': 1e-15,
              'fatol': 1e-15,
-             'single_component_at_a_time': True,
              'components': m,
-             'combine_component_func': sum_squares,
              'num_inst': 1,
              'batch_mode': True,
-             'stop_on_NaNs': True, 
-             'stop_partial_fvec_eval': True,
              'queue_update_function': queue_update_function 
              }
 
@@ -92,3 +87,8 @@ if MPI.COMM_WORLD.Get_rank() == 0:
     filename = short_name + '_results_after_evals=' + str(max_sim_budget) + '_ranks=' + str(MPI.COMM_WORLD.Get_size())
     print("\n\n\nRun completed.\nSaving results to file: " + filename)
     np.save(filename, H)
+
+    # Calculating the Jacobian at the best point (though this information was not used by pounders)
+    J = EvaluateJacobian(H['x'][np.argmin(H['f'])])
+    assert np.linalg.norm(J) < 2000
+
