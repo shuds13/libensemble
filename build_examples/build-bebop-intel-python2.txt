@@ -1,0 +1,112 @@
+Example build of libensemble on ANLs Bebop cluster using intel python/compilers: Nov 2017
+Steve Hudson: shudson@anl.gov
+=========================================================================================
+Includes builds of both nlopt and petsc required for tests.
+
+Anaconda is used to access mainly pip for python installs - in this case some simple packages were installed with conda for expediency.
+This includes building of nlopt from tarball and petsc with pip.
+Build targets broadwell nodes - but should work on both broadwell and knl.
+
+A couple of issues were encountered and workarounds are shown - hopefully this will be ironed out.
+
+
+Below conda env is called $MY_ENV - set MY_ENV env variable to name of conda environment.
+=========================================================================================
+
+Starting in libensemble root dir (only so can do "pip install .")
+
+Default loaded modules - intel - the intel compiler/mpi/mkl loaded here will be used in the build.
+
+> module list
+
+Currently Loaded Modules:
+  1) intel/17.0.4-74uvhji   2) intel-mpi/2017.3-dfphq6k   3) intel-mkl/2017.3.196-v7uuj6z   4) StdEnv
+
+  
+#Get MKL directory by doing >module show intel-mkl - eg.
+> export MKL_DIR=/blues/gpfs/home/software/spack-0.10.1/opt/spack/linux-centos7-x86_64/intel-17.0.4/intel-mkl-2017.3.196-v7uuj6zmthzln35n2hb7i5u5ybncv5ev/mkl
+
+#Alt. can use conda mkl path once intel conda module is loaded (see below).
+export MKL_DIR=$HOME/.conda/envs/$MY_ENV/lib
+  
+#Create conda env.
+> module load anaconda
+> conda create --name $MY_ENV
+> . activate $MY_ENV
+> conda config --add channels intel
+
+#For python2 - this package includes python/numpy/scipy
+> conda install intelpython2_core
+
+
+#Build nlopt here (after installing anaconda python) - could put in this env space - otherwise need to add to PYTHONPATH
+#Install dir is $HOME/install/intel in this case. Having got nlopt v2.4.2 from tarball or github. nlopt.py should be created alongside shared libs.
+> CC="icc" CXX="icpc" ./configure PYTHON=$HOME/.conda/envs/$MY_ENV/bin/python --prefix=$HOME/install/intel --enable-shared
+> make -j4
+> make install
+> export PYTHONPATH=$HOME/install/intel/lib/python2.7/site-packages/
+
+#Now going to conda install some general stuff for speed - alt. could pip install everything.
+> conda install --no-update-deps cython #May not be necessary now.
+
+#Now going to pip to avoid MPI issues etc ... should build using installed MPI and compilers for extensions.
+> pip install mpi4py #Should get version 3.0.0 now (or higher).
+
+#Now for pip install petsc. Need to provide path to MKL, and even then have to do a LD_PRELOAD or does not find some libs.
+#If build exists - must have shared libs and libs directory added to PYTHONPATH.
+
+---------------------------------------------------------------------------
+#PETSC (with pip)
+
+#Currently using env variable PETSC_CONFIGURE_OPTIONS - captured by petsc's setup.py
+# - but I still have to do LD_PRELOAD after ... see error below - when run tests. 
+
+#Any of following PETSC_CONFIGURE_OPTIONS lines seem to work the same .. all still require the LD_PRELOAD step, however.
+#> export PETSC_CONFIGURE_OPTIONS="--with-blaslapack-dir=$MKL_DIR"
+
+#Also tried adding sub-dirs at end.
+> export PETSC_CONFIGURE_OPTIONS="--with-blaslapack-dir=$MKL_DIR/lib/intel64_lin"
+
+#NOTE: See LD_PRELOAD below - can do here or wait till run and see if you get the error....
+
+#Finally
+> pip install petsc petsc4py
+---------------------------------------------------------------------------
+
+#Install libensemble - here doing in place
+> pip install .
+
+#pip or conda pytest (if conda - use --no-update-deps)
+> conda install --no-update-deps pytest pytest-cov
+
+Now run tests
+eg.
+> cd code/tests; ./run-tests.sh
+
+
+IF GET:
+Intel MKL FATAL ERROR: Cannot load libmkl_avx2.so or libmkl_def.so.
+
+Can get round by LD_PRELOAD:
+> export LD_PRELOAD=$MKL_DIR/lib/intel64_lin/libmkl_core.so:$MKL_DIR/lib/intel64_lin/libmkl_sequential.so
+#Note - there are alt. dirs for mic here which may be optimised, but these should run.
+
+To exit $MY_ENV
+> . deactivate
+
+=========================================================================================
+
+Returning after log out:
+
+> module load anaconda
+ 
+> . activate $MY_ENV
+
+#If nlopt not put in $MY_ENV
+> export PYTHONPATH=$HOME/install/intel/lib/python2.7/site-packages/
+
+If... Intel MKL FATAL ERROR: Cannot load libmkl_avx2.so or libmkl_def.so.
+> export LD_PRELOAD=$MKL_DIR/lib/intel64_lin/libmkl_core.so:$MKL_DIR/lib/intel64_lin/libmkl_sequential.so
+
+
+
