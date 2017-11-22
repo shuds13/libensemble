@@ -31,8 +31,17 @@ setup(
     author='Jeffrey Larson',
     author_email='libensemble@lists.mcs.anl.gov',
     license='BSD 2-clause',
-    packages=['libensemble'],
-    package_dir={'libensemble'  : 'code/src'},
+
+    packages=['libensemble',
+              'libensemble.gen_funcs',
+              'libensemble.sim_funcs',
+              'libensemble.alloc_funcs'],
+
+    package_dir={'libensemble'  : 'code/src',
+                 'libensemble.gen_funcs' : 'code/examples/gen_funcs',
+                 'libensemble.sim_funcs' : 'code/examples/sim_funcs',
+                 'libensemble.alloc_funcs' : 'code/examples/alloc_funcs',                 
+                 },
 
     install_requires=['Cython>=0.22',
                       'mpi4py>=2.0',
