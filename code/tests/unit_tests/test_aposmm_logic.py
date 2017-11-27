@@ -1,11 +1,11 @@
 import sys, time, os
 import numpy as np
+#import libensemble
+#sys.path.append(os.path.join(os.path.dirname(__file__), '../../examples/gen_funcs')) 
+import libensemble.gen_funcs.aposmm_logic as al
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../examples/gen_funcs')) 
-import aposmm_logic as al
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../src')) 
-import libE_manager as man
+#sys.path.append(os.path.join(os.path.dirname(__file__), '../../src')) 
+import libensemble.libE_manager as man
 
 from test_manager_main import make_criteria_and_specs_0
 

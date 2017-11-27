@@ -35,19 +35,23 @@ setup(
     packages=['libensemble',
               'libensemble.gen_funcs',
               'libensemble.sim_funcs',
+              'libensemble.sim_funcs.branin',	      
               'libensemble.alloc_funcs'],
 
     package_dir={'libensemble'  : 'code/src',
                  'libensemble.gen_funcs' : 'code/examples/gen_funcs',
                  'libensemble.sim_funcs' : 'code/examples/sim_funcs',
+                 'libensemble.sim_funcs.branin' : 'code/examples/sim_funcs/branin',		 
                  'libensemble.alloc_funcs' : 'code/examples/alloc_funcs',                 
                  },
-
+    
+    package_data={'libensemble.sim_funcs.branin': ['known_minima_and_func_values']},
+    
     install_requires=['Cython>=0.22',
                       'mpi4py>=2.0',
                       'numpy',
                       'scipy',                      
-                      'petsc>=3.5',
+                      #'petsc>=3.5',
                       'petsc4py>=3.5'
                       ],
 

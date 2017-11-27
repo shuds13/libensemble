@@ -10,9 +10,9 @@ from mpi4py import MPI
 import numpy as np
 import os, shutil 
 
-from message_numbers import STOP_TAG # manager tells worker to stop
-from message_numbers import EVAL_SIM_TAG 
-from message_numbers import EVAL_GEN_TAG 
+from libensemble.message_numbers import STOP_TAG # manager tells worker to stop
+from libensemble.message_numbers import EVAL_SIM_TAG 
+from libensemble.message_numbers import EVAL_GEN_TAG 
 
 def worker_main(c, sim_specs, gen_specs):
     """ 

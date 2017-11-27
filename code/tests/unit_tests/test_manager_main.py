@@ -1,11 +1,11 @@
 import sys, time, os
 import numpy as np
 import numpy.lib.recfunctions
+#import libensemble
+#sys.path.append(os.path.join(os.path.dirname(__file__), '../../src')) 
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../src')) 
 
-
-import libE_manager as man
+from libensemble import libE_manager as man
 
 al = {'worker_ranks':set([1,2]),'persist_gen_ranks':set([])}
 
