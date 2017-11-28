@@ -51,7 +51,7 @@ setup(
                       'mpi4py>=2.0',
                       'numpy',
                       'scipy',                      
-                      #'petsc>=3.5',
+                      'petsc>=3.5',
                       'petsc4py>=3.5'
                       ],
 

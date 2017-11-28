@@ -14,8 +14,8 @@ from mpi4py import MPI # for libE communicator
 import sys             # for adding to path
 import numpy as np
 
-sys.path.append('../../src')
-from libE import libE
+#sys.path.append('../../src')
+from libensemble.libE import libE
 
 def six_hump_camel(H, sim_out, obj_params,info):
     batch = len(H['x'])
@@ -86,7 +86,7 @@ exit_criteria = {'sim_max': 10}
 np.random.seed(1)
 
 # Perform the run
-H = libE(sim_specs, gen_specs, exit_criteria)
+H, gen_info, flag = libE(sim_specs, gen_specs, exit_criteria)
 
 if MPI.COMM_WORLD.Get_rank() == 0:
     filename = '6-hump_camel_results_History_length=' + str(len(H)) + '_evals=' + str(sum(H['returned'])) + '_ranks=' + str(MPI.COMM_WORLD.Get_size())

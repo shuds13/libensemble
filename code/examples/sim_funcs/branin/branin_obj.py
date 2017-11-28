@@ -6,7 +6,6 @@ import numpy as np
 import subprocess
 import os
 import time
-#from libensemble.sim_funcs.branin import branin
 from libensemble.sim_funcs.branin.branin import branin
 
 # @profile
