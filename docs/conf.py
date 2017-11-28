@@ -95,7 +95,7 @@ todo_include_todos = False
 #html_theme = 'alabaster'
 #html_theme = 'default'
 #html_theme = 'graphite'
-html_theme = 'sphinxdoc'
+#html_theme = 'sphinxdoc'
 
 
 # Theme options are theme-specific and customize the look and feel of a theme
