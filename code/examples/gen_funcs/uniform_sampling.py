@@ -5,6 +5,8 @@ import numpy as np
 from mpi4py import MPI
 
 def uniform_random_sample_with_different_nodes_and_ranks(H,gen_info,gen_specs,libE_info):
+    """Add docstring."""
+    
     del libE_info # Ignored parameter
 
     ub = gen_specs['ub']
