@@ -15,7 +15,6 @@ from petsc4py import PETSc
 import nlopt
 
 def aposmm_logic(H,gen_info,gen_specs,libE_info):
-    del libE_info # Ignored parameter
     """
     Receives the following data from H:
         'x_on_cube', 'fvec', 'f', 'local_pt', 
@@ -54,7 +53,9 @@ def aposmm_logic(H,gen_info,gen_specs,libE_info):
     exit_code:        0 if a new localopt point has been found, otherwise it's the NLopt/POUNDERS code 
     samples_needed:   counts the number of additional uniformly drawn samples needed
     """
-
+ 
+    del libE_info # Ignored parameter
+    
     n, n_s, c_flag, O, rk_const, lhs_divisions, mu, nu = initialize_APOSMM(H, gen_specs)
 
     # np.savez('H'+str(len(H)),H=H,gen_specs=gen_specs)
