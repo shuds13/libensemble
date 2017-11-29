@@ -6,6 +6,8 @@ from mpi4py import MPI
 
 
 def uniform_random_sample_obj_components(H,gen_info,gen_specs,libE_info):
+    """Simple docstring."""
+    
     del libE_info # Ignored parameter
 
     ub = gen_specs['ub']
