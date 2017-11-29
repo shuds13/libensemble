@@ -15,45 +15,6 @@ from petsc4py import PETSc
 import nlopt
 
 def aposmm_logic(H,gen_info,gen_specs,libE_info):
-    """
-    Receives the following data from H:
-    'x_on_cube', 'fvec', 'f', 'local_pt', 
-    'dist_to_unit_bounds', 'dist_to_better_l', 'dist_to_better_s',
-    'ind_of_better_l', 'ind_of_better_s', 'started_run', 'num_active_runs', 'local_min'
-
-    import IPython; IPython.embed()
-    import ipdb; ipdb.set_trace() 
-
-    When using libEnsemble to do individual component evaluations, APOSMM will
-    return num_components copies of each point, but each component=0 version of
-    the point will only be considered when 
-        - deciding where to start a run, 
-        - best nearby point, 
-        - storing the order of the points is the run
-        - storing the combined objective function value
-        - etc
-
-    Description of intermediate variables in aposmm_logic:
-
-    n:                domain dimension
-    c_flag:           True if giving libEnsemble individual components of fvec to evaluate. (Note if c_flag is True, APOSMM will only use the com
-    n_s:              the number of complete evaluations (not just component evaluations)
-    updated_inds:     indices of H that have been updated (and so all their information must be sent back to libE manager to update) 
-    O:                new points to be sent back to the history
-                     
-                     
-    x_new:            when re-running a local opt method to get the next point: stores the first new point requested by a local optimization method
-    pt_in_run:        when re-running a local opt method to get the next point: counts function evaluations to know when a new point is given
-    total_pts_in_run: when re-running a local opt method to get the next point: total evaluations in run to be incremented
-
-    starting_inds:    indices where a runs should be started.
-    active_runs:      indices of active local optimization runs (currently saved to disk between calls to APOSMM)
-    sorted_run_inds:  indices of the considered run (in the order they were requested by the localopt method)
-    x_opt:            the reported minimum from a localopt run (disregarded unless exit_code isn't 0)
-    exit_code:        0 if a new localopt point has been found, otherwise it's the NLopt/POUNDERS code 
-    samples_needed:   counts the number of additional uniformly drawn samples needed
-    """
- 
     del libE_info # Ignored parameter
     
     n, n_s, c_flag, O, rk_const, lhs_divisions, mu, nu = initialize_APOSMM(H, gen_specs)
