@@ -4,36 +4,6 @@ from __future__ import absolute_import
 import numpy as np
 from mpi4py import MPI
 
-def uniform_random_sample_with_different_nodes_and_ranks(H,gen_info,gen_specs,libE_info):
-    """Add docstring."""
-    
-    del libE_info # Ignored parameter
-
-    ub = gen_specs['ub']
-    lb = gen_specs['lb']
-    n = len(lb)
-
-    if len(H) == 0: 
-        b = gen_specs['initial_batch_size']
-
-        O = np.zeros(b, dtype=gen_specs['out'])
-        for i in range(0,b):
-            # x = np.random.uniform(lb,ub,(1,n))
-            x = gen_info['rand_stream'][MPI.COMM_WORLD.Get_rank()].uniform(lb,ub,(1,n))
-            O['x'][i] = x
-            O['num_nodes'][i] = 1
-            O['ranks_per_node'][i] = 16
-            O['priority'] = 1
-        
-    else:
-        O = np.zeros(1, dtype=gen_specs['out'])
-        O['x'] = len(H)*np.ones(n)
-        O['num_nodes'] = np.random.randint(1,gen_specs['max_num_nodes']+1) 
-        O['ranks_per_node'] = np.random.randint(1,gen_specs['max_ranks_per_node']+1)
-        O['priority'] = 10*O['num_nodes']
-
-    return O, gen_info
-
 
 def uniform_random_sample_obj_components(H,gen_info,gen_specs,libE_info):
     del libE_info # Ignored parameter
