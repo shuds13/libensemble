@@ -17,9 +17,9 @@ import nlopt
 def aposmm_logic(H,gen_info,gen_specs,libE_info):
     """
     Receives the following data from H:
-        'x_on_cube', 'fvec', 'f', 'local_pt', 
-        'dist_to_unit_bounds', 'dist_to_better_l', 'dist_to_better_s',
-        'ind_of_better_l', 'ind_of_better_s', 'started_run', 'num_active_runs', 'local_min'
+    'x_on_cube', 'fvec', 'f', 'local_pt', 
+    'dist_to_unit_bounds', 'dist_to_better_l', 'dist_to_better_s',
+    'ind_of_better_l', 'ind_of_better_s', 'started_run', 'num_active_runs', 'local_min'
 
     import IPython; IPython.embed()
     import ipdb; ipdb.set_trace() 
