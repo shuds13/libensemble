@@ -27,7 +27,7 @@ class Mock(MagicMock):
     def __getattr__(cls, name):
             return MagicMock()
 
-MOCK_MODULES = ['argparse', 'numpy', 'mpi4py' , 'scipy', 'numpy.lib', 'numpy.lib.recfunctions', 'math']
+MOCK_MODULES = ['argparse', 'numpy', 'mpi4py' , 'scipy', 'numpy.lib', 'numpy.lib.recfunctions', 'math', 'petsc4py', 'PETSc', 'nlopt']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
