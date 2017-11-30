@@ -15,6 +15,6 @@ from math import log, gamma, pi, sqrt
 
 def aposmm_aaatest():
     
-    """A simple test."""
+    """A simple test this is."""
     
     pass
