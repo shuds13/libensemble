@@ -1,10 +1,9 @@
 import sys, time, os
 import numpy as np
-#import libensemble
-#sys.path.append(os.path.join(os.path.dirname(__file__), '../../src')) 
 
-#sh - prob better to import libE and use libE. than import *
-from libensemble.libE import * 
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../src')) 
+
+from libE import * 
 from test_manager_main import make_criteria_and_specs_0
 
 al = {'manager_ranks':set([0]), 'worker_ranks':set([1,2]),'persist_gen_ranks':set([])}
