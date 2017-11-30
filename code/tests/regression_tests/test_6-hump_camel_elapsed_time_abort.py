@@ -51,12 +51,16 @@ gen_specs = {'gen_f': uniform_random_sample,
              }
 
 # Tell libEnsemble when to stop
-exit_criteria = {'elapsed_wallclock_time': 0.1}
+#exit_criteria = {'elapsed_wallclock_time': 0.1}
+exit_criteria = {'elapsed_wallclock_time': 20.0}
 
 np.random.seed(1)
 
 # Perform the run
 H, gen_info, flag = libE(sim_specs, gen_specs, exit_criteria)
+sys.stderr.write("flag=",flag)
+#print(H)
+#print('flag',flag)
 
 if MPI.COMM_WORLD.Get_rank() == 0:
     assert flag == 2

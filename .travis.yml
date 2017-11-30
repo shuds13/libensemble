@@ -31,6 +31,8 @@ cache:
 
 # Setup Miniconda
 before_install:
+  - nproc
+  - getconf _NPROCESSORS_ONLN
   # Do this conditionally because it saves some downloading if the
   # version is the same.
   - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
