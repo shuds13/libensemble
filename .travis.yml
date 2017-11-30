@@ -14,8 +14,9 @@ env:
   matrix:
     - MPI=mpich
     - MPI=openmpi
-    allow_failures:
-      - env: MPI=openmpi
+    
+allow_failures:
+  - env: MPI=openmpi
 
 addons:
   apt:
