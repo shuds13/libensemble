@@ -14,16 +14,16 @@ import sys, os             # for adding to path
 import numpy as np
 
 # Import libEnsemble main
-#sys.path.append('../../src')
-from libensemble.libE import libE
+sys.path.append('../../src')
+from libE import libE
 
 # Import sim_func 
-#sys.path.append(os.path.join(os.path.dirname(__file__), '../../examples/sim_funcs'))
-from libensemble.sim_funcs.chwirut1 import sum_squares, libE_func_wrapper, EvaluateJacobian
-
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../examples/sim_funcs'))
+from chwirut1 import libE_func_wrapper, EvaluateJacobian
+ 
 # Import gen_func 
-#sys.path.append(os.path.join(os.path.dirname(__file__), '../../examples/gen_funcs'))
-from libensemble.gen_funcs.aposmm_logic import aposmm_logic, queue_update_function
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../examples/gen_funcs'))
+from aposmm_logic import aposmm_logic, queue_update_function
 
 script_name = os.path.splitext(os.path.basename(__file__))[0]
 
@@ -36,7 +36,7 @@ sim_specs = {'sim_f': [libE_func_wrapper],
              'in': ['x'],
              'out': [('f',float), ('fvec',float,m),
                      ],
-             'combine_component_func': sum_squares,
+             'combine_component_func': lambda x: np.sum(np.power(x,2)),
              }
 
 gen_out = [('x',float,n),

@@ -13,10 +13,12 @@ env:
     - OMPI_MCA_rmaps_base_oversubscribe=yes
   matrix:
     - MPI=mpich
+      PROC_LIST="2 4"
     - MPI=openmpi
-    
-allow_failures:
-  - env: MPI=openmpi
+      PROC_LIST="2" #Do not oversubsribe with OpenMPI
+      
+#allow_failures:
+#  - env: MPI=openmpi
 
 addons:
   apt:
@@ -31,6 +33,8 @@ cache:
 
 # Setup Miniconda
 before_install:
+  - nproc
+  - getconf _NPROCESSORS_ONLN
   # Do this conditionally because it saves some downloading if the
   # version is the same.
   - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
@@ -69,7 +73,7 @@ install:
 
 # Run test
 script:
-  - code/tests/run-tests.sh
+  - code/tests/run-tests.sh -l "$PROC_LIST"
 
 # Coverage
 after_success:

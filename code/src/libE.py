@@ -26,8 +26,8 @@ Third (aspirational) tasks for libEnsemble:
 from __future__ import division
 from __future__ import absolute_import
 
-from libensemble.libE_manager import manager_main
-from libensemble.libE_worker import worker_main
+from libE_manager import manager_main
+from libE_worker import worker_main
 
 from mpi4py import MPI
 
@@ -38,17 +38,18 @@ import sys,os
 # sys.excepthook = ultratb.FormattedTB(mode='Verbose',
 #      color_scheme='Linux', call_pdb=1)
 
-#sys.path.append(os.path.join(os.path.dirname(__file__), '../examples/alloc_funcs'))
-from libensemble.alloc_funcs.give_sim_work_first import give_sim_work_first
+sys.path.append(os.path.join(os.path.dirname(__file__), '../examples/alloc_funcs'))
+from give_sim_work_first import give_sim_work_first
 
 def libE(sim_specs, gen_specs, exit_criteria, failure_processing={},
         alloc_specs={'alloc_f': give_sim_work_first, 'manager_ranks': set([0]), 'worker_ranks': set(range(1,MPI.COMM_WORLD.Get_size()))},
         c={'comm': MPI.COMM_WORLD, 'color': 0}, 
         H0=[]):
-
     """ 
-    Parameters
-    ----------
+    This is the outer libEnsemble routine. It checks each rank in c['comm']
+    against alloc_specs['manager_ranks'] or alloc_specs['worker_ranks'] and
+    either runs manager_main or worker_main 
+    (Some subroutines currently assume that the manager is always (only) rank 0.)
     """
     check_inputs(c, alloc_specs, sim_specs, gen_specs, failure_processing, exit_criteria, H0)
     
@@ -72,6 +73,11 @@ def libE(sim_specs, gen_specs, exit_criteria, failure_processing={},
 
 
 def check_inputs(c, alloc_specs, sim_specs, gen_specs, failure_processing, exit_criteria, H0):
+    """ 
+    Check if the libEnsemble arguments are of the correct data type contain
+    sufficient information to perform a run. 
+    """
+
     assert isinstance(sim_specs,dict), "sim_specs must be a dictionary"
     assert isinstance(gen_specs,dict), "gen_specs must be a dictionary"
     assert isinstance(c,dict), "c must be a dictionary"
@@ -102,7 +108,7 @@ def check_inputs(c, alloc_specs, sim_specs, gen_specs, failure_processing, exit_
         if gen_specs['gen_f'].__name__ == 'aposmm_logic':
             assert gen_specs['batch_mode'], "Must be in batch mode when using 'single_component_at_a_time' and APOSMM"
 
-    from libensemble.libE_fields import libE_fields
+    from libE_fields import libE_fields
 
     if ('sim_id',int) in gen_specs['out'] and 'sim_id' in gen_specs['in']:
         print('\n' + 79*'*' + '\n'

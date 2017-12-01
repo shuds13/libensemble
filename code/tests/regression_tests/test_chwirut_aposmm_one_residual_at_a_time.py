@@ -14,16 +14,16 @@ import sys, os             # for adding to path
 import numpy as np
 
 # Import libEnsemble main
-#sys.path.append('../../src')
-from libensemble.libE import libE
+sys.path.append('../../src')
+from libE import libE
 
 # Import sim_func 
-#sys.path.append(os.path.join(os.path.dirname(__file__), '../../examples/sim_funcs'))
-from libensemble.sim_funcs.chwirut1 import sum_squares, libE_func_wrapper
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../examples/sim_funcs'))
+from chwirut1 import libE_func_wrapper
 
 # Import gen_func 
-#sys.path.append(os.path.join(os.path.dirname(__file__), '../../examples/gen_funcs'))
-from libensemble.gen_funcs.aposmm_logic import aposmm_logic, queue_update_function
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../examples/gen_funcs'))
+from aposmm_logic import aposmm_logic, queue_update_function
 
 script_name = os.path.splitext(os.path.basename(__file__))[0]
 
@@ -71,7 +71,7 @@ gen_specs = {'gen_f': aposmm_logic,
              'fatol': 1e-15,
              'single_component_at_a_time': True,
              'components': m,
-             'combine_component_func': sum_squares,
+             'combine_component_func': lambda x: np.sum(np.power(x,2)),
              'num_inst': 1,
              'batch_mode': True,
              'stop_on_NaNs': True, 

@@ -27,7 +27,7 @@ class Mock(MagicMock):
     def __getattr__(cls, name):
             return MagicMock()
 
-MOCK_MODULES = ['argparse', 'numpy', 'mpi4py' , 'scipy', 'numpy.lib', 'numpy.lib.recfunctions', 'math', 'petsc4py', 'PETSc', 'nlopt']
+MOCK_MODULES = ['argparse', 'numpy', 'mpi4py' , 'scipy', 'numpy.lib', 'numpy.lib.recfunctions', 'math', 'petsc4py', 'PETSc', 'nlopt', 'scipy.spatial', 'scipy.spatial.distance']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
@@ -50,7 +50,7 @@ sys.path.append(os.path.abspath('../code/examples/sim_funcs'))
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon', 'sphinx.ext.imgmath']
 #extensions = ['sphinx.ext.autodoc', 'breathe']
 #breathe_projects = { "libEnsemble": "../code/src/xml/" }
 #breathe_default_project = "libEnsemble"

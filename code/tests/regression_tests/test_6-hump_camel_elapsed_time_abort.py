@@ -15,16 +15,19 @@ import sys, os             # for adding to path
 import numpy as np
 
 # Import libEnsemble main
-#sys.path.append('../../src')
-from libensemble.libE import libE
+sys.path.append('../../src')
+from libE import libE
 
 # Import sim_func 
-#sys.path.append(os.path.join(os.path.dirname(__file__), '../../examples/sim_funcs'))
-from libensemble.sim_funcs.six_hump_camel import six_hump_camel
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../examples/sim_funcs'))
+from six_hump_camel import six_hump_camel
 
 # Import gen_func 
-#sys.path.append(os.path.join(os.path.dirname(__file__), '../../examples/gen_funcs'))
-from libensemble.gen_funcs.uniform_sampling import uniform_random_sample
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../examples/gen_funcs'))
+from uniform_sampling import uniform_random_sample
+
+#def eprint(*args, **kwargs):
+#    print(*args, file=sys.stderr, **kwargs)
 
 script_name = os.path.splitext(os.path.basename(__file__))[0]
 
@@ -52,11 +55,16 @@ gen_specs = {'gen_f': uniform_random_sample,
 
 # Tell libEnsemble when to stop
 exit_criteria = {'elapsed_wallclock_time': 0.1}
+#exit_criteria = {'elapsed_wallclock_time': 20.0}
 
 np.random.seed(1)
 
 # Perform the run
 H, gen_info, flag = libE(sim_specs, gen_specs, exit_criteria)
+#sys.stderr.write(flag)
+#eprint('flag is',flag)
+#print(H)
+#print('flag',flag)
 
 if MPI.COMM_WORLD.Get_rank() == 0:
     assert flag == 2
