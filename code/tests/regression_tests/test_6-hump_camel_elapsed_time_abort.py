@@ -26,8 +26,8 @@ from six_hump_camel import six_hump_camel
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../examples/gen_funcs'))
 from uniform_sampling import uniform_random_sample
 
-def eprint(*args, **kwargs):
-    print(*args, file=sys.stderr, **kwargs)
+#def eprint(*args, **kwargs):
+#    print(*args, file=sys.stderr, **kwargs)
 
 script_name = os.path.splitext(os.path.basename(__file__))[0]
 
@@ -62,7 +62,7 @@ np.random.seed(1)
 # Perform the run
 H, gen_info, flag = libE(sim_specs, gen_specs, exit_criteria)
 #sys.stderr.write(flag)
-eprint('flag is',flag)
+#eprint('flag is',flag)
 #print(H)
 #print('flag',flag)
 

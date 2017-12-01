@@ -146,7 +146,7 @@ RUN_PREFIX=$script_name
 CLEAN_ONLY=false
 unset MPIEXEC_FLAGS
 
-while getopts ":p:n:a:c" opt; do
+while getopts ":p:n:a:l:c" opt; do
   case $opt in
     p)
       echo "Parameter supplied for Python version: $OPTARG" >&2
@@ -159,6 +159,10 @@ while getopts ":p:n:a:c" opt; do
     a)
       echo "Parameter supplied for mpiexec args: $OPTARG" >&2
       MPIEXEC_FLAGS=$OPTARG
+      ;;      
+    l)
+      echo "Parameter supplied for list of proc counts: $OPTARG" >&2
+      REG_TEST_PROCESS_COUNT_LIST=$OPTARG
       ;;      
     c)
       #echo "Cleaning test output: $OPTARG" >&2
