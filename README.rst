@@ -1,5 +1,5 @@
 ===========
-libensemble
+libEnsemble
 ===========
 
 .. image:: https://img.shields.io/pypi/v/libensemble.svg
