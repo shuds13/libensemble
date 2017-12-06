@@ -2,6 +2,9 @@
 libensemble
 ===========
 
+.. image:: https://img.shields.io/pypi/v/libensemble.svg
+   :target: https://pypi.org/project/libensemble
+
 .. image::  https://travis-ci.org/shuds13/libensemble.svg?branch=master
    :target: https://travis-ci.org/shuds13/libensemble
 
