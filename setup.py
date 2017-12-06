@@ -4,6 +4,9 @@
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
 
+with open(path.join(here, 'README.rst'), encoding='utf-8') as readme_file:
+    readme = readme_file.read()
+
 class Run_TestSuite(TestCommand):
     def run_tests(self):
         import os
@@ -27,6 +30,7 @@ setup(
     name='libensemble',
     version='0.1.0',    
     description='Library for managing ensemble-like collections of computations',
+    long_description=readme,
     url='https://github.com/libensemble/libensemble',
     author='Jeffrey Larson',
     author_email='libensemble@lists.mcs.anl.gov',
