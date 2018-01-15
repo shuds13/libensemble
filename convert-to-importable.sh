@@ -3,8 +3,6 @@
 # This should work for listed packages. Files/modules can be added/changed, but if add new
 # packages will need to add to this.
 
-#NOTE: ***PROBLEM NOT SORTED*** - sim_dir_name directory in test_branin_aposmm.py
-
 #Set to exit script on error
 set -e
 
