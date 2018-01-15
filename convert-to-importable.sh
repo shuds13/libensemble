@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 
+# This should work for listed packages. Files/modules can be added/changed, but if add new
+# packages will need to add to this.
+
 #NOTE: ***PROBLEM NOT SORTED*** - sim_dir_name directory in test_branin_aposmm.py
 
 #Set to exit script on error
 set -e
+
 
 if [[ -z $1 ]]
 then
@@ -17,48 +21,105 @@ echo -e "\nTime of writing: check sim_dir_name directory in test_branin_aposmm.p
 echo -e "Also remember need packages in setup.py and make sure got __init__.py in test dirs unit/regression"
 echo -e "then can do <pip install .> or <pip install --upgrade .> from the project root dir. And try run tests.\n" 
 
-REPO_DIR=$1
+REPO_DIR=${PWD}/$1
+REPO_DIR=${REPO_DIR%/} #Remove if trailing slash
 
-export CODE_DIR=code
+export CODE_DIR=$REPO_DIR/code
 
-#Quick and Dirty Convert
-#Currently going through existing files - need to generalise to get files by listing dirs - so does new ones.
-#So this is files in master branch at time of writing.
+#List python package dirs
+export LIBE_DIR=$CODE_DIR/src
+export SIM_FUNCS_DIR=$CODE_DIR/examples/sim_funcs
+export BRANIN_DIR=$SIM_FUNCS_DIR/branin
+export GEN_FUNCS_DIR=$CODE_DIR/examples/gen_funcs
+export ALLOC_FUNCS_DIR=$CODE_DIR/examples/alloc_funcs
+export UTESTS_DIR=$CODE_DIR/tests/unit_tests
+export REG_TESTS_DIR=$CODE_DIR/tests/regression_tests
 
+
+# ----------------------------------------------------------------------
+
+#Replace imports lines for each listed package - and remove sys.path.append lines
 convert_import_paths() {
   echo ${PWD}
-  sed -i -e 's/^\(\s*\)sys.path.append/\1#sys.path.append/g' *.py 
-  sed -i -e 's/^\(\s*\)from libE/\1from libensemble.libE/g' *.py 
-  sed -i -e 's/^\(\s*\)from message_numbers/\1from libensemble.message_numbers/g' *.py   
-  sed -i -e 's/^\(\s*\)import libE/\1import libensemble.libE/g' *.py 
-  sed -i -e 's/^\(\s*\)import message_numbers/\1import libensemble.message_numbers/g' *.py   
-
-  sed -i -e 's/^\(\s*\)from six_hump_camel/\1from libensemble.sim_funcs.six_hump_camel/g' *.py 
-  sed -i -e 's/^\(\s*\)from chwirut1/\1from libensemble.sim_funcs.chwirut1/g' *.py 
-  sed -i -e 's/^\(\s*\)from helloworld/\1from libensemble.sim_funcs.helloworld/g' *.py 
-  sed -i -e 's/^\(\s*\)from branin/\1from libensemble.sim_funcs.branin.branin/g' *.py 
-  sed -i -e 's/^\(\s*\)import six_hump_camel/\1import libensemble.sim_funcs.six_hump_camel/g' *.py 
-  sed -i -e 's/^\(\s*\)import chwirut1/\1import libensemble.sim_funcs.chwirut1/g' *.py 
-  sed -i -e 's/^\(\s*\)import helloworld/\1import libensemble.sim_funcs.helloworld/g' *.py 
-  sed -i -e 's/^\(\s*\)import branin/\1import libensemble.sim_funcs.branin.branin/g' *.py 
-
-  sed -i -e 's/^\(\s*\)from uniform_sampling/\1from libensemble.gen_funcs.uniform_sampling/g' *.py 
-  sed -i -e 's/^\(\s*\)from aposmm_logic/\1from libensemble.gen_funcs.aposmm_logic/g' *.py 
-  sed -i -e 's/^\(\s*\)import uniform_sampling/\1import libensemble.gen_funcs.uniform_sampling/g' *.py 
-  sed -i -e 's/^\(\s*\)import aposmm_logic/\1import libensemble.gen_funcs.aposmm_logic/g' *.py 
-  sed -i -e 's/^\(\s*\)from uniform_or_localopt/\1from libensemble.gen_funcs.uniform_or_localopt/g' *.py 
-  sed -i -e 's/^\(\s*\)import uniform_or_localopt/\1import libensemble.gen_funcs.uniform_or_localopt/g' *.py 
   
-  sed -i -e 's/^\(\s*\)from give_sim_work_first/\1from libensemble.alloc_funcs.give_sim_work_first/g' *.py
-  sed -i -e 's/^\(\s*\)import give_sim_work_first/\1import libensemble.alloc_funcs.give_sim_work_first/g' *.py  
-
-  sed -i -e 's/^\(\s*\)from start_persistent_local_opt_gens/\1from libensemble.alloc_funcs.start_persistent_local_opt_gens/g' *.py
-  sed -i -e 's/^\(\s*\)import start_persistent_local_opt_gens/\1import libensemble.alloc_funcs.start_persistent_local_opt_gens/g' *.py  
+  sed -i -e "s/^\(\s*\)sys.path.append/\1#sys.path.append/g" *.py 
   
-  #Special kluge - for unit tests accessing regression tests - now i've made unit/reg tests submodules
-  #Not sure this is a good idea
-  sed -i -e 's/^\(\s*\)from test_branin_aposmm/\1from libensemble.regression_tests.test_branin_aposmm/g' *.py   
+  for file in $LIBE_FILES
+  do 
+    filebase=${file%.py}
+    sed -i -e "s/^\(\s*\)from $filebase/\1from libensemble.$filebase/g" *.py
+    sed -i -e "s/^\(\s*\)import $filebase\s*$/\1import libensemble.$filebase as $filebase/g" *.py
+    sed -i -e "s/^\(\s*\)import $filebase/\1import libensemble.$filebase/g" *.py
+  done
+  
+  for file in $SIM_FUNCS_FILES
+  do
+    filebase=${file%.py}
+    sed -i -e "s/^\(\s*\)from $filebase/\1from libensemble.sim_funcs.$filebase/g" *.py
+    sed -i -e "s/^\(\s*\)import $filebase\s*$/\1import libensemble.sim_funcs.$filebase as $filebase/g" *.py
+    sed -i -e "s/^\(\s*\)import $filebase/\1import libensemble.sim_funcs.$filebase/g" *.py    
+  done
+
+  for file in $BRANIN_FILES
+  do
+    filebase=${file%.py}
+    sed -i -e "s/^\(\s*\)from $filebase/\1from libensemble.sim_funcs.branin.$filebase/g" *.py
+    sed -i -e "s/^\(\s*\)import $filebase\s*$/\1import libensemble.sim_funcs.branin.$filebase as $filebase/g" *.py    
+    sed -i -e "s/^\(\s*\)import $filebase/\1import libensemble.sim_funcs.branin.$filebase/g" *.py    
+  done
+
+  for file in $GEN_FUNCS_FILES
+  do
+    filebase=${file%.py}
+    sed -i -e "s/^\(\s*\)from $filebase/\1from libensemble.gen_funcs.$filebase/g" *.py
+    sed -i -e "s/^\(\s*\)import $filebase\s*$/\1import libensemble.gen_funcs.$filebase as $filebase/g" *.py    
+    sed -i -e "s/^\(\s*\)import $filebase/\1import libensemble.gen_funcs.$filebase/g" *.py    
+  done
+  
+  for file in $ALLOC_FUNCS_FILES
+  do
+    filebase=${file%.py}
+    sed -i -e "s/^\(\s*\)from $filebase/\1from libensemble.alloc_funcs.$filebase/g" *.py
+    sed -i -e "s/^\(\s*\)import $filebase\s*$/\1import libensemble.alloc_funcs.$filebase as $filebase/g" *.py    
+    sed -i -e "s/^\(\s*\)import $filebase/\1import libensemble.alloc_funcs.$filebase/g" *.py    
+  done
+
+  for file in $UTESTS_FILES
+  do
+    filebase=${file%.py}
+    sed -i -e "s/^\(\s*\)from $filebase/\1from libensemble.unit_tests.$filebase/g" *.py
+    sed -i -e "s/^\(\s*\)import $filebase\s*$/\1import libensemble.unit_tests.$filebase as $filebase/g" *.py    
+    sed -i -e "s/^\(\s*\)import $filebase/\1import libensemble.unit_tests.$filebase/g" *.py    
+  done
+
+  for file in $REG_TESTS_FILES
+  do
+    filebase=${file%.py}
+    sed -i -e "s/^\(\s*\)from $filebase/\1from libensemble.regression_tests.$filebase/g" *.py
+    sed -i -e "s/^\(\s*\)import $filebase\s*$/\1import libensemble.regression_tests.$filebase as $filebase/g" *.py    
+    sed -i -e "s/^\(\s*\)import $filebase/\1import libensemble.regression_tests.$filebase/g" *.py    
+  done
+  
+  #Kludge to deal with using data file known_minima_and_func_values
+  line_in="sim_dir_name='..\/..\/examples\/sim_funcs\/branin'"
+  line_out="import pkg_resources; sim_dir_name=pkg_resources.resource_filename('libensemble.sim_funcs.branin', '.')"
+  sed -i -e "s/${line_in}/${line_out}/g" *.py
+  
+  line_in="minima_and_func_val_file = os.path.join(sim_dir_name, 'known_minima_and_func_values')"
+  line_out="import pkg_resources; minima_and_func_val_file = pkg_resources.resource_filename('libensemble.sim_funcs.branin', 'known_minima_and_func_values')"
+  sed -i -e "s/${line_in}/${line_out}/g" *.py
+   
 }
+
+# ----------------------------------------------------------------------
+#List of files in each dir
+LIBE_FILES=`find $LIBE_DIR -maxdepth 1 -name "*.py" -exec basename {} \;`
+SIM_FUNCS_FILES=`find $SIM_FUNCS_DIR -maxdepth 1 -name "*.py" -exec basename {} \;`
+BRANIN_FILES=`find $BRANIN_DIR -maxdepth 1 -name "*.py" -exec basename {} \;`
+GEN_FUNCS_FILES=`find $GEN_FUNCS_DIR -maxdepth 1 -name "*.py" -exec basename {} \;`
+ALLOC_FUNCS_FILES=`find $ALLOC_FUNCS_DIR -maxdepth 1 -name "*.py" -exec basename {} \;`
+UTESTS_FILES=`find $UTESTS_DIR -maxdepth 1 -name "*.py" -exec basename {} \;`
+REG_TESTS_FILES=`find $REG_TESTS_DIR -maxdepth 1 -name "*.py" -exec basename {} \;`
 
 echo -e "Converting libensemble src dir:"
 cd $REPO_DIR
