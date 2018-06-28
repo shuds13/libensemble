@@ -1,6 +1,3 @@
-conda:
-    file: conda/environment.yml
-
 build:
     image: latest
     
