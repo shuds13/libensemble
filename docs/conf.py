@@ -33,11 +33,11 @@ sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
 sys.path.insert(0, os.path.abspath('.'))
-sys.path.append(os.path.abspath('../code/src'))
-sys.path.append(os.path.abspath('../code/examples'))
-sys.path.append(os.path.abspath('../code/examples/alloc_funcs'))
-sys.path.append(os.path.abspath('../code/examples/gen_funcs'))
-sys.path.append(os.path.abspath('../code/examples/sim_funcs'))
+sys.path.append(os.path.abspath('../libensemble'))
+sys.path.append(os.path.abspath('../libensemble'))
+sys.path.append(os.path.abspath('../libensemble/alloc_funcs'))
+sys.path.append(os.path.abspath('../libensemble/gen_funcs'))
+sys.path.append(os.path.abspath('../libensemble/sim_funcs'))
 
 # print(sys.path)
 
@@ -50,7 +50,7 @@ sys.path.append(os.path.abspath('../code/examples/sim_funcs'))
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon', 'sphinx.ext.imgmath']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon']
 #extensions = ['sphinx.ext.autodoc', 'breathe']
 #breathe_projects = { "libEnsemble": "../code/src/xml/" }
 #breathe_default_project = "libEnsemble"

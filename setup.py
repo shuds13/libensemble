@@ -4,9 +4,6 @@
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
 
-with open(path.join(here, 'README.rst'), encoding='utf-8') as readme_file:
-    readme = readme_file.read()
-
 class Run_TestSuite(TestCommand):
     def run_tests(self):
         import os
@@ -30,8 +27,7 @@ setup(
     name='libensemble',
     version='0.1.0',    
     description='Library for managing ensemble-like collections of computations',
-    long_description=readme,
-    url='https://github.com/libensemble/libensemble',
+    url='https://github.com/Libensemble/libensemble',
     author='Jeffrey Larson',
     author_email='libensemble@lists.mcs.anl.gov',
     license='BSD 2-clause',
@@ -40,24 +36,28 @@ setup(
               'libensemble.gen_funcs',
               'libensemble.sim_funcs',
               'libensemble.sim_funcs.branin',	      
-              'libensemble.alloc_funcs'],
+              'libensemble.alloc_funcs',
+              'libensemble.tests',              
+              'libensemble.tests.unit_tests',
+              'libensemble.tests.regression_tests'],
 
-    package_dir={'libensemble'  : 'code/src',
-                 'libensemble.gen_funcs' : 'code/examples/gen_funcs',
-                 'libensemble.sim_funcs' : 'code/examples/sim_funcs',
-                 'libensemble.sim_funcs.branin' : 'code/examples/sim_funcs/branin',		 
-                 'libensemble.alloc_funcs' : 'code/examples/alloc_funcs',                 
-                 },
+    #package_dir={'libensemble'  : 'code/src',
+                 #'libensemble.gen_funcs' : 'code/examples/gen_funcs',
+                 #'libensemble.sim_funcs' : 'code/examples/sim_funcs',
+                 #'libensemble.sim_funcs.branin' : 'code/examples/sim_funcs/branin',		 
+                 #'libensemble.alloc_funcs' : 'code/examples/alloc_funcs',
+                 #'libensemble.unit_tests' : 'code/tests/unit_tests', 
+                 #'libensemble.regression_tests' : 'code/tests/regression_tests',                  
+                 #},
     
     package_data={'libensemble.sim_funcs.branin': ['known_minima_and_func_values']},
     
-    install_requires=['Cython>=0.22',
-                      'mpi4py>=2.0',
-                      'numpy',
-                      'scipy',                      
-                      #'petsc>=3.5',
-                      'petsc4py>=3.5'
-                      ],
+#    install_requires=['mpi4py>=2.0',
+#                      'numpy',
+#                      'scipy',                      
+#                      #'petsc>=3.5',
+#                      'petsc4py>=3.5'
+#                      ],
 
     #If run tests through setup.py - downloads these but does not install
     tests_require=['pytest>=3.1',
