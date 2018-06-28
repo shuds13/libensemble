@@ -1,0 +1,349 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Job Controller &mdash; libEnsemble 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="libEnsemble 0.1.0 documentation" href="../index.html"/>
+        <link rel="next" title="Registration Module" href="register.html"/>
+        <link rel="prev" title="Worker Modules" href="../worker_modules.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> libEnsemble
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">libEnsemble:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../readme.html">libEnsemble</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes.html">Release Notes</a></li>
+</ul>
+<p class="caption"><span class="caption-text">libEnsemble API:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../libe_module.html">libE Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../manager_modules.html">Manager Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../worker_modules.html">Worker Modules</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Job Controller:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Job Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="register.html">Registration Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="job_controller.html">Job Controller Module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Examples:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples_modules.html">Example Modules</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libEnsemble</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Job Controller</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/job_controller/overview.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="job-controller">
+<h1>Job Controller<a class="headerlink" href="#job-controller" title="Permalink to this headline">¶</a></h1>
+<p>The Job Controller module can be used by the worker or user-side code to issue and manage jobs using a portable interface. Various back-end mechanisms may be used to implement this interface on the system, either specified by the user at the top-level, or auto-detected. The job_controller manages jobs using the launch, poll and kill functions. Job attributes can then be queried to determine status. Functions are also provided to access and interrogate files in the job’s working directory.</p>
+<p>At the top-level calling script, a registry and job_controller are created and the executable gen or sim applications are registered to these (these are applications that will be runnable parallel jobs). If an alternative job_controller, such as Balsam, is to be used, then these can be created as in the example. Once in the user-side worker code (sim/gen func), the job_controller can be retrieved without any need to specify the type.</p>
+<p><strong>Example usage (code runnable with or without Balsam backend):</strong></p>
+<p>In calling function:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">libensemble.register</span> <span class="k">import</span> <span class="n">Register</span><span class="p">,</span> <span class="n">BalsamRegister</span>
+<span class="kn">from</span> <span class="nn">libensemble.controller</span> <span class="k">import</span> <span class="n">JobController</span><span class="p">,</span> <span class="n">BalsamJobController</span>
+<span class="n">sim_app</span> <span class="o">=</span> <span class="s1">&#39;/path/to/my/exe&#39;</span>
+<span class="n">USE_BALSAM</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="k">if</span> <span class="n">USE_BALSAM</span><span class="p">:</span>
+    <span class="n">registry</span> <span class="o">=</span> <span class="n">BalsamRegister</span><span class="p">()</span>
+    <span class="n">jobctrl</span> <span class="o">=</span> <span class="n">BalsamJobController</span><span class="p">(</span><span class="n">registry</span> <span class="o">=</span> <span class="n">registry</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">registry</span> <span class="o">=</span> <span class="n">Register</span><span class="p">()</span>
+    <span class="n">jobctrl</span> <span class="o">=</span> <span class="n">JobController</span><span class="p">(</span><span class="n">registry</span> <span class="o">=</span> <span class="n">registry</span><span class="p">)</span>
+
+<span class="n">registry</span><span class="o">.</span><span class="n">register_calc</span><span class="p">(</span><span class="n">full_path</span><span class="o">=</span><span class="n">sim_app</span><span class="p">,</span> <span class="n">calc_type</span><span class="o">=</span><span class="s1">&#39;sim&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In user sim func:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">libensemble.controller</span> <span class="k">import</span> <span class="n">JobController</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">jobctl</span> <span class="o">=</span> <span class="n">JobController</span><span class="o">.</span><span class="n">controller</span> <span class="c1">#Will return controller (whether Balsam or standard).</span>
+<span class="n">job</span> <span class="o">=</span> <span class="n">jobctl</span><span class="o">.</span><span class="n">launch</span><span class="p">(</span><span class="n">calc_type</span><span class="o">=</span><span class="s1">&#39;sim&#39;</span><span class="p">,</span> <span class="n">num_procs</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">app_args</span><span class="o">=</span><span class="s1">&#39;input.txt&#39;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="s1">&#39;out.txt&#39;</span><span class="p">)</span>
+
+<span class="k">while</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="n">timeout_sec</span><span class="p">:</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span>
+
+    <span class="c1"># Has manager sent a finish signal</span>
+    <span class="n">jobctl</span><span class="o">.</span><span class="n">manager_poll</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">job</span><span class="o">.</span><span class="n">manager_signal</span> <span class="o">==</span> <span class="s1">&#39;finish&#39;</span><span class="p">:</span>
+        <span class="n">jobctl</span><span class="o">.</span><span class="n">kill</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+
+    <span class="c1"># Poll job to see if completed</span>
+    <span class="n">jobctl</span><span class="o">.</span><span class="n">poll</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">job</span><span class="o">.</span><span class="n">finished</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
+        <span class="k">break</span>
+
+    <span class="c1"># Check output file for error and kill job</span>
+    <span class="k">if</span> <span class="n">job</span><span class="o">.</span><span class="n">stdout_exists</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s1">&#39;Error&#39;</span> <span class="ow">in</span> <span class="n">job</span><span class="o">.</span><span class="n">read_stdout</span><span class="p">():</span>
+            <span class="n">jobctl</span><span class="o">.</span><span class="n">kill</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+            <span class="k">break</span>
+</pre></div>
+</div>
+<p>Following is a list of job status and configuration attributes that can be retrieved from job.</p>
+<p>Job Status attributes include:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">job.state:</th><td class="field-body">(string) The job status. One of: (‘UNKNOWN’|’CREATED’|’WAITING’|’RUNNING’|’FINISHED’|’USER_KILLED’|’FAILED’)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">job.process:</th><td class="field-body">(process obj) The process object used by the underlying process manager (e.g. return value of subprocess.Popen)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">job.errcode:</th><td class="field-body">(int) The errorcode/return code used by the underlying process manager</td>
+</tr>
+<tr class="field-even field"><th class="field-name">job.finished:</th><td class="field-body">(Boolean) True means job has finished running - not whether was successful</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">job.success:</th><td class="field-body">(Boolean) Did job complete succesfully (e.g. returncode is zero)</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">job.manager_signal:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">(String) Contains any signals received by manager. (‘none’|’finish’|’kill’)</td>
+</tr>
+</tbody>
+</table>
+<p>Run configuration attributes - Some will be auto-generated:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">job.workdir:</th><td class="field-body">(string) Work directory for the job</td>
+</tr>
+<tr class="field-even field"><th class="field-name">job.name:</th><td class="field-body">(string) Name of job - auto-generated</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">job.app:</th><td class="field-body">(app obj) Use application/executable, registered using registry.register_calc</td>
+</tr>
+<tr class="field-even field"><th class="field-name">job.app_args:</th><td class="field-body">(string) Application arguments as a string</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">job.num_procs:</th><td class="field-body">(int) Total number of processors for job</td>
+</tr>
+<tr class="field-even field"><th class="field-name">job.num_nodes:</th><td class="field-body">(int) Number of nodes for job</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">job.ranks_per_node:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">(int) Ranks per node for job</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">job.machinefile:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">(string) Name of machinefile is provided</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">job.stdout:</th><td class="field-body">(string) Name of file where the standard output of the job is written (in job.workdir)</td>
+</tr>
+</tbody>
+</table>
+<p>A list of job_controller and job functions can be found under the Job Controller Module.</p>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="register.html" class="btn btn-neutral float-right" title="Registration Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../worker_modules.html" class="btn btn-neutral" title="Worker Modules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Jeffrey Larson.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

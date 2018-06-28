@@ -1,0 +1,522 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Example Modules &mdash; libEnsemble 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="libEnsemble 0.1.0 documentation" href="index.html"/>
+        <link rel="prev" title="Job Controller Module" href="job_controller/job_controller.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> libEnsemble
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">libEnsemble:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="readme.html">libEnsemble</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes.html">Release Notes</a></li>
+</ul>
+<p class="caption"><span class="caption-text">libEnsemble API:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="libe_module.html">libE Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manager_modules.html">Manager Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="worker_modules.html">Worker Modules</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Job Controller:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="job_controller/overview.html">Job Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="job_controller/register.html">Registration Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="job_controller/job_controller.html">Job Controller Module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Examples:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Example Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#allocation-functions">Allocation Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-give_sim_work_first">give_sim_work_first</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#generation-functions">Generation Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-aposmm_logic">aposmm_logic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-uniform_sampling">uniform_sampling</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#simulation-functions">Simulation Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-six_hump_camel">six_hump_camel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-chwirut1">chwirut</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">libEnsemble</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Example Modules</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/examples_modules.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="example-modules">
+<h1>Example Modules<a class="headerlink" href="#example-modules" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="allocation-functions">
+<h2>Allocation Functions<a class="headerlink" href="#allocation-functions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-give_sim_work_first">
+<span id="give-sim-work-first"></span><h3>give_sim_work_first<a class="headerlink" href="#module-give_sim_work_first" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="give_sim_work_first.give_sim_work_first">
+<code class="descclassname">give_sim_work_first.</code><code class="descname">give_sim_work_first</code><span class="sig-paren">(</span><em>worker_sets</em>, <em>H</em>, <em>sim_specs</em>, <em>gen_specs</em>, <em>gen_info</em><span class="sig-paren">)</span><a class="headerlink" href="#give_sim_work_first.give_sim_work_first" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decide what should be given to workers. This allocation function gives any
+available simulation work first, and only when all simulations are
+completed or running does it start (at most gen_specs[‘num_inst’])
+generator instances.</p>
+<p>note: everything put into the Work dictionary will be given, so be
+careful not to put more gen or sim items into Work than necessary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>H</strong> (<em>numpy structured array</em>) – </li>
+<li><strong>H_ind</strong> (<em>integer</em>) – </li>
+<li><strong>sim_specs</strong> (<em>dictionary</em>) – </li>
+<li><strong>gen_specs</strong> (<em>dictionary</em>) – </li>
+<li><strong>term_test</strong> (<em>lambda function</em>) – </li>
+<li><strong>gen_info</strong> (<em>dictionary</em>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>Work</strong> (<em>dictionary</em>) – Each integer key corresponds to a worker that will be given the
+corresponding dictionary values</li>
+<li><strong>gen_info</strong> (<em>dictionary</em>) – Updated generation informaiton</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="generation-functions">
+<h2>Generation Functions<a class="headerlink" href="#generation-functions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-aposmm_logic">
+<span id="aposmm-logic"></span><h3>aposmm_logic<a class="headerlink" href="#module-aposmm_logic" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="aposmm_logic.add_points_to_O">
+<code class="descclassname">aposmm_logic.</code><code class="descname">add_points_to_O</code><span class="sig-paren">(</span><em>O</em>, <em>pts</em>, <em>len_H</em>, <em>gen_specs</em>, <em>c_flag</em>, <em>gen_info</em>, <em>local_flag=0</em>, <em>sorted_run_inds=[]</em>, <em>run=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#aposmm_logic.add_points_to_O" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds points to O, the numpy structured array to be sent back to the manager</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="aposmm_logic.advance_localopt_method">
+<code class="descclassname">aposmm_logic.</code><code class="descname">advance_localopt_method</code><span class="sig-paren">(</span><em>H</em>, <em>gen_specs</em>, <em>c_flag</em>, <em>run</em>, <em>gen_info</em><span class="sig-paren">)</span><a class="headerlink" href="#aposmm_logic.advance_localopt_method" title="Permalink to this definition">¶</a></dt>
+<dd><p>Moves a local optimization method one iteration forward. We currently do
+this by feeding all past evaluations from a run to the method and then
+storing the first new point generated</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="aposmm_logic.aposmm_logic">
+<code class="descclassname">aposmm_logic.</code><code class="descname">aposmm_logic</code><span class="sig-paren">(</span><em>H</em>, <em>gen_info</em>, <em>gen_specs</em>, <em>libE_info</em><span class="sig-paren">)</span><a class="headerlink" href="#aposmm_logic.aposmm_logic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Receives the following data from H:</p>
+<blockquote>
+<div>‘x_on_cube’, ‘fvec’, ‘f’, ‘local_pt’,
+‘dist_to_unit_bounds’, ‘dist_to_better_l’, ‘dist_to_better_s’,
+‘ind_of_better_l’, ‘ind_of_better_s’, ‘started_run’, ‘num_active_runs’,
+‘local_min’</div></blockquote>
+<p>When using libEnsemble to do individual component evaluations, APOSMM will
+return num_components copies of each point, but each component=0 version of
+the point will only be considered when</p>
+<ul class="simple">
+<li>deciding where to start a run,</li>
+<li>best nearby point,</li>
+<li>storing the order of the points is the run</li>
+<li>storing the combined objective function value</li>
+<li>etc</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="aposmm_logic.calc_rk">
+<code class="descclassname">aposmm_logic.</code><code class="descname">calc_rk</code><span class="sig-paren">(</span><em>n</em>, <em>n_s</em>, <em>rk_const</em>, <em>lhs_divisions=0</em><span class="sig-paren">)</span><a class="headerlink" href="#aposmm_logic.calc_rk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the critical distance r_k</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="aposmm_logic.decide_where_to_start_localopt">
+<code class="descclassname">aposmm_logic.</code><code class="descname">decide_where_to_start_localopt</code><span class="sig-paren">(</span><em>H</em>, <em>n_s</em>, <em>rk_const</em>, <em>lhs_divisions=0</em>, <em>mu=0</em>, <em>nu=0</em>, <em>gamma_quantile=1</em><span class="sig-paren">)</span><a class="headerlink" href="#aposmm_logic.decide_where_to_start_localopt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decide where to start a LocalOpt run</p>
+<p>Finds points in the history that satisfy the conditions (S1-S5 and L1-L8) in
+Table 1 of the paper: “A Batch, Derivative-free Algorithm for Finding
+Multiple Local Minima”. To do this, we first identify sample points
+satisfying S2-S5. We then identify all localopt points that satisfy L1-L7.
+We then start from any sample point also satisfying S1. For L8 we use the
+pairwise distances from all Local to Local points and from all Sample to
+Local points to search through Local points to attempt to travel on an
+rk-ascent path to some Sample point</p>
+<p>We don’t consider points in the history without function values. Also, note
+that mu and nu implicitly depend on the scaling that is happening with the
+domain. That is, adjusting lb/ub can make mu/nu start (resp. not start) at a
+point that didn’t (resp. did) satisfy the mu/nu test prviously.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>H</strong> (<em>numpy structured array</em>) – History array storing rows for each point.</li>
+<li><strong>n_s</strong> (<em>integer</em>) – Number of sample points</li>
+<li><strong>rk_const</strong> (<em>float</em>) – Constant in front of r_k evaluation</li>
+<li><strong>lhs_divisions</strong> (<em>integer</em>) – Number of Latin hypercube sampling divisions (0 or 1 means uniform
+random sampling over the domain)</li>
+<li><strong>mu</strong> (<em>nonnegative float</em>) – Distance from the boundary that all starting points must satisfy</li>
+<li><strong>nu</strong> (<em>nonnegative float</em>) – Distance from identified minima that all starting points must satisfy</li>
+<li><strong>gamma_quantile</strong> (<em>float in</em><em> (</em><em>0</em><em>,</em><em>1</em><em>]</em>) – Only sample points whose function values are in the lower
+gamma_quantile can start localopt runs</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>start_inds</strong> – Indices where a local opt run should be started</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="aposmm_logic.initialize_APOSMM">
+<code class="descclassname">aposmm_logic.</code><code class="descname">initialize_APOSMM</code><span class="sig-paren">(</span><em>H</em>, <em>gen_specs</em><span class="sig-paren">)</span><a class="headerlink" href="#aposmm_logic.initialize_APOSMM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes common values every time that APOSMM is reinvoked</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="aposmm_logic.look_in_history">
+<code class="descclassname">aposmm_logic.</code><code class="descname">look_in_history</code><span class="sig-paren">(</span><em>x</em>, <em>Run_H</em>, <em>vector_return=False</em><span class="sig-paren">)</span><a class="headerlink" href="#aposmm_logic.look_in_history" title="Permalink to this definition">¶</a></dt>
+<dd><p>See if Run[‘x_on_cube’][pt_in_run] matches x, returning f or fvec, or saves x to
+x_new if every point in Run_H has been checked.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="aposmm_logic.queue_update_function">
+<code class="descclassname">aposmm_logic.</code><code class="descname">queue_update_function</code><span class="sig-paren">(</span><em>H</em>, <em>gen_specs</em>, <em>persistent_data</em><span class="sig-paren">)</span><a class="headerlink" href="#aposmm_logic.queue_update_function" title="Permalink to this definition">¶</a></dt>
+<dd><p>A specific queue update function that stops evaluations under a variety of
+conditions</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="aposmm_logic.set_up_and_run_nlopt">
+<code class="descclassname">aposmm_logic.</code><code class="descname">set_up_and_run_nlopt</code><span class="sig-paren">(</span><em>Run_H</em>, <em>gen_specs</em><span class="sig-paren">)</span><a class="headerlink" href="#aposmm_logic.set_up_and_run_nlopt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up objective and runs nlopt</p>
+<p>Declares the appropriate syntax for our special objective function to read
+through Run_H, sets the parameters and starting points for the run.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="aposmm_logic.set_up_and_run_tao">
+<code class="descclassname">aposmm_logic.</code><code class="descname">set_up_and_run_tao</code><span class="sig-paren">(</span><em>Run_H</em>, <em>gen_specs</em><span class="sig-paren">)</span><a class="headerlink" href="#aposmm_logic.set_up_and_run_tao" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up objective and runs PETSc on the comm_self communicator</p>
+<p>Declares the appropriate syntax for our special objective function to read
+through Run_H, sets the parameters and starting points for the run.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="aposmm_logic.update_history_dist">
+<code class="descclassname">aposmm_logic.</code><code class="descname">update_history_dist</code><span class="sig-paren">(</span><em>H</em>, <em>gen_specs</em>, <em>c_flag</em><span class="sig-paren">)</span><a class="headerlink" href="#aposmm_logic.update_history_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update distances for any new points that have been evaluated</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="aposmm_logic.update_history_optimal">
+<code class="descclassname">aposmm_logic.</code><code class="descname">update_history_optimal</code><span class="sig-paren">(</span><em>x_opt</em>, <em>H</em>, <em>run_inds</em><span class="sig-paren">)</span><a class="headerlink" href="#aposmm_logic.update_history_optimal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updated the history after any point has been declared a local minimum</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-uniform_sampling">
+<span id="uniform-sampling"></span><h3>uniform_sampling<a class="headerlink" href="#module-uniform_sampling" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="uniform_sampling.uniform_random_sample">
+<code class="descclassname">uniform_sampling.</code><code class="descname">uniform_random_sample</code><span class="sig-paren">(</span><em>H</em>, <em>gen_info</em>, <em>gen_specs</em>, <em>libE_info</em><span class="sig-paren">)</span><a class="headerlink" href="#uniform_sampling.uniform_random_sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates points uniformly over the domain defined by gen_specs[‘ub’] and
+gen_specs[‘lb’].</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="uniform_sampling.uniform_random_sample_obj_components">
+<code class="descclassname">uniform_sampling.</code><code class="descname">uniform_random_sample_obj_components</code><span class="sig-paren">(</span><em>H</em>, <em>gen_info</em>, <em>gen_specs</em>, <em>libE_info</em><span class="sig-paren">)</span><a class="headerlink" href="#uniform_sampling.uniform_random_sample_obj_components" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates points uniformly over the domain defined by gen_specs[‘ub’] and
+gen_specs[‘lb’] but requests each component be evaluated separately.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="uniform_sampling.uniform_random_sample_with_different_nodes_and_ranks">
+<code class="descclassname">uniform_sampling.</code><code class="descname">uniform_random_sample_with_different_nodes_and_ranks</code><span class="sig-paren">(</span><em>H</em>, <em>gen_info</em>, <em>gen_specs</em>, <em>libE_info</em><span class="sig-paren">)</span><a class="headerlink" href="#uniform_sampling.uniform_random_sample_with_different_nodes_and_ranks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates points uniformly over the domain defined by gen_specs[‘ub’] and
+gen_specs[‘lb’]. Also randomly requests a different number of nodes to be
+used in the evaluation of the generated point.</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="simulation-functions">
+<h2>Simulation Functions<a class="headerlink" href="#simulation-functions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-six_hump_camel">
+<span id="six-hump-camel"></span><h3>six_hump_camel<a class="headerlink" href="#module-six_hump_camel" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="six_hump_camel.six_hump_camel">
+<code class="descclassname">six_hump_camel.</code><code class="descname">six_hump_camel</code><span class="sig-paren">(</span><em>H</em>, <em>gen_info</em>, <em>sim_specs</em>, <em>libE_info</em><span class="sig-paren">)</span><a class="headerlink" href="#six_hump_camel.six_hump_camel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluates the six_hump_camel_func and possible six_hump_camel_grad</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six_hump_camel.six_hump_camel_func">
+<code class="descclassname">six_hump_camel.</code><code class="descname">six_hump_camel_func</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#six_hump_camel.six_hump_camel_func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Definition of the six-hump camel</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six_hump_camel.six_hump_camel_grad">
+<code class="descclassname">six_hump_camel.</code><code class="descname">six_hump_camel_grad</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#six_hump_camel.six_hump_camel_grad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Definition of the six-hump camel gradient</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six_hump_camel.six_hump_camel_with_different_ranks_and_nodes">
+<code class="descclassname">six_hump_camel.</code><code class="descname">six_hump_camel_with_different_ranks_and_nodes</code><span class="sig-paren">(</span><em>H</em>, <em>gen_info</em>, <em>sim_specs</em>, <em>libE_info</em><span class="sig-paren">)</span><a class="headerlink" href="#six_hump_camel.six_hump_camel_with_different_ranks_and_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluates the six hump camel but also performs a system call (to show one
+way of evaluating a compiled simulation).</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-chwirut1">
+<span id="chwirut"></span><h3>chwirut<a class="headerlink" href="#module-chwirut1" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="chwirut1.EvaluateFunction">
+<code class="descclassname">chwirut1.</code><code class="descname">EvaluateFunction</code><span class="sig-paren">(</span><em>x</em>, <em>component=&lt;MagicMock id='139714592053344'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#chwirut1.EvaluateFunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluates the chwirut function</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chwirut1.EvaluateJacobian">
+<code class="descclassname">chwirut1.</code><code class="descname">EvaluateJacobian</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#chwirut1.EvaluateJacobian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluates the chwirut Jacobian</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chwirut1.libE_func_wrapper">
+<code class="descclassname">chwirut1.</code><code class="descname">libE_func_wrapper</code><span class="sig-paren">(</span><em>H</em>, <em>gen_info</em>, <em>sim_specs</em>, <em>libE_info</em><span class="sig-paren">)</span><a class="headerlink" href="#chwirut1.libE_func_wrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>libEnsemble wrapper around EvaluateFunction</p>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="job_controller/job_controller.html" class="btn btn-neutral" title="Job Controller Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Jeffrey Larson.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

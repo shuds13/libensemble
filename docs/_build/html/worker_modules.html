@@ -1,0 +1,308 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Worker Modules &mdash; libEnsemble 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="libEnsemble 0.1.0 documentation" href="index.html"/>
+        <link rel="next" title="Job Controller" href="job_controller/overview.html"/>
+        <link rel="prev" title="Manager Modules" href="manager_modules.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> libEnsemble
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">libEnsemble:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="readme.html">libEnsemble</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes.html">Release Notes</a></li>
+</ul>
+<p class="caption"><span class="caption-text">libEnsemble API:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="libe_module.html">libE Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manager_modules.html">Manager Modules</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Worker Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#libensemble-worker-class">libEnsemble worker class</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Job Controller:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="job_controller/overview.html">Job Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="job_controller/register.html">Registration Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="job_controller/job_controller.html">Job Controller Module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Examples:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples_modules.html">Example Modules</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">libEnsemble</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Worker Modules</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/worker_modules.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-libE_worker">
+<span id="worker-modules"></span><h1>Worker Modules<a class="headerlink" href="#module-libE_worker" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="libensemble-worker-class">
+<h2>libEnsemble worker class<a class="headerlink" href="#libensemble-worker-class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="libE_worker.Worker">
+<em class="property">class </em><code class="descclassname">libE_worker.</code><code class="descname">Worker</code><span class="sig-paren">(</span><em>workerID</em><span class="sig-paren">)</span><a class="headerlink" href="#libE_worker.Worker" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="libE_worker.Worker.clean">
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libE_worker.Worker.clean" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="libE_worker.Worker.gen_specs">
+<code class="descname">gen_specs</code><em class="property"> = {}</em><a class="headerlink" href="#libE_worker.Worker.gen_specs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="libE_worker.Worker.init_workers">
+<em class="property">static </em><code class="descname">init_workers</code><span class="sig-paren">(</span><em>sim_specs_in</em>, <em>gen_specs_in</em><span class="sig-paren">)</span><a class="headerlink" href="#libE_worker.Worker.init_workers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="libE_worker.Worker.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>Work</em>, <em>calc_in</em><span class="sig-paren">)</span><a class="headerlink" href="#libE_worker.Worker.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="libE_worker.Worker.sim_specs">
+<code class="descname">sim_specs</code><em class="property"> = {}</em><a class="headerlink" href="#libE_worker.Worker.sim_specs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="libE_worker.worker_main">
+<code class="descclassname">libE_worker.</code><code class="descname">worker_main</code><span class="sig-paren">(</span><em>c</em>, <em>sim_specs</em>, <em>gen_specs</em><span class="sig-paren">)</span><a class="headerlink" href="#libE_worker.worker_main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate calculations given to it by the manager</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>c</strong> (<em>dict containing fields 'comm' and 'color' for the communicator.</em>) – </li>
+<li><strong>sim_specs</strong> (<em>dict with parameters/information for simulation calculations</em>) – </li>
+<li><strong>gen_specs</strong> (<em>dict with parameters/information for generation calculations</em>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="job_controller/overview.html" class="btn btn-neutral float-right" title="Job Controller" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="manager_modules.html" class="btn btn-neutral" title="Manager Modules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Jeffrey Larson.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

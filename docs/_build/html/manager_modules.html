@@ -1,0 +1,370 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Manager Modules &mdash; libEnsemble 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="libEnsemble 0.1.0 documentation" href="index.html"/>
+        <link rel="next" title="Worker Modules" href="worker_modules.html"/>
+        <link rel="prev" title="libE Module" href="libe_module.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> libEnsemble
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">libEnsemble:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="readme.html">libEnsemble</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes.html">Release Notes</a></li>
+</ul>
+<p class="caption"><span class="caption-text">libEnsemble API:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="libe_module.html">libE Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Manager Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#libensemble-manager-routines">libEnsemble manager routines</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="worker_modules.html">Worker Modules</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Job Controller:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="job_controller/overview.html">Job Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="job_controller/register.html">Registration Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="job_controller/job_controller.html">Job Controller Module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Examples:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples_modules.html">Example Modules</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">libEnsemble</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Manager Modules</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/manager_modules.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-libE_manager">
+<span id="manager-modules"></span><h1>Manager Modules<a class="headerlink" href="#module-libE_manager" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="libensemble-manager-routines">
+<h2>libEnsemble manager routines<a class="headerlink" href="#libensemble-manager-routines" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="libE_manager.final_receive_and_kill">
+<code class="descclassname">libE_manager.</code><code class="descname">final_receive_and_kill</code><span class="sig-paren">(</span><em>comm</em>, <em>worker_sets</em>, <em>H</em>, <em>H_ind</em>, <em>sim_specs</em>, <em>gen_specs</em>, <em>term_test</em>, <em>libE_specs</em>, <em>gen_info</em>, <em>man_start_time</em><span class="sig-paren">)</span><a class="headerlink" href="#libE_manager.final_receive_and_kill" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tries to receive from any active workers.</p>
+<p>If time expires before all active workers have been received from, a
+nonblocking receive is posted (though the manager will not receive this
+data) and a kill signal is sent.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="libE_manager.grow_H">
+<code class="descclassname">libE_manager.</code><code class="descname">grow_H</code><span class="sig-paren">(</span><em>H</em>, <em>k</em><span class="sig-paren">)</span><a class="headerlink" href="#libE_manager.grow_H" title="Permalink to this definition">¶</a></dt>
+<dd><p>libEnsemble is requesting k rows be added to H because the gen_func produced
+more points than rows in H.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="libE_manager.initialize">
+<code class="descclassname">libE_manager.</code><code class="descname">initialize</code><span class="sig-paren">(</span><em>sim_specs</em>, <em>gen_specs</em>, <em>alloc_specs</em>, <em>exit_criteria</em>, <em>H0</em>, <em>libE_specs</em><span class="sig-paren">)</span><a class="headerlink" href="#libE_manager.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Forms the numpy structured array that records everything from the
+libEnsemble run</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>H</strong> (<em>numpy structured array</em>) – History array storing rows for each point. Field names are in
+libensemble/libE_fields.py</li>
+<li><strong>H_ind</strong> (<em>integer</em>) – Where libEnsemble should start filling in H</li>
+<li><strong>term_test</strong> (<em>lambda funciton</em>) – Simplified termination test (doesn’t require passing fixed quantities).
+This is nice when calling term_test in multiple places.</li>
+<li><strong>idle_w</strong> (<em>python set</em>) – Idle worker (initially all workers)</li>
+<li><strong>active_w</strong> (<em>python set</em>) – Active worker (initially empty)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="libE_manager.manager_main">
+<code class="descclassname">libE_manager.</code><code class="descname">manager_main</code><span class="sig-paren">(</span><em>libE_specs</em>, <em>alloc_specs</em>, <em>sim_specs</em>, <em>gen_specs</em>, <em>failure_processing</em>, <em>exit_criteria</em>, <em>H0</em><span class="sig-paren">)</span><a class="headerlink" href="#libE_manager.manager_main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Manager routine to coordinate the generation and simulation evaluations</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="libE_manager.receive_from_sim_and_gen">
+<code class="descclassname">libE_manager.</code><code class="descname">receive_from_sim_and_gen</code><span class="sig-paren">(</span><em>comm</em>, <em>worker_sets</em>, <em>H</em>, <em>H_ind</em>, <em>sim_specs</em>, <em>gen_specs</em>, <em>gen_info</em><span class="sig-paren">)</span><a class="headerlink" href="#libE_manager.receive_from_sim_and_gen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Receive calculation output from workers. Loops over all active workers and
+probes to see if worker is ready to communticate. If any output is
+received, all other workers are looped back over.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="libE_manager.send_initial_info_to_workers">
+<code class="descclassname">libE_manager.</code><code class="descname">send_initial_info_to_workers</code><span class="sig-paren">(</span><em>comm</em>, <em>H</em>, <em>sim_specs</em>, <em>gen_specs</em>, <em>worker_sets</em><span class="sig-paren">)</span><a class="headerlink" href="#libE_manager.send_initial_info_to_workers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="libE_manager.send_to_worker_and_update_active_and_idle">
+<code class="descclassname">libE_manager.</code><code class="descname">send_to_worker_and_update_active_and_idle</code><span class="sig-paren">(</span><em>comm</em>, <em>H</em>, <em>Work</em>, <em>w</em>, <em>sim_specs</em>, <em>gen_specs</em>, <em>worker_sets</em><span class="sig-paren">)</span><a class="headerlink" href="#libE_manager.send_to_worker_and_update_active_and_idle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends calculation information to the workers and updates the sets of
+active/idle workers</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="libE_manager.termination_test">
+<code class="descclassname">libE_manager.</code><code class="descname">termination_test</code><span class="sig-paren">(</span><em>H</em>, <em>H_ind</em>, <em>exit_criteria</em>, <em>start_time</em>, <em>lenH0</em><span class="sig-paren">)</span><a class="headerlink" href="#libE_manager.termination_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return nonzero if the libEnsemble run should stop</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="libE_manager.update_active_and_queue">
+<code class="descclassname">libE_manager.</code><code class="descname">update_active_and_queue</code><span class="sig-paren">(</span><em>H</em>, <em>libE_specs</em>, <em>gen_specs</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#libE_manager.update_active_and_queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call a user-defined function that decides if active work should be continued
+and possibly updated the priority of points in H.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="libE_manager.update_history_f">
+<code class="descclassname">libE_manager.</code><code class="descname">update_history_f</code><span class="sig-paren">(</span><em>H</em>, <em>D</em><span class="sig-paren">)</span><a class="headerlink" href="#libE_manager.update_history_f" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the history (in place) after a point has been evaluated</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="libE_manager.update_history_x_in">
+<code class="descclassname">libE_manager.</code><code class="descname">update_history_x_in</code><span class="sig-paren">(</span><em>H</em>, <em>H_ind</em>, <em>gen_worker</em>, <em>O</em><span class="sig-paren">)</span><a class="headerlink" href="#libE_manager.update_history_x_in" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the history (in place) when a new point has been returned from a gen</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>H</strong> (<em>numpy structured array</em>) – History array storing rows for each point.</li>
+<li><strong>H_ind</strong> (<em>integer</em>) – The new point</li>
+<li><strong>gen_worker</strong> (<em>integer</em>) – The worker who generated these points</li>
+<li><strong>O</strong> (<em>numpy array</em>) – Output from gen_func</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="libE_manager.update_history_x_out">
+<code class="descclassname">libE_manager.</code><code class="descname">update_history_x_out</code><span class="sig-paren">(</span><em>H</em>, <em>q_inds</em>, <em>sim_worker</em><span class="sig-paren">)</span><a class="headerlink" href="#libE_manager.update_history_x_out" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the history (in place) when a new point has been given out to be evaluated</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="worker_modules.html" class="btn btn-neutral float-right" title="Worker Modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="libe_module.html" class="btn btn-neutral" title="libE Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Jeffrey Larson.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

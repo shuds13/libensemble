@@ -1,0 +1,304 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>libEnsemble User Guide &mdash; libEnsemble 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="libEnsemble 0.1.0 documentation" href="index.html"/>
+        <link rel="next" title="libE Module" href="libe_module.html"/>
+        <link rel="prev" title="Release Notes" href="release_notes.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> libEnsemble
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">libEnsemble:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">libEnsemble</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes.html">Release Notes</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">libEnsemble User Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#libensemble-overview">libEnsemble overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#expected-use-cases">Expected use cases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-libensemble-history-array">The libEnsemble History Array</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">libEnsemble API:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="libe_module.html">libE Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manager_modules.html">Manager Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="worker_modules.html">Worker Modules</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Job Controller:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="job_controller/overview.html">Job Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="job_controller/register.html">Registration Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="job_controller/job_controller.html">Job Controller Module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Examples:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples_modules.html">Example Modules</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">libEnsemble</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>libEnsemble User Guide</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/user_guide.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="libensemble-user-guide">
+<h1>libEnsemble User Guide<a class="headerlink" href="#libensemble-user-guide" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="libensemble-overview">
+<h2>libEnsemble overview<a class="headerlink" href="#libensemble-overview" title="Permalink to this headline">¶</a></h2>
+<p>libEnsemble is a software library to coordinate the concurrent evaluation of ensembles of calculations. libEnsemble uses a manager to allocate work to various workers. (A libEnsemble worker is the smallest indivisible unit to perform some calculation.) The work performed by libEnsemble is governed by three routines:
+* gen_f: Generates inputs to sim_f.
+* sim_f: Evaluates a simulation or other evaluation at output from gen_f.
+* alloc_f: Decides whether sim_f or gen_f should be called (and with what input/resources) as workers
+become available. (Can decide neither sim_f nor gen_f should be called.)</p>
+<p>The default alloc_f tells each available worker to call sim_f with the highest priority unit of work from gen_f. If a worker is idle and there is no gen_f output to give, the worker is told to call gen_f. Example sim_f, gen_f, and alloc_f routines can be found in the libensemble directory under the sim_funcs, gen_funcs, alloc_funcs directories respectively; Example running
+scripts are available in libensemble/regression_tests</p>
+</div>
+<div class="section" id="expected-use-cases">
+<h2>Expected use cases<a class="headerlink" href="#expected-use-cases" title="Permalink to this headline">¶</a></h2>
+<p>Below are some expected libEnsemble use cases that we support (or are working to support) and plan to have examples of:</p>
+<ul class="simple">
+<li>A user is looking to optimize a simulation calculation. The simulation may already be using
+parallel resources, but not a large fraction of some computer. libEnsemble can coordinate the concurrent evaluation of the simulation sim_f at various parameter values and gen_f would return candidate parameter values (possibly after each sim_f output).</li>
+<li>A user is has a gen_f that produces different meshes to be used within a sim_f. Given the sim_f
+output, gen_f will refine a mesh or produce a new mesh. libEnsemble can ensure that the calculated
+meshes can be used by multiple simulations without requiring movement of data.</li>
+<li>A user is attempting to sample a simulation sim_f at some parameter values, many of which are
+will cause the simulation to fail. libEnsemble can stop unresponsive evaluations, and recover com-
+putational resources for future evaluations. gen_f can possibly update the sampling after discovering regions where evaluations of sim_f fail.</li>
+<li>A user has a simulation sim_f that requires calculating multiple expensive quantities, some of
+which depend on other quantities. sim_f can observe intermediate quantities in order to stop related calcu-lations and preempt future calculations associated with a poor parameter values.</li>
+<li>A user has a simulation sim_f with multiple fidelities, with the higher-fidelity evaluations
+requiring more computational resources, and a gen_f/alloc_f that decides which parameters should be evalu-ated and at what fidelity level. libEnsemble can coordinate these evaluations without requiring the user know parallel programming.</li>
+<li>A user wishes to identify multiple local optima for a sim_f. Furthermore, sensitivity analysis is
+desired at each identified optimum. libEnsemble can use the points from the APOSMM gen_f to identify optima and after a point is ruled to be an optimum, a different gen_f can produce a collection of parameters necessary for sensitivity analysis of sim_f.</li>
+</ul>
+<p>Naturally, combinations use cases is supported as well. libEnsemble can be used to optimize simulations fail frequently.</p>
+</div>
+<div class="section" id="the-libensemble-history-array">
+<h2>The libEnsemble History Array<a class="headerlink" href="#the-libensemble-history-array" title="Permalink to this headline">¶</a></h2>
+<p>libEnsemble uses a numpy structured array H to store output from gen_f and corresponding sim_f output. Similarly, gen_f and sim_f are expected to return output in numpy structured arrays. The names of the fields to be given as input to gen_f and sim_f must be an output from gen_f or sim_f. In addition to the fields output from sim_f and gen_f, the final history returned from libEnsemble will include the fields. (Note that the libEnsemble history can contain pointers to data instead of the data itself. In some applications, this can greatly the size of the history and reduce the amount of data communicated to/from the manager.):</p>
+<ul class="simple">
+<li>sim_id’ [int]: Each unit of work output from gen_f is must have an associated sim_id. The generator
+can assign this, but users must careful to ensure points are added in order. For example, if alloc_f allows for two gen_f instances to be running simultaneously, alloc_f should ensure that both don’t generate points with the same sim_id.</li>
+<li>given’ [bool]: Has this gen_f output been given to a libEnsemble worker to be evaluated yet?</li>
+<li>given_time’ [float]: At what time (since the epoch) was this gen_f output given to a worker?</li>
+<li>sim_worker’ [int]: libEnsemble worker that it was given to be evaluated.</li>
+<li>gen_worker’ [int]: libEnsemble worker that generated this sim_id</li>
+<li>returned’ [bool]: Has this a worker completed the evaluation of this unit of work?</li>
+<li>paused’ [bool]: Has this evaluation been paused?</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="libe_module.html" class="btn btn-neutral float-right" title="libE Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="release_notes.html" class="btn btn-neutral" title="Release Notes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Jeffrey Larson.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

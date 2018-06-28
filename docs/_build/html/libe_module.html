@@ -1,0 +1,396 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>libE Module &mdash; libEnsemble 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="libEnsemble 0.1.0 documentation" href="index.html"/>
+        <link rel="next" title="Manager Modules" href="manager_modules.html"/>
+        <link rel="prev" title="Release Notes" href="release_notes.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> libEnsemble
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">libEnsemble:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="readme.html">libEnsemble</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes.html">Release Notes</a></li>
+</ul>
+<p class="caption"><span class="caption-text">libEnsemble API:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">libE Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#main-libensemble-routine">Main libEnsemble routine</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="manager_modules.html">Manager Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="worker_modules.html">Worker Modules</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Job Controller:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="job_controller/overview.html">Job Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="job_controller/register.html">Registration Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="job_controller/job_controller.html">Job Controller Module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Examples:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples_modules.html">Example Modules</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">libEnsemble</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>libE Module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/libe_module.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-libE">
+<span id="libe-module"></span><h1>libE Module<a class="headerlink" href="#module-libE" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="main-libensemble-routine">
+<h2>Main libEnsemble routine<a class="headerlink" href="#main-libensemble-routine" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>First tasks to be included in libEnsemble: [depends on]</dt>
+<dd><ul class="first last simple">
+<li>generate input for simulations</li>
+<li>launch simulations</li>
+<li>receive ouptut from simulations [sim]</li>
+<li>coordinate concurrent simulations [sim]</li>
+<li>track simulation history</li>
+</ul>
+</dd>
+<dt>Second tasks to be included in libEnsemble:</dt>
+<dd><ul class="first last simple">
+<li>allocate resources to simulations [machinefiles or sim or queue system]</li>
+<li>receive intermediate output from simulations [sim]</li>
+<li>tolerate failed simulations [MPI/Hydra]</li>
+<li>exploit persistent data (e.g., checkpointing, meshes, iterative solvers) [sim &amp; OS/memory]</li>
+<li>gracefully terminate simulations [sim &amp; ??]</li>
+</ul>
+</dd>
+<dt>Third (aspirational) tasks for libEnsemble:</dt>
+<dd><ul class="first last simple">
+<li>change resources given to a simulation midrun [sim]</li>
+<li>recover resources when simulation fails [MPI/Hydra]</li>
+<li>gracefully pause cimulation [sim]</li>
+</ul>
+</dd>
+</dl>
+<dl class="function">
+<dt id="libE.check_inputs">
+<code class="descclassname">libE.</code><code class="descname">check_inputs</code><span class="sig-paren">(</span><em>libE_specs</em>, <em>alloc_specs</em>, <em>sim_specs</em>, <em>gen_specs</em>, <em>failure_processing</em>, <em>exit_criteria</em>, <em>H0</em><span class="sig-paren">)</span><a class="headerlink" href="#libE.check_inputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the libEnsemble arguments are of the correct data type contain
+sufficient information to perform a run.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="libE.libE">
+<code class="descclassname">libE.</code><code class="descname">libE</code><span class="sig-paren">(</span><em>sim_specs</em>, <em>gen_specs</em>, <em>exit_criteria</em>, <em>failure_processing={}</em>, <em>alloc_specs={'alloc_f': give_sim_work_first</em>, <em>'out':[]}</em>, <em>libE_specs={'comm': MPI.COMM_WORLD</em>, <em>'color': 0</em>, <em>'manager_ranks': set([0])</em>, <em>'worker_ranks': set(range(1</em>, <em>MPI.COMM_WORLD.Get_size()))}</em>, <em>H0=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#libE.libE" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the outer libEnsemble routine. It checks each rank in libE_specs[‘comm’]
+against libE_specs[‘manager_ranks’] or libE_specs[‘worker_ranks’] and
+either runs manager_main or worker_main
+(Some subroutines currently assume that the manager is always (only) rank 0.)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sim_specs</strong> (<em>[</em><em>dict</em><em>]</em><em>:</em>) – <p>Required keys :</p>
+<dl class="docutils">
+<dt>’sim_f’ [func] :</dt>
+<dd>the simulation function being evaluated</dd>
+<dt>’in’ [list] :</dt>
+<dd>field names (as strings) that will be given to sim_f</dd>
+<dt>’out’ [list of tuples (field name, data type, [size])] :</dt>
+<dd>sim_f outputs that will be stored in the libEnsemble history</dd>
+</dl>
+<p>Optional keys :</p>
+<dl class="docutils">
+<dt>’save_every_k’ [int] :</dt>
+<dd>Save history array every k steps</dd>
+<dt>’sim_dir’ [str] :</dt>
+<dd>Name of simulation directory which will be copied for each worker</dd>
+<dt>’sim_dir_prefix’ [str] :</dt>
+<dd>A prefix path specifying where to create sim directories</dd>
+</dl>
+<p>Additional entires in sim_specs will be given to sim_f</p>
+</li>
+<li><strong>gen_specs</strong> (<em>[</em><em>dict</em><em>]</em><em>:</em>) – <p>Required keys :</p>
+<dl class="docutils">
+<dt>’gen_f’ [func] :</dt>
+<dd>generates inputs to sim_f</dd>
+<dt>’in’ [list] :</dt>
+<dd>field names (as strings) that will be given to gen_f</dd>
+<dt>’out’ [list of tuples (field name, data type, [size])] :</dt>
+<dd>gen_f outputs that will be stored in the libEnsemble history</dd>
+</dl>
+<p>Optional keys :</p>
+<dl class="docutils">
+<dt>’save_every_k’ [int] :</dt>
+<dd>Save history array every k steps</dd>
+<dt>’queue_update_function’ [func] :</dt>
+<dd>Additional entires in gen_specs will be given to gen_f</dd>
+</dl>
+</li>
+<li><strong>exit_criteria</strong> (<em>[</em><em>dict</em><em>]</em><em>:</em>) – <p>Optional keys (At least one must be given) :</p>
+<dl class="docutils">
+<dt>’sim_max’ [int] :</dt>
+<dd>Stop after this many sim_f evaluations have been completed</dd>
+<dt>’gen_max’ [int] :</dt>
+<dd>Stop after this many points have been generated by gen_f</dd>
+<dt>’elapsed_wallclock_time’ [float] :</dt>
+<dd>Stop after this amount of seconds have elapsed (since the libEnsemble manager has been initialized)</dd>
+<dt>’stop_val’ [(str,float)] :</dt>
+<dd>Stop when H[str] (for some field str returned from sim_out or gen_out) has been observed with a value less than the float given</dd>
+</dl>
+</li>
+<li><strong>alloc_specs</strong> (<em>[</em><em>dict</em><em>, </em><em>optional</em><em>] </em><em>:</em>) – <dl class="docutils">
+<dt>‘alloc_f’ [func] :</dt>
+<dd>Default: give_sim_work_first</dd>
+<dt>’out’ [list of tuples] :</dt>
+<dd>Default: [(‘allocated’,bool)]</dd>
+<dt>’batch_mode’ [bool] :</dt>
+<dd>Default: []</dd>
+<dt>’num_inst’ [int] :</dt>
+<dd>Default: []</dd>
+</dl>
+<p>The ‘batch_mode’ and ‘num_inst’ are specific arguments for the allocation function give_sim_work_first</p>
+</li>
+<li><strong>[</strong><strong>dict</strong><strong>]</strong> (<em>libE_specs</em>) – <dl class="docutils">
+<dt>‘comm’ [MPI communicator] :</dt>
+<dd>libEnsemble communicator. Default: MPI.COMM_WORLD</dd>
+<dt>’color’ [int] :</dt>
+<dd>Communicator color. Default: 0</dd>
+<dt>’manager_ranks’ [set] :</dt>
+<dd>Default: [0]</dd>
+<dt>’worker_ranks’ [set] :</dt>
+<dd>Default: [1 to comm.Get_size()-1]</dd>
+<dt>’queue_update_function’ [func] :</dt>
+<dd>Default: []</dd>
+</dl>
+</li>
+<li><strong>H0</strong> (<em>numpy array:</em>) – A previous libEnsemble history to be prepended to the history in the current libEnsemble run.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>H</strong> (<em>numpy structured array</em>) – History array storing rows for each point. Field names are in
+libensemble/libE_fields.py</li>
+<li><strong>gen_info</strong> (<em>Dict</em>) – Dictionary containing generator info</li>
+<li><strong>exit_flag</strong> (<em>int</em>) – Flag containing job status: 0 = No errors, 2 = Manager timed out and ended simulation</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="manager_modules.html" class="btn btn-neutral float-right" title="Manager Modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="release_notes.html" class="btn btn-neutral" title="Release Notes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Jeffrey Larson.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
