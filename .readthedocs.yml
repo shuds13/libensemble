@@ -1,8 +1,3 @@
-requirements_file: requirements.txt
-
-build:
-    image: latest
-    
-python:
-    pip_install: true
+conda:
+    file: conda/environment.yml
 

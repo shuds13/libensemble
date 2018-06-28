@@ -2,3 +2,5 @@ dependencies:
  - python=3.5
  - mpi4py
  - numpy
+ - pip:
+     - pip install -e .
