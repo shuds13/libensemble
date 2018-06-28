@@ -1,6 +1,4 @@
 dependencies:
+ - python==3.5
  - mpi4py
  - numpy
-
-python:
-    pip_install: true
