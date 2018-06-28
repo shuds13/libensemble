@@ -1,0 +1,8 @@
+*__pycache__
+*.pyc
+libensemble_applications/
+*.o
+cov_*
+.cov_*
+code/tests/regression_tests/output/
+.cache

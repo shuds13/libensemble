@@ -1,0 +1,78 @@
+language: python
+python:
+  - 2.7
+  - 3.4
+  - 3.5
+  - 3.6
+  
+os: linux
+dist: trusty
+sudo: false
+
+env:
+  global:
+    - HYDRA_LAUNCHER=fork
+    - OMPI_MCA_rmaps_base_oversubscribe=yes  
+  matrix:
+    - MPI=mpich
+    - MPI=openmpi
+
+matrix:
+  allow_failures:
+    - env: MPI=openmpi
+    
+addons:
+  apt:
+    packages:
+      - gfortran
+      - libblas-dev
+      - liblapack-dev
+    
+cache: 
+  pip: true
+  apt: true
+
+# Setup Miniconda
+before_install:
+  # Do this conditionally because it saves some downloading if the version is the same.
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+      wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
+    else
+      wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+    fi
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  - conda info -a # For debugging any issues with conda
+  - conda config --add channels conda-forge  
+  - conda create --yes --name condaenv python=$TRAVIS_PYTHON_VERSION 
+  - source activate condaenv
+
+install:
+  - conda install $MPI
+  - pip install numpy
+  - pip install scipy
+  - pip install mpi4py
+  - pip install petsc petsc4py
+  - pip install pytest
+  - pip install pytest-cov
+  - pip install coveralls
+  - conda install --no-deps nlopt  
+  # For confirmation of MPI library being used.
+  - python conda/find_mpi.py #locate compilers
+  - mpiexec --version #Show MPI library details
+  - pip install .
+
+# Run test
+script:
+  - libensemble/tests/run-tests.sh
+
+# Coverage
+after_success:
+  - mv libensemble/tests/.cov* .
+  - coveralls
+
+after_failure:
+- cat libensemble/tests/regression_tests/log.err
