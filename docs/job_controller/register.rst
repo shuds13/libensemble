@@ -1,6 +1,6 @@
 Registration Module
 --------------------
-.. automodule:: register
+.. automodule:: libensemble.register
   :no-undoc-members:
 
 .. autoclass:: register.Register

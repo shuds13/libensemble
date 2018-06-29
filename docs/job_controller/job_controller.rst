@@ -1,6 +1,6 @@
 Job Controller Module
 ---------------------
-.. automodule:: controller
+.. automodule:: libensemble.controller
   :no-undoc-members:
     
 .. autoclass:: JobController

@@ -1,5 +1,5 @@
 Manager Modules
 ===============
-.. automodule:: libE_manager
+.. automodule:: libensemble.libE_manager
   :members:
   :undoc-members:

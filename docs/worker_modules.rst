@@ -1,5 +1,5 @@
 Worker Modules
 ===============
-.. automodule:: libE_worker
+.. automodule:: libensemble.libE_worker
   :members:
   :undoc-members:

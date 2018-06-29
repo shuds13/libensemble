@@ -19,13 +19,13 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('./'))
-sys.path.insert(0, os.path.abspath('../'))
-import libensemble
-import libensemble.alloc_funcs.give_sim_work_first
-from libensemble.alloc_funcs.give_sim_work_first import give_sim_work_first
-import libensemble.gen_funcs
-import libensemble.sim_funcs
+#sys.path.insert(0, os.path.abspath('./'))
+#sys.path.insert(0, os.path.abspath('../'))
+#import libensemble
+#import libensemble.alloc_funcs.give_sim_work_first
+#from libensemble.alloc_funcs.give_sim_work_first import give_sim_work_first
+#import libensemble.gen_funcs
+#import libensemble.sim_funcs
 
 #from unittest.mock import MagicMock
 from mock import MagicMock
@@ -52,12 +52,12 @@ sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 #from libensemble.sim_funcs import *
 
 
-#sys.path.insert(0, os.path.abspath('.'))
-sys.path.append(os.path.abspath('../libensemble'))
-##sys.path.append(os.path.abspath('../libensemble'))
-sys.path.append(os.path.abspath('../libensemble/alloc_funcs'))
-sys.path.append(os.path.abspath('../libensemble/gen_funcs'))
-sys.path.append(os.path.abspath('../libensemble/sim_funcs'))
+##sys.path.insert(0, os.path.abspath('.'))
+#sys.path.append(os.path.abspath('../libensemble'))
+###sys.path.append(os.path.abspath('../libensemble'))
+#sys.path.append(os.path.abspath('../libensemble/alloc_funcs'))
+#sys.path.append(os.path.abspath('../libensemble/gen_funcs'))
+#sys.path.append(os.path.abspath('../libensemble/sim_funcs'))
 
 # print(sys.path)
 

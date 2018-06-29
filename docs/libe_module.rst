@@ -1,5 +1,5 @@
 libE Module
 ===========
-.. automodule:: libE
+.. automodule:: libensemble.libE
   :members:
   :undoc-members:
