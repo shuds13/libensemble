@@ -3,6 +3,8 @@ import time
 from libensemble.executors.executor import Executor
 from libensemble.message_numbers import (UNSET_TAG, TASK_FAILED,
                                          MAN_SIGNAL_KILL, WORKER_DONE)
+from numpy.lib.recfunctions import repack_fields
+
 
 # bounds for (Tu, Tl, Hu, Hl, r, Kw, rw, L)
 bounds = np.array([[63070, 115600],
@@ -14,34 +16,23 @@ bounds = np.array([[63070, 115600],
                    [0.05, 0.15],  # Very low probability of being outside of this range
                    [1120, 1680]])
 
-check_for_man_kills = True
 
-
-def check_for_kill_recv(sim_specs, libE_info):
-    """ Checks for manager kill signal"""
+def poll_task(sim_specs, exctr, task):
+    """ Poll task for complettion and for manager kill signal"""
 
     calc_status = UNSET_TAG
-    comm = libE_info['comm']
-    poll_interval = 0.01
-    timeout_sec = 0.01
-
-    if sim_specs['user'].get('kill_sim_test', False):
-        # Run these sims longer to test kill
-        sim_id = libE_info['H_rows'][0]
-        if 630 <= sim_id <= 634:
-            poll_interval = 0.2
-            timeout_sec = 5
+    poll_interval = 0.05
 
     # Example poll loop - generally used if launch and wait for applcation to run.
-    exctr = Executor.executor
-    start_time = time.time()
-    while time.time() - start_time < timeout_sec:
-        time.sleep(poll_interval)
-        exctr.manager_poll(comm)
+    while(not task.finished):
+        exctr.manager_poll()
         if exctr.manager_signal == 'kill':
-            # exctr.kill(task) # No task running
+            task.kill()
             calc_status = MAN_SIGNAL_KILL
             break
+        else:
+            task.poll()
+            time.sleep(poll_interval)
 
     return calc_status
 
@@ -52,16 +43,32 @@ def borehole(H, persis_info, sim_specs, libE_info):
     """
 
     calc_status = UNSET_TAG  # Calc_status gets printed in libE_stats.txt
-
+    H = repack_fields(H)  # From libE 0.7.1 this will be unnecessary
     H_o = np.zeros(H.shape[0], dtype=sim_specs['out'])
-    H_o['f'] = borehole_func(H)
 
-    if check_for_man_kills:
-        calc_status = check_for_kill_recv(sim_specs, libE_info)
+    # Executor to run sub-process
+    np.save('input', H)
+    exctr = Executor.executor
+
+    # For test only
+    delay = 0.01
+    sim_id = libE_info['H_rows'][0]
+    if 630 <= sim_id <= 634:
+        delay = 5
+
+    args = 'input.npy' + ' ' + str(delay)
+    task = exctr.submit(app_name='borehole', app_args=args,stdout='out.txt', stderr='err.txt')
+    # task.wait() # for testing - else use polling loop
+    calc_status = poll_task(sim_specs, exctr, task)
+
+    # H_o['f'] = borehole_func(H)
 
     if calc_status == MAN_SIGNAL_KILL:
         H_o['f'] = np.nan
+        print('sim_id {} was killed. Returning nan'.format(sim_id),flush=True)
         return H_o, persis_info, calc_status
+    else:
+        H_o['f'] = float(task.read_stdout())
 
     if H_o['f'] > H['quantile'][0]:
         H_o['failures'] = 1
@@ -101,7 +108,6 @@ def borehole_func(H):
         flow rate through the Borehole (m^3/year)
 
     """
-
     thetas = H['thetas']
     xs = H['x']
 

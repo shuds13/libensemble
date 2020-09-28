@@ -31,14 +31,20 @@ from libensemble.gen_funcs.persistent_cwp_calib import testcalib as gen_f
 from libensemble.alloc_funcs.start_only_persistent import only_persistent_gens as alloc_f
 from libensemble.sim_funcs.cwpsim import borehole as sim_f
 from libensemble.tools import parse_args, save_libE_output, add_unique_random_streams
-from libensemble.executors.mpi_executor import MPIExecutor
+#from libensemble.executors.mpi_executor import MPIExecutor
+from libensemble.executors.executor import Executor
+import libensemble.sim_funcs.borehole_standalone  as borehole_standalone
+
 
 # from libensemble import libE_logger
 # libE_logger.set_level('DEBUG')  # To get debug logging in ensemble.log
 
 if __name__ == '__main__':
 
-    exctr = MPIExecutor()
+    #exctr = MPIExecutor(auto_resources=False)
+    exctr = Executor()
+    sim_app = borehole_standalone.__file__
+    exctr.register_calc(full_path=sim_app, app_name='borehole')
 
     nworkers, is_master, libE_specs, _ = parse_args()
 
@@ -95,6 +101,10 @@ if __name__ == '__main__':
                             'batch_mode': False  # set batch mode (alloc behavior after batch_sim_id)
                             }
                    }
+
+    # Add field to libE_specs
+    libE_specs['use_worker_dirs'] = True # Use worker dirs
+    libE_specs['sim_dirs_make'] = False # Do not make sim dirs
 
     persis_info = add_unique_random_streams({}, nworkers + 1)
 
