@@ -120,7 +120,6 @@ install:
     fi
     # End: dependencies only for regression tests
     #
-  - pip install flake8
   - pip install coverage==4.5.4
   - pip install pytest
   - pip install pytest-cov
