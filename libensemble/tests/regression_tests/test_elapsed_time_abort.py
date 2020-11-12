@@ -13,6 +13,7 @@
 # Do not change these lines - they are parsed by run-tests.sh
 # TESTSUITE_COMMS: mpi local tcp
 # TESTSUITE_NPROCS: 2 4
+# TESTSUITE_LEVEL: 1
 
 import numpy as np
 

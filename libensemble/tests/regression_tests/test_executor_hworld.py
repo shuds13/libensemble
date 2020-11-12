@@ -28,6 +28,7 @@ from libensemble.tests.regression_tests.common import build_simfunc
 # Do not change these lines - they are parsed by run-tests.sh
 # TESTSUITE_COMMS: mpi local tcp
 # TESTSUITE_NPROCS: 2 3 4
+# TESTSUITE_LEVEL: 1
 
 nworkers, is_manager, libE_specs, _ = parse_args()
 

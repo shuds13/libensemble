@@ -15,6 +15,7 @@
 # Do not change these lines - they are parsed by run-tests.sh
 # TESTSUITE_COMMS: mpi
 # TESTSUITE_NPROCS: 2 4
+# TESTSUITE_LEVEL: 1
 
 import sys
 import numpy as np

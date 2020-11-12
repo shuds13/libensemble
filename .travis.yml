@@ -148,7 +148,9 @@ before_script:
 
 # Run test (-z show output)
 script:
-  - ./libensemble/tests/run-tests.sh -A "-W error" -z -$COMMS_TYPE
+  #- ./libensemble/tests/run-tests.sh -A "-W error" -z -$COMMS_TYPE
+  - python test_persistent_tasmanian.py --comms local --nworkers 3
+  - mpirun -np 4 python test_persistent_tasmanian.py
 
 # Track code coverage
 after_success:

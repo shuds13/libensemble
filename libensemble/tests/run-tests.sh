@@ -449,8 +449,28 @@ if [ "$root_found" = true ]; then
     reg_fail=0
     test_num=0
 
+    TESTSUITE_LEVEL=1  # 1. BASIC. 2. STANDARD 3. FULL
+
+
+
+
     for TEST_SCRIPT in $REG_TEST_LIST
     do
+      TEST_LEVEL=$(sed -n '/# TESTSUITE_LEVEL/s/# TESTSUITE_LEVEL: //p' $TEST_SCRIPT)
+
+      if [ "$TEST_LEVEL" = "" ]; then
+        TEST_LEVEL=3
+        echo -e  "Warning $TEST_SCRIPT has no test level set. Setting to level 3"
+      fi
+
+      if [ "$TEST_LEVEL" -le "$TESTSUITE_LEVEL" ]
+      then
+        echo -e  "Test $TEST_SCRIPT will be run. Level $TEST_LEVEL"
+      else
+        echo -e  "Test $TEST_SCRIPT will NOT be run. Level $TEST_LEVEL"
+        continue
+      fi
+
       COMMS_LIST=$(sed -n '/# TESTSUITE_COMMS/s/# TESTSUITE_COMMS: //p' $TEST_SCRIPT)
       for LAUNCHER in $COMMS_LIST
       do
