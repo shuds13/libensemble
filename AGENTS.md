@@ -7,6 +7,49 @@ Read the ``README.rst`` for an overview of libEnsemble.
 - The manager determines how and when points get passed to workers via an allocation function.
 - See ``libensemble/tests/regression_tests/test_1d_sampling.py`` for a simple example of the libEnsemble interface.
 
+Quick Start Pattern
+-------------------
+
+The recommended way to parameterize and run libEnsemble is via the ``Ensemble`` class. Using a ``VOCS`` (Variables, Objectives, Constraints, Settings) object is highly encouraged for automatic configuration of input and output fields.
+
+```python
+import numpy as np
+from gest_api.vocs import VOCS
+from libensemble import Ensemble
+from libensemble.specs import ExitCriteria, GenSpecs, LibeSpecs, SimSpecs
+
+# 1. Define problem space
+vocs = VOCS(
+    variables={"x": [0, 1]},
+    objectives={"f": "MINIMIZE"},
+)
+
+# 2. Define Simulator
+def my_sim(H, persis_info, sim_specs, _):
+    batch = len(H)
+    H_o = np.zeros(batch, dtype=sim_specs["out"])
+    for i in range(batch):
+        H_o["f"][i] = H["x"][i]**2  # Simple quadratic objective
+    return H_o, persis_info
+
+# 3. Setup and Run
+if __name__ == "__main__":
+    # parse_args=True enables -n <nworkers> and --comms from CLI
+    ens = Ensemble(parse_args=True)
+    ens.sim_specs = SimSpecs(sim_f=my_sim, vocs=vocs)
+
+    from libensemble.gen_funcs.sampling import latin_hypercube_sample
+    ens.gen_specs = GenSpecs(gen_f=latin_hypercube_sample, vocs=vocs)
+
+    ens.exit_criteria = ExitCriteria(sim_max=10)
+    ens.add_random_streams()
+
+    H, persis_info, flag = ens.run()
+    ens.save_output(__file__)
+```
+
+For more examples (MPI, Executors, persistent generators), see the regression tests.
+
 Repository Layout
 -----------------
 
@@ -58,6 +101,47 @@ long-running loop, sending and receiving points to and from the manager until th
 - If using a generator that adheres to the ``gest-api`` standard, or a classic persistent generator, use the ``start_only_persistent`` allocation function.
 - Generators are often used for simple sampling, optimization, calibration, uncertainty quantification, and other simulation-based tasks.
 
+### Implementing a Standardized Generator
+
+When writing a new generator class, inherit from ``gest_api.Generator``. This standard (the `gest-api`) ensures compatibility across different optimization and sampling frameworks.
+
+> [!IMPORTANT]
+> Avoid inheriting from ``LibensembleGenerator`` for new generators; that class is reserved for internal libEnsemble compatibility.
+
+```python
+from gest_api import Generator
+from gest_api.vocs import VOCS
+
+class MyGenerator(Generator):
+    def __init__(self, vocs: VOCS, **kwargs):
+        self.vocs = vocs
+        super().__init__(vocs)
+        # Initialize internal models or state here
+
+    def _validate_vocs(self, vocs: VOCS):
+        # Ensure the VOCS object is compatible with this generator
+        if not vocs.variables:
+            raise ValueError("VOCS must contain variables.")
+
+    def suggest(self, num_points: int) -> list[dict]:
+        """Generate new points for simulation."""
+        points = []
+        for _ in range(num_points):
+            # Each dict must contain keys for all variables and constants in VOCS
+            point = {"x": ...}
+            points.append(point)
+        return points
+
+    def ingest(self, results: list[dict]) -> None:
+        """Process results from completed simulations."""
+        # 'results' contains dictionaries with keys for variables, constants,
+        # objectives, constraints, and observables.
+        pass
+```
+
+See ``libensemble/gen_classes/external/sampling.py`` for a complete reference implementation.
+
+
 General Guidelines
 ------------------
 
@@ -91,5 +175,7 @@ Testing
 - Some tests require third party software to be installed. When developing a feature or fixing a bug, since the entire test suite will be run on Github Actions,
 for local development running individual tests is sufficient.
 - Individual unit tests can be run with ``pixi run -e dev pytest path/to/test_file``.
+- The ``libensemble/tests/regression_tests`` directory contains tests that resemble actual examples and use-cases.
+
 - A libEnsemble run typically outputs an ``ensemble.log`` and ``libE_stats.txt`` file in the working directory. Check these files for tracebacks or run statistics.
 - An "ensemble" or "workflow" directory may also be created, often containing per-simulation output directories
