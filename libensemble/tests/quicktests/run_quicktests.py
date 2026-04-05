@@ -55,6 +55,8 @@ SCRIPT_TESTS = [
     # Regression - APOSMM
     ("regression_tests", "test_persistent_aposmm_nlopt.py", ["--nworkers", "3", "--comms", "local"]),
     ("regression_tests", "test_asktell_aposmm_nlopt.py", ["--nworkers", "3", "--comms", "local"]),
+    # Regression - VOCS / xopt
+    ("regression_tests", "test_xopt_nelder_mead.py", ["--nworkers", "3", "--comms", "local"]),
 ]
 
 SIMDIR = TESTS_DIR / "unit_tests" / "simdir"
