@@ -1,6 +1,7 @@
 """
-Test the APOSMM generator function's capabilities to properly exit when a
-timeout has occurred.
+Tests that the ``persistent_aposmm`` generator exits cleanly when a wall-clock
+timeout occurs. Uses the ``func_wrapper`` simulator from
+``sim_funcs.periodic_func``. Classic (non-vocs) format. Pure Python simulation.
 
 Execute via one of the following commands (e.g. 3 workers):
    mpiexec -np 4 python test_persistent_aposmm_timeout.py

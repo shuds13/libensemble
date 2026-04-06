@@ -1,3 +1,21 @@
+"""
+Tests libEnsemble's platform configuration and workflow directory creation
+using the PerlmutterGPU platform spec. A persistent variable-resource
+generator assigns varying GPU counts to simulations; the ``gpu_variable_resources``
+simulator is run as an MPI application via MPIExecutor (six_hump_camel as the
+application), with dry_run enabled. Verifies that the correct MPI runner
+(srun) appears in the ensemble log and that a workflow directory is created.
+Uses classic (non-vocs) format. Runs an MPI application via executor.
+
+Execute via one of the following commands (e.g. 3 workers):
+   mpiexec -np 4 python test_ensemble_platform_workdir.py
+   python test_ensemble_platform_workdir.py --nworkers 3
+"""
+
+# Do not change these lines - they are parsed by run-tests.sh
+# TESTSUITE_COMMS: local mpi
+# TESTSUITE_NPROCS: 4
+
 import glob
 import os
 import re

@@ -1,16 +1,15 @@
 """
-Tests variable resource detection and automatic GPU assignment in libEnsemble
+Tests libEnsemble's variable resource detection and automatic GPU assignment
+with a persistent generator that assigns varying numbers of GPUs to each
+simulation. Uses the ``uniform_sample`` persistent generator and the
+``gpu_variable_resources_from_gen`` simulator (``sim_funcs.var_resources``),
+which is run as an MPI application via MPIExecutor. Four GPUs per node are
+mocked for portability. Classic (non-vocs) format. Runs an MPI application
+via executor.
 
-The persistent generator creates simulations with variable resource requirements.
-
-The sim_f (gpu_variable_resources_from_gen) asserts that GPUs assignment
-is correct for the default method for the MPI runner. GPUs are not actually
-used for default application. Four GPUs per node is mocked up below (if this line
-is removed, libEnsemble will detect any GPUs available).
-
-A dry_run option is provided. This can be set in the calling script, and will
-just print run-lines and GPU settings. This may be used for testing run-lines
-produced and GPU settings for different MPI runners.
+The sim_f asserts that GPU assignment is correct for the default MPI runner.
+GPUs are not actually used; four GPUs per node is mocked up (remove to detect
+real GPUs). A dry_run option is provided for inspecting run-lines only.
 
 Execute via one of the following commands (e.g. 5 workers):
    mpiexec -np 6 python test_GPU_variable_resources.py

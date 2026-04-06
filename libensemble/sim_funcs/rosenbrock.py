@@ -1,7 +1,8 @@
 """
-Sim function for Rosenbrock function. We include a @const input to the
-gradient, and not the function evaluation, to scale down the gradient
-so the Lipschitz and smoothness term is reduced.
+Simulator evaluating the chained Rosenbrock function and optionally its
+gradient. A ``@const`` scaling input is applied to the gradient (not the
+function value) to reduce the Lipschitz/smoothness constant. Classic
+(non-vocs) format. Pure Python simulation.
 """
 
 import numpy as np

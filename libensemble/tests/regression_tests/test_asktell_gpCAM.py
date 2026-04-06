@@ -1,16 +1,18 @@
 """
-Tests libEnsemble with gpCAM
+Tests libEnsemble with gpCAM Gaussian process generators via the gest-api
+ask/tell interface. Runs two generator variants (``GP_CAM`` and ``GP_CAM_Covar``)
+from ``gen_classes.gpCAM`` with VOCS configuration on the Rosenbrock function
+simulator. Gest-api/vocs format. Pure Python simulation.
 
 Execute via one of the following commands (e.g. 3 workers):
-   mpiexec -np 4 python test_gpCAM_class.py
-   python test_gpCAM_class.py --nworkers 3 --comms local
+   mpiexec -np 4 python test_asktell_gpCAM.py
+   python test_asktell_gpCAM.py --nworkers 3 --comms local
 
 When running with the above commands, the number of concurrent evaluations of
 the objective function will be 2, as one of the three workers will be the
 persistent generator.
 
-See libensemble.gen_funcs.persistent_gpCAM for more details about the generator
-setup.
+See libensemble.gen_classes.gpCAM for more details about the generator setup.
 """
 
 # Do not change these lines - they are parsed by run-tests.sh

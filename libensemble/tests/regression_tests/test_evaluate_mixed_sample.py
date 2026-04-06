@@ -1,6 +1,8 @@
 """
-Tests libEnsemble's capability to take in an existing sample of points with
-sim_f values and do additional evaluations.
+Tests libEnsemble's capability to ingest an existing sample of pre-evaluated
+points (with sim_f values) and continue evaluating additional points. Uses
+the ``give_pregenerated_sim_work`` alloc function and the ``borehole`` simulator.
+Classic (non-vocs) format. Pure Python simulation.
 
 Execute via one of the following commands (e.g. 3 workers):
    mpiexec -np 4 python test_evaluate_mixed_sample.py

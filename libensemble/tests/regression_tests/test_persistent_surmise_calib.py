@@ -1,5 +1,15 @@
 """
-Runs libEnsemble with Surmise calibration test.
+Performs Borehole calibration with selective simulation cancellation using the
+Surmise package. Uses the ``surmise_calib`` generator and the ``borehole``
+simulator from ``sim_funcs.borehole``. Classic (non-vocs) format. Pure Python
+simulation.
+
+Initial observations use theta at the center of a unit hypercube. As the
+surrogate model is updated, the generator cancels previously issued evaluations
+that are no longer needed.
+
+See tutorial "Borehole Calibration with Selective Simulation Cancellation"
+in the libEnsemble documentation for more details.
 
 Execute via one of the following commands (e.g. 3 workers):
    mpiexec -np 4 python test_persistent_surmise_calib.py
@@ -9,16 +19,6 @@ Execute via one of the following commands (e.g. 3 workers):
 When running with the above commands, the number of concurrent evaluations of
 the objective function will be 2, as one of the three workers will be the
 persistent generator.
-
-This test uses the Surmise package to perform a Borehole Calibration with
-selective simulation cancellation. Initial observations are modeled using
-a theta at the center of a unit hypercube. The initial function values for
-these are run first. As the model is updated, the generator selects previously
-issued evaluations to cancel.
-
-See more information, see tutorial:
-"Borehole Calibration with Selective Simulation Cancellation"
-in the libEnsemble documentation.
 """
 
 # Do not change these lines - they are parsed by run-tests.sh

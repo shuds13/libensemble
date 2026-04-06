@@ -1,9 +1,9 @@
 """
-Tests libEnsemble with Optimas GridSamplingGenerator
+Evaluates a grid of points using the Optimas ``GridSamplingGenerator``
+(gest-api/vocs format). Uses an inline evaluation function as the simulator.
+Pure Python simulation. Adapted from the Optimas test ``test_grid_sampling.py``.
 
-*****currently fixing nworkers to batch_size*****
-
-From Optimas test test_grid_sampling.py
+Note: currently fixing nworkers to batch_size.
 
 Execute via one of the following commands (e.g. 4 workers):
    mpiexec -np 5 python test_optimas_grid_sample.py

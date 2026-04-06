@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 """
-Parallel Hello World
+Parallel Hello World MPI application. Each MPI process prints its rank, world
+size, and host name. Used as a simple test application submitted via the
+libEnsemble MPIExecutor in executor hello-world tests.
 """
 
 if __name__ == "__main__":

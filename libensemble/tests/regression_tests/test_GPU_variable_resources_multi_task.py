@@ -1,20 +1,14 @@
 """
-Tests multi-task (using GPU and non-GPU tasks using variable resources
-and automatic GPU assignment in libEnsemble.
+Tests libEnsemble's multi-task variable resource assignment with both GPU
+and non-GPU tasks. A persistent generator (``uniform_sample_with_var_gpus``)
+assigns mixed resource requirements; the ``gpu_variable_resources_from_gen``
+simulator (``sim_funcs.var_resources``) is run as an MPI application via
+MPIExecutor. Verifies correct GPU assignment for default MPI runner. Classic
+(non-vocs) format. Runs an MPI application via executor.
 
-The persistent generator creates simulations with variable resource requirements
-and some that require GPUs and some do not. The "num_procs" and "num_gpus"
-for each task are set in the generator. These are automatically passed through
-to the executor used by the sim.
-
-The sim_f (gpu_variable_resources_from_gen) asserts that GPUs assignment
-is correct for the default method for the MPI runner. GPUs are not actually
-used for default application. CPUs and GPUs per node are mocked up below
-(if this line is removed, libEnsemble will detect any CPUs/GPUs available).
-
-A dry_run option is provided. This can be set in the calling script, and will
-just print run-lines and GPU settings. This may be used for testing run-lines
-produced and GPU settings for different MPI runners.
+The "num_procs" and "num_gpus" for each task are set in the generator and
+passed through to the executor. CPUs and GPUs per node are mocked up for
+portability. A dry_run option is available for inspecting run-lines only.
 
 Execute via one of the following commands (e.g. 9 workers):
    mpiexec -np 10 python test_GPU_variable_resources_multi_task.py

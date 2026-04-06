@@ -1,3 +1,10 @@
+"""
+Simulator for testing manager-worker communications in libEnsemble. Applies
+simple numerical transformations to worker inputs (scaling and passing values
+through to output arrays). Designed for internal communications testing;
+not intended as a general-purpose example.
+"""
+
 import numpy as np
 
 

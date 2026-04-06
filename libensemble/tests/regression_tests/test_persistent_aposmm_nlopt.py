@@ -1,5 +1,8 @@
 """
-Runs libEnsemble with APOSMM with the NLopt local optimizer.
+Finds multiple minima of the six-hump camel function using APOSMM with the
+NLopt local optimizer. Uses the ``persistent_aposmm`` generator and the
+``six_hump_camel`` simulator from ``sim_funcs.six_hump_camel``. Classic
+(non-vocs) format. Pure Python simulation.
 
 Execute via one of the following commands (e.g. 3 workers):
    mpiexec -np 4 python test_persistent_aposmm_nlopt.py

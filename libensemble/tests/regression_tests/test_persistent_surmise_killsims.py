@@ -1,5 +1,13 @@
 """
-Tests libEnsemble's capability to kill/cancel  simulations that are in progress.
+Tests libEnsemble's ability to kill in-progress simulations, using Surmise
+calibration on the borehole function. A smaller variant of
+``test_persistent_surmise_calib.py`` that subprocesses a compiled borehole
+executable via the Executor. Uses the ``surmise_calib`` generator and the
+``borehole_kills`` simulator from ``sim_funcs.borehole_kills``. Classic
+(non-vocs) format. Runs an application (compiled borehole executable).
+
+A delay is added after the initial batch so in-progress simulations can be
+killed when the generator requests cancellation.
 
 Execute via one of the following commands (e.g. 3 workers):
    mpiexec -np 4 python test_persistent_surmise_killsims.py
@@ -9,16 +17,6 @@ Execute via one of the following commands (e.g. 3 workers):
 When running with the above commands, the number of concurrent evaluations of
 the objective function will be 2, as one of the three workers will be the
 persistent generator.
-
-This test is a smaller variant of test_persistent_surmise_calib.py, but which
-subprocesses a compiled version of the borehole simulation. A delay is
-added to simulations after the initial batch, so that the killing of running
-simulations can be tested. This will only affect simulations that have already
-been issued to a worker when the cancel request is registesred by the manager.
-
-See more information, see tutorial:
-"Borehole Calibration with Selective Simulation Cancellation"
-in the libEnsemble documentation.
 """
 
 # Do not change these lines - they are parsed by run-tests.sh

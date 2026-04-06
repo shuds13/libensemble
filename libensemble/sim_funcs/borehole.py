@@ -1,3 +1,12 @@
+"""
+Simulator implementing the Borehole function (Harper and Gupta, 1983), which
+models flow rate through a borehole as an 8-dimensional function. Includes
+utilities for generating random inputs within physically meaningful bounds.
+Pure Python simulation.
+
+See: https://www.sfu.ca/~ssurjano/borehole.html
+"""
+
 import numpy as np
 import numpy.typing as npt
 

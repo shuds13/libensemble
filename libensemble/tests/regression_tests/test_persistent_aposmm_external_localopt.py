@@ -1,11 +1,12 @@
 """
-Test the use for APOSMM with an external local optimization method.
-Points are passed to/from the localopt method using files with run-specific
-hashes. These hashes are currently generated using uuid, which may not be
-thread safe on some systems (e.g., Travis-CI). This was resolved by not using
-'local' communication; we therefore recommend using 'mpi' communication when
-using persistent_aposmm with an external localopt # method.
+Tests APOSMM with an external local optimizer on the six-hump camel function.
+Points are passed to/from the external localopt method via files with
+run-specific hashes. Uses the ``persistent_aposmm`` generator and the
+``six_hump_camel`` simulator from ``sim_funcs.six_hump_camel``. Classic
+(non-vocs) format. Pure Python simulation.
 
+Note: MPI communication is recommended when using an external localopt method,
+as the file-based hash approach may not be thread safe on all systems.
 
 Execute via one of the following commands (e.g. 3 workers):
    mpiexec -np 4 python test_persistent_aposmm_external_localopt.py

@@ -1,7 +1,9 @@
 """
-Tests libEnsemble with Xopt ExpectedImprovementGenerator and a gest-api form simulator.
+Performs Bayesian optimization using the Xopt ``ExpectedImprovementGenerator``
+with a gest-api/vocs format simulator (rather than a plain function). Both
+generator and simulator use the gest-api/vocs format. Pure Python simulation.
 
-*****currently fixing nworkers to batch_size*****
+Note: currently fixing nworkers to batch_size.
 
 Execute via one of the following commands (e.g. 4 workers):
    mpiexec -np 5 python test_xopt_EI_xopt_sim.py

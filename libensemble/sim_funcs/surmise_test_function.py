@@ -1,7 +1,10 @@
 """
-Created on Tue Feb  9 10:27:23 2021
-
-@author: mosesyhc
+Simulator implementing the Borehole model function for Surmise calibration
+tests. Models flow rate through a borehole as a function of both physical
+inputs ``x`` and calibration parameters ``thetas``. Supports a failure model
+that returns infinite values for outputs exceeding 1.25× the true value, used
+to test selective simulation cancellation in Surmise-based calibration. Pure
+Python simulation.
 """
 
 import numpy as np

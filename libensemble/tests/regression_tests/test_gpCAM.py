@@ -1,5 +1,11 @@
 """
-Tests libEnsemble with gpCAM
+Tests libEnsemble with three variants of the gpCAM Gaussian process generator
+on the Rosenbrock function. Uses ``persistent_gpCAM`` and
+``persistent_gpCAM_covar`` generators from ``gen_funcs.persistent_gpCAM``
+and the ``rosenbrock_eval`` simulator. The first two runs use posterior
+covariance sampling (one with grid approach using prior run’s points); the
+third uses the gpCAM ask/tell interface. Classic persistent generator format.
+Pure Python simulation.
 
 Execute via one of the following commands (e.g. 3 workers):
    mpiexec -np 4 python test_gpCAM.py
@@ -8,11 +14,6 @@ Execute via one of the following commands (e.g. 3 workers):
 When running with the above commands, the number of concurrent evaluations of
 the objective function will be 2, as one of the three workers will be the
 persistent generator.
-
-Runs three variants of gpCAM. The first two use the posterior covariance
-sampling method,  whereby the second run uses the grid approach and uses
-the points from the first run as it’s test points. The third run uses the
-gpCAM ask/tell interface.
 
 See libensemble.gen_funcs.persistent_gpCAM for more details about the
 generator setup.

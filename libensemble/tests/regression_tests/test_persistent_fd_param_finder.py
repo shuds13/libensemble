@@ -1,7 +1,8 @@
 """
-Runs libEnsemble with the fd_param_finder persistent gen_f, which finds an
-appropriate finite-difference parameter for the sim_f mapping from R^n to R^p
-around the point x.
+Determines an appropriate finite-difference step parameter for a vector-valued
+simulator using the ``fd_param_finder`` persistent generator. Uses the
+``func_wrapper`` simulator from ``sim_funcs.noisy_vector_mapping``. Classic
+(non-vocs) format. Pure Python simulation.
 
 Execute via one of the following commands (e.g. 3 workers):
    mpiexec -np 4 python test_persistent_fd_param_finder.py

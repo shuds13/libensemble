@@ -1,5 +1,7 @@
 """
-This module contains an example function that evaluates one point of any dimension >=1
+A simple simulator that evaluates the Euclidean norm of an input vector ``x``
+of any dimension >= 1. Uses the gest-api ``@input_fields``/``@output_data``
+decorators (compatible with both classic and vocs formats). Pure Python simulation.
 """
 
 __all__ = ["norm_eval"]

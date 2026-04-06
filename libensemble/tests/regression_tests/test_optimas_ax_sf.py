@@ -1,7 +1,9 @@
 """
-Tests libEnsemble with Optimas Single-Fidelity Ax Generator
+Performs single-fidelity Bayesian optimization using the Optimas
+``AxSingleFidelityGenerator`` (gest-api/vocs format). Uses an inline
+evaluation function as the simulator. Pure Python simulation.
 
-*****currently fixing nworkers to batch_size*****
+Note: currently fixing nworkers to batch_size.
 
 Execute via one of the following commands (e.g. 4 workers):
    mpiexec -np 5 python test_optimas_ax_sf.py
