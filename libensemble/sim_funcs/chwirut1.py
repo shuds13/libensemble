@@ -1,3 +1,13 @@
+"""
+Simulator implementing the Chwirut1 nonlinear least-squares problem, a NIST
+Statistical Reference Dataset (StRD) benchmark with 214 observations. Evaluates
+residuals of an exponential decay model fit and optionally returns individual
+components for component-wise derivative-free optimization (e.g., with POUNDERS
+or DFO-LS). Pure Python simulation.
+
+See: https://www.itl.nist.gov/div898/strd/nls/data/chwirut1.shtml
+"""
+
 __all__ = ["chwirut_eval"]
 import numpy as np
 

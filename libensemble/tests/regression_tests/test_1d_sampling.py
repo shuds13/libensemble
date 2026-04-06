@@ -1,5 +1,8 @@
 """
-Runs libEnsemble with Latin hypercube sampling on a simple 1D problem
+Tests libEnsemble with 1D uniform/Latin hypercube sampling on a simple norm
+evaluation. Uses the ``persistent_uniform`` generator and the ``norm_eval``
+simulator from ``sim_funcs.simple_sim``. Classic (non-vocs) format.
+Pure Python simulation.
 
 Execute via one of the following commands (e.g. 3 workers):
    mpiexec -np 4 python test_1d_sampling.py

@@ -1,5 +1,7 @@
 """
-Tests libEnsemble with Xopt NelderMeadGenerator using Rosenbrock function
+Minimizes the Rosenbrock function using the Xopt ``NelderMeadGenerator``
+(gest-api/vocs format). Uses an inline Rosenbrock evaluation function as the
+simulator. Pure Python simulation.
 
 Execute via one of the following commands (e.g. 4 workers):
    mpiexec -np 5 python test_xopt_nelder_mead.py

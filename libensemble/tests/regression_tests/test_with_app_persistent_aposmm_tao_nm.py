@@ -1,12 +1,13 @@
 """
-Runs libEnsemble with APOSMM with a PETSc/TAO local optimizer and using
-the executor to run an application.
-
-This is to test the scenario, where Open-MPI will fail due to nested MPI, if
-PETSc is imported at global level.
+Finds multiple minima of the six-hump camel function using APOSMM with the
+PETSc/TAO Nelder-Mead optimizer, where the simulator is launched as an
+application via the Executor. Tests that PETSc imported lazily avoids
+nested-MPI failures with Open-MPI. Uses the ``persistent_aposmm`` generator
+and the ``six_hump_camel`` simulator run as a subprocess. Classic (non-vocs)
+format. Runs an application.
 
 Execute via one of the following commands (e.g., 3 workers):
-   mpiexec -np 4 python test_persistent_aposmm_tao_nm.py
+   mpiexec -np 4 python test_with_app_persistent_aposmm_tao_nm.py
    python test_with_app_persistent_aposmm_tao_nm.py --nworkers 3
    python test_with_app_persistent_aposmm_tao_nm.py --nworkers 3 --comms tcp
 

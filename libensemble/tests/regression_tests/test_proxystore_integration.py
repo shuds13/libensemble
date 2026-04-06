@@ -1,11 +1,13 @@
 """
-Test libEnsemble's capability to use no gen_f and instead coordinates the
-evaluation of an existing set of points.
+Tests libEnsemble integration with ProxyStore for transparent object proxying
+across workers. Uses the ``give_pregenerated_sim_work`` allocation function
+and an inline ``one_d_example`` simulator. Classic (non-vocs) format.
+Pure Python simulation.
 
 Execute via one of the following commands (e.g. 3 workers):
-   mpiexec -np 4 python test_evaluate_existing_sample.py
-   python test_evaluate_existing_sample.py --nworkers 3
-   python test_evaluate_existing_sample.py --nworkers 3 --comms tcp
+   mpiexec -np 4 python test_proxystore_integration.py
+   python test_proxystore_integration.py --nworkers 3
+   python test_proxystore_integration.py --nworkers 3 --comms tcp
 
 The number of concurrent evaluations of the objective function will be 4-1=3.
 """

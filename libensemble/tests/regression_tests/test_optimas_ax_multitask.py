@@ -1,9 +1,10 @@
 """
-Tests libEnsemble with Optimas Multitask Ax Generator
+Performs multitask Bayesian optimization using the Optimas
+``AxMultitaskGenerator`` (gest-api/vocs format). Runs an initial ensemble,
+then a second run using the first as a warm-start (H0). Uses an inline
+evaluation function as the simulator. Pure Python simulation.
 
-Runs an initial ensemble, followed by another using the first as an H0.
-
-*****currently fixing nworkers to batch_size*****
+Note: currently fixing nworkers to batch_size.
 
 Execute via one of the following commands (e.g. 4 workers):
    mpiexec -np 5 python test_optimas_ax_multitask.py
@@ -12,10 +13,7 @@ Execute via one of the following commands (e.g. 4 workers):
 When running with the above commands, the number of concurrent evaluations of
 the objective function will be 4 as the generator is on the manager.
 
-Issues: In some cases, the generator fails to produce points. This is
-intermittent and can be seen by the message "alloc_f did not return any work".
-This needs to be resolved in the generator by generating extra points
-as needed (excluding from until then).
+Issues: In some cases, the generator fails to produce points (intermittent).
 """
 
 # Do not change these lines - they are parsed by run-tests.sh

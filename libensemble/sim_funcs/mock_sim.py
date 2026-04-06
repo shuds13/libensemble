@@ -1,3 +1,11 @@
+"""
+Mock simulator that replays simulation outputs from a previous libEnsemble run.
+Reads results from a saved NumPy history file and returns the corresponding
+output for each requested point. Useful for reproducing a prior run while
+capturing additional information from a generator, or for post-processing
+scenarios. Requires ``sim_specs["user"]["history_file"]`` to be set.
+"""
+
 import numpy as np
 
 

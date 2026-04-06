@@ -1,6 +1,9 @@
 """
-Runs libEnsemble with APOSMM with an NLopt local optimizer that uses gradient
-information from the sim_f
+Finds multiple minima of the six-hump camel function using APOSMM with the
+NLopt local optimizer exploiting gradient information returned by the simulator.
+Uses the ``persistent_aposmm`` generator and the ``six_hump_camel`` simulator
+(with gradient) from ``sim_funcs.six_hump_camel``. Classic (non-vocs) format.
+Pure Python simulation.
 
 Execute via one of the following commands (e.g. 3 workers):
    mpiexec -np 4 python test_persistent_aposmm_with_grad.py

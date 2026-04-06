@@ -1,3 +1,12 @@
+"""
+Executor hello-world simulator used for internal testing of libEnsemble's
+task launch and polling mechanisms. Exercises various termination scenarios
+(normal finish, worker kill on error, worker kill on timeout, manager kill)
+by submitting simple shell commands via the executor. Also tests named app
+submission by comparing six_hump_camel results run directly vs. as an app.
+Designed for internal testing; not intended as a general-purpose example.
+"""
+
 import numpy as np
 
 from libensemble.message_numbers import (

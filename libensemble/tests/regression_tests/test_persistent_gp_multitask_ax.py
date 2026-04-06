@@ -1,9 +1,8 @@
 """
-Example of multi-fidelity optimization using a persistent GP gen_func (calling
-Ax).
-
-This test uses the gen_on_manager option (persistent generator runs on
-a thread). Therefore nworkers is the number of simulation workers.
+Performs multi-fidelity Bayesian optimization using the ``persistent_gp_mt_ax_gen_f``
+generator (which calls Ax internally) and an inline ``run_simulation`` function.
+The persistent generator runs on a manager thread (``gen_on_manager=True``).
+Classic (non-vocs) format. Pure Python simulation.
 
 Execute via one of the following commands:
    mpiexec -np 4 python test_persistent_gp_multitask_ax.py

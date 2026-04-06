@@ -1,5 +1,9 @@
 """
-This module contains a test noisy function
+Simulator implementing a noisy vector-valued 2D objective function. Returns
+a 3-component output based on the six-hump camel terms perturbed by
+high-frequency oscillatory noise. Used to test finite-difference parameter
+finding (``fd_param_finder``) and derivative-free optimization in the presence
+of noise. Pure Python simulation.
 """
 
 import numpy as np

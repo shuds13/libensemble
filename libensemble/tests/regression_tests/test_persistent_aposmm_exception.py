@@ -1,5 +1,7 @@
 """
-Tests the APOSMM generator function's ability to handle exceptions
+Tests the ``persistent_aposmm`` generator's ability to handle exceptions
+raised by the simulator. Uses the ``periodic_func`` simulator from
+``sim_funcs.periodic_func``. Classic (non-vocs) format. Pure Python simulation.
 
 Execute via one of the following commands (e.g. 3 workers):
    mpiexec -np 4 python test_persistent_aposmm_exception.py

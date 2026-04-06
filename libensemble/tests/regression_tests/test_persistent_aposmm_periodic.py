@@ -1,6 +1,8 @@
 """
-Tests the 'periodic' domain use case for APOSMM with both NLopt and SciPy
-local optimization methods.
+Tests APOSMM's periodic domain feature using both NLopt and SciPy local
+optimizers on a periodic test function. Uses the ``persistent_aposmm``
+generator and the ``func_wrapper`` simulator from ``sim_funcs.periodic_func``.
+Classic (non-vocs) format. Pure Python simulation.
 
 Execute via one of the following commands (e.g. 3 workers):
    mpiexec -np 4 python test_persistent_aposmm_periodic.py

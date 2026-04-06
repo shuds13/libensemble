@@ -1,5 +1,8 @@
 """
-Runs libEnsemble with Latin hypercube sampling on a simple 2D problem
+Tests libEnsemble with 2D Latin hypercube sampling on a simple norm evaluation.
+Uses the ``latin_hypercube_sample`` generator and the ``norm_eval`` simulator
+from ``sim_funcs.simple_sim``. Classic (non-vocs) format with alloc function.
+Pure Python simulation.
 
 Execute via one of the following commands (e.g. 3 workers):
    mpiexec -np 4 python test_2d_sampling.py

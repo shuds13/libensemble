@@ -1,11 +1,9 @@
 """
-Tests libEnsemble with Xopt ExpectedImprovementGenerator using
-initial_sample_method="uniform" to produce initial sample points.
-
-EI requires pre-evaluated data before it can suggest points. This test
-verifies that setting initial_sample_method="uniform" in GenSpecs causes
-libEnsemble to generate uniform random samples, evaluate them through
-the sim, and ingest results into the generator before optimization begins.
+Performs Bayesian optimization using the Xopt ``ExpectedImprovementGenerator``
+with ``initial_sample_method="uniform"`` to bootstrap the surrogate model.
+Verifies that libEnsemble generates uniform samples, evaluates them, and feeds
+results to the generator before optimization begins. gest-api/vocs format.
+Uses an inline evaluation function as the simulator. Pure Python simulation.
 
 Execute via one of the following commands (e.g. 4 workers):
    mpiexec -np 5 python test_xopt_EI_initial_sample.py

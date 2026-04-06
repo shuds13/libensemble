@@ -1,17 +1,13 @@
 """
-Runs libEnsemble with APOSMM+IBCDFO on two test problems. Only a single
-optimization run is being performed for the below setup.
+Solves two test problems using APOSMM with the IBCDFO POUNDERS local optimizer.
+Uses the ``persistent_aposmm`` generator. Classic (non-vocs) format.
+Pure Python simulation.
 
-The first case uses POUNDERS to solve the chwirut least-squares problem. For
-this case, all chwirut 214 residual calculations for a given point are
-performed as a single simulation evaluation.
-
-The second case uses the generalized POUNDERS to minimize normalized beamline
-emittance. The "beamline simulation" is a synthetic polynomial test function
-that takes in 4 variables and returning 3 outputs. These outputs represent
-position <x>, momentum <p_x>, and the correlation between them <x p_x>.
-
-These values are then mapped to the normalized emittance <x> <p_x> - <x p_x>.
+The first case uses POUNDERS on the chwirut least-squares problem (all 214
+residual calculations for a point are a single evaluation). The second case
+minimizes normalized beamline emittance using a synthetic polynomial function
+(4 inputs, 3 outputs: position, momentum, and cross-correlation mapped to
+normalized emittance).
 
 Execute via one of the following commands:
    mpiexec -np 3 python test_persistent_aposmm_ibcdfo_pounders.py

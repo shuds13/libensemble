@@ -1,5 +1,7 @@
 """
-This module contains a periodic test function
+Simulator implementing a periodic 2D test function ``sin(x[0]) * cos(x[1])``.
+Used to test APOSMM's periodic domain handling and exception-handling behavior.
+Pure Python simulation.
 """
 
 import numpy as np

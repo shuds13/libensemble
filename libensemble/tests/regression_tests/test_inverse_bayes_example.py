@@ -1,5 +1,8 @@
 """
-Tests libEnsemble's inverse_bayes generator function
+Tests libEnsemble with the ``persistent_updater_after_likelihood`` generator
+performing iterative Bayesian updating (inverse Bayes calibration). Uses the
+``likelihood_calculator`` simulator from ``sim_funcs.inverse_bayes``. Classic
+(non-vocs) format. Pure Python simulation.
 
 Execute via one of the following commands (e.g. 3 workers):
    mpiexec -np 4 python test_inverse_bayes_example.py

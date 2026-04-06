@@ -1,4 +1,10 @@
-# Sim_func
+"""
+Simulator computing a proxy likelihood function for inverse Bayesian inference
+testing. Evaluates the six_hump_camel function as a stand-in likelihood,
+returning the result in the ``"like"`` output field. Used with the
+``persistent_inverse_bayes`` generator in calibration tests.
+"""
+
 __all__ = ["likelihood_calculator"]
 
 import numpy as np

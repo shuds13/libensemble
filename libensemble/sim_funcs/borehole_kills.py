@@ -1,3 +1,11 @@
+"""
+Borehole simulator variant used for testing libEnsemble's handling of manager
+kill signals during active simulations. Runs the Borehole function via a
+compiled subprocess using the libEnsemble executor, and implements a failure
+model to produce some infinite values. Designed for internal testing of
+kill-signal propagation; not intended as a general-purpose example.
+"""
+
 import numpy as np
 
 from libensemble.executors.executor import Executor
